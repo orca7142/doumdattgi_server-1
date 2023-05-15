@@ -16,6 +16,7 @@ import { User } from './apis/users/entities/user.entity';
   imports: [
     AuthModule,
     UsersModule,
+    PointsTransactionsModule,
     ConfigModule.forRoot(),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
