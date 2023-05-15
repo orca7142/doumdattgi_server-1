@@ -5,10 +5,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './apis/users/users.module';
 import { User } from './apis/users/entities/user.entity';
+import { PointsTransactionsModule } from './apis/pointTransaction/pointTransaction.module';
 
 @Module({
   imports: [
     UsersModule,
+    PointsTransactionsModule,
     ConfigModule.forRoot(),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
