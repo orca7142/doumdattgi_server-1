@@ -30,6 +30,11 @@ import { PointsTransactionsModule } from './apis/pointTransaction/pointTransacti
       synchronize: true,
       logging: true,
     }),
+    CacheModule.register({
+      store: redisStore,
+      url: 'redis://doumdattgi-redis:6379',
+      isGlobal: true,
+    }),
   ],
 })
 export class AppModule {}
