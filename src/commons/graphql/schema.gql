@@ -2,6 +2,51 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type User {
+  id: String!
+  email: String!
+  password: String!
+  name: String!
+  nickname: String!
+  phone: String!
+  profileImage: String!
+  introduce: String!
+  portfolio: String!
+  workRate: Int!
+  point: Int!
+}
+
 type Query {
-  fetchUsers: String!
+  fetchLoginUser: User!
+}
+
+type Mutation {
+  login(email: String!, password: String!): String!
+  logout: String!
+  restoreAccessToken: String!
+  sendTokenEmail(email: String!): String!
+  checkValidToken(email: String!, token: String!): Boolean!
+  createUser(createUserInput: CreateUserInput!): User!
+  updateNicknameIntroduce(updateNicknameIntroduceInput: UpdateNicknameIntroduceInput!): User!
+  updateUserInfo(updateUserInfoInput: UpdateUserInfoInput!): User!
+  deleteUser: Boolean!
+}
+
+input CreateUserInput {
+  email: String!
+  password: String!
+  nickname: String!
+  phone: String!
+  name: String!
+}
+
+input UpdateNicknameIntroduceInput {
+  nickname: String
+  introduce: String
+}
+
+input UpdateUserInfoInput {
+  name: String
+  email: String
+  portfolio: String
 }
