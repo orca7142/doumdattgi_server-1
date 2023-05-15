@@ -8,6 +8,9 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import * as redisStore from 'cache-manager-redis-store';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { AuthModule } from './apis/auth/auth.module';
+import { PointsTransactionsModule } from './apis/pointTransaction/pointTransaction.module';
+import { User } from './apis/users/entities/user.entity';
+
 
 @Module({
   imports: [
