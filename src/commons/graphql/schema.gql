@@ -41,6 +41,9 @@ type Product {
   user: User!
   title: PRODUCT_CATEGORY_ENUM!
   category: String!
+  title: String!
+  category: PRODUCT_CATEGORY_ENUM!
+  sub_category: String!
   summary: String!
   main_text: String!
   sellOrBuy: Boolean!
@@ -88,6 +91,10 @@ type Mutation {
   uploadFile(files: [Upload!]!): [String!]!
   createPointTransaction(impUid: String!, amount: Int!, paymentType: String!): PointTransaction!
   cancelPointTransaction(impUid: String!, paymentType: String!): PointTransaction!
+  createProduct(createProductInput: CreateProductInput!): Product!
+  updateProduct(productId: String!, updateProductInput: UpdateProductInput!): Boolean!
+  createPointTransaction(impUid: String!, amount: Int!): PointTransaction!
+  cancelPointTransaction(impUid: String!): PointTransaction!
 }
 
 input CreateUserInput {
@@ -111,3 +118,20 @@ input UpdateUserInfoInput {
 
 """The `Upload` scalar type represents a file upload."""
 scalar Upload
+input CreateProductInput {
+  title: String!
+  category: String!
+  sub_category: String!
+  summary: String!
+  main_text: String!
+  sellOrBuy: Boolean!
+}
+
+input UpdateProductInput {
+  title: String
+  category: String
+  sub_category: String
+  summary: String
+  main_text: String
+  sellOrBuy: Boolean
+}
