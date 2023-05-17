@@ -16,8 +16,62 @@ type User {
   point: Int!
 }
 
+type PointTransaction {
+  id: String!
+  impUid: String!
+  amount: Int!
+  status: POINT_TRANSACTION_STATUS_ENUM!
+  paymentType: String!
+  user: User!
+  createdAt: DateTime!
+}
+
+enum POINT_TRANSACTION_STATUS_ENUM {
+  PAYMENT
+  CANCEL
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Product {
+  id: String!
+  user: User!
+  title: PRODUCT_CATEGORY_ENUM!
+  category: String!
+  summary: String!
+  main_text: String!
+  sellOrBuy: Boolean!
+}
+
+enum PRODUCT_CATEGORY_ENUM {
+  IT
+  DESIGN
+  TRANSLATE
+  VIDEO
+  MARKETING
+  DOCUMENT
+}
+
+type Request {
+  id: String!
+  product: Product!
+  user: User!
+  isAccept: Boolean!
+  price: Int!
+  createAt: DateTime!
+  sentAt: DateTime!
+  completedAt: DateTime!
+  req_title: String!
+  content: String!
+}
+
 type Query {
   fetchLoginUser: User!
+  fetchUserPaymentInfo: [PointTransaction!]!
+  fetchPointTransactions(impUid: String!): [PointTransaction!]!
 }
 
 type Mutation {
@@ -28,8 +82,12 @@ type Mutation {
   checkValidToken(email: String!, token: String!): Boolean!
   createUser(createUserInput: CreateUserInput!): User!
   updateNicknameIntroduce(updateNicknameIntroduceInput: UpdateNicknameIntroduceInput!): User!
+  updateProfileImage(url: String!): User!
   updateUserInfo(updateUserInfoInput: UpdateUserInfoInput!): User!
   deleteUser: Boolean!
+  uploadFile(files: [Upload!]!): [String!]!
+  createPointTransaction(impUid: String!, amount: Int!, paymentType: String!): PointTransaction!
+  cancelPointTransaction(impUid: String!, paymentType: String!): PointTransaction!
 }
 
 input CreateUserInput {
@@ -50,3 +108,6 @@ input UpdateUserInfoInput {
   email: String
   portfolio: String
 }
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload

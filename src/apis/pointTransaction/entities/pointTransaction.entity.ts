@@ -36,6 +36,10 @@ export class PointTransaction {
   @Field(() => POINT_TRANSACTION_STATUS_ENUM)
   status: string;
 
+  @Column()
+  @Field(() => String)
+  paymentType: string;
+
   @ManyToOne(() => User)
   @Field(() => User)
   user: User;

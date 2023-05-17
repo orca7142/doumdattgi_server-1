@@ -10,7 +10,6 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { Cache } from 'cache-manager';
 import {
-  IAuthServiceGetAccessToken,
   IAuthServiceLogin,
   IAuthServiceRestoreAccessToken,
 } from './interfaces/auth-service.interface';
@@ -89,11 +88,12 @@ export class AuthService {
         },
       });
     this.setRefreshToken({ user, res, req });
-    res.redirect('http://localhost:5501/frontend/login/index.html');
+    res.redirect('http://localhost:5500/frontend/login/index.html');
   }
 
   // 로그아웃 서비스
   async logout(headers) {
+    console.log(headers.headers);
     const refreshToken = headers.headers.cookie.replace('refreshToken=', '');
     const accessToken = headers.headers.authorization.replace('Bearer ', '');
 

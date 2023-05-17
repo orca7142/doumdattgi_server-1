@@ -17,12 +17,14 @@ export interface IPointsTransactionsServiceCreate {
   amount: number;
   user: IAuthUser['user'];
   status?: POINT_TRANSACTION_STATUS_ENUM;
+  paymentType: string;
 }
 
 export interface IPointsTransactionsServiceCreateForPayment {
   impUid: string;
   amount: number;
   user: IAuthUser['user'];
+  paymentType: string;
 }
 
 export interface IPointsTransactionsServiceFindByImpUidAndUser {
@@ -40,5 +42,6 @@ export interface IPointsTransactionsServiceCheckHasCancelablePoint {
 
 export interface IPointsTransactionsServiceCancel {
   impUid: string;
+  paymentType: string;
   user: IAuthUser['user'];
 }

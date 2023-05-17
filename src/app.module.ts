@@ -9,13 +9,15 @@ import * as redisStore from 'cache-manager-redis-store';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { AuthModule } from './apis/auth/auth.module';
 import { PointsTransactionsModule } from './apis/pointTransaction/pointTransaction.module';
-import { User } from './apis/users/entities/user.entity';
-
+import { FilesModule } from './apis/files/files.module';
+import { ProductModule } from './apis/product/product.module';
 
 @Module({
   imports: [
     AuthModule,
     UsersModule,
+    FilesModule,
+    ProductModule,
     PointsTransactionsModule,
     ConfigModule.forRoot(),
     GraphQLModule.forRoot<ApolloDriverConfig>({
