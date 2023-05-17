@@ -59,6 +59,7 @@ export class PointsTransactionsService {
     amount,
     user: _user,
     status = POINT_TRANSACTION_STATUS_ENUM.PAYMENT,
+    paymentType,
   }: IPointsTransactionsServiceCreate): Promise<PointTransaction> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -70,6 +71,7 @@ export class PointsTransactionsService {
         amount,
         user: _user,
         status,
+        paymentType,
       });
       await queryRunner.manager.save(pointTransaction);
 
@@ -139,6 +141,7 @@ export class PointsTransactionsService {
     impUid,
     amount,
     user,
+    paymentType,
   }: IPointsTransactionsServiceCreateForPayment): Promise<PointTransaction> {
     await this.iamportService.checkPid({
       impUid,
@@ -146,13 +149,14 @@ export class PointsTransactionsService {
     });
     await this.checkDuplication({ impUid });
 
-    return this.create({ impUid, amount, user });
+    return this.create({ impUid, amount, user, paymentType });
   }
 
   // 포인트 환불 및 취소된 결과 등록하기
   async cancel({
     impUid,
     user,
+    paymentType,
   }: IPointsTransactionsServiceCancel): Promise<PointTransaction> {
     const pointTransactions = await this.findByImpUidAndUser({ impUid, user });
     this.checkAlreadyCanceled({ pointTransactions });
@@ -165,6 +169,7 @@ export class PointsTransactionsService {
       amount: -canceledAmount,
       status: POINT_TRANSACTION_STATUS_ENUM.CANCEL,
       user,
+      paymentType,
     });
   }
 }

@@ -14,6 +14,7 @@ import {
   IUsersServiceFindOneByEmail,
   IUsersServiceSendTokenEmail,
   IUsersServiceUpdateNicknameIntroduce,
+  IUsersServiceUpdateProfileImage,
   IUsersServiceUpdateUserInfo,
 } from './interfaces/users-service.interface';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -21,12 +22,16 @@ import { Repository } from 'typeorm';
 import { sendTokenTemplate } from 'src/commons/utils/utils';
 import { MailerService } from '@nestjs-modules/mailer';
 import * as bcrypt from 'bcrypt';
+import { PointTransaction } from '../pointTransaction/entities/pointTransaction.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>, //
+
+    @InjectRepository(PointTransaction)
+    private readonly pointsTransactionsRepository: Repository<PointTransaction>,
 
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
@@ -38,7 +43,7 @@ export class UsersService {
     return this.usersRepository.findOne({ where: { email } });
   }
 
-  //   토큰 생성
+  // 토큰 생성
   async createToken() {
     const token = await String(Math.floor(Math.random() * 1000000)).padStart(
       6,
@@ -113,7 +118,6 @@ export class UsersService {
 
   // 로그인한 유저 정보 조회
   async findLoginUser({ context }: IUsersServiceFindLoginUser): Promise<User> {
-    console.log(context);
     const id = context.req.user.id;
 
     const loginUserInfo = await this.usersRepository.findOne({ where: { id } });
@@ -146,6 +150,19 @@ export class UsersService {
     }
   }
 
+  // 프로필 이미지 수정
+  async updateProfileImage({
+    url, //
+    context,
+  }: IUsersServiceUpdateProfileImage): Promise<User> {
+    const loginUserInfo = await this.findLoginUser({ context });
+
+    return await this.usersRepository.save({
+      ...loginUserInfo,
+      profileImage: url,
+    });
+  }
+
   // 유저정보 수정 (이름, 이메일, 포트폴리오)
   async updateUserInfo({
     updateUserInfoInput,
@@ -168,5 +185,17 @@ export class UsersService {
     const loginUserId = (await this.findLoginUser({ context })).id;
     const result = await this.usersRepository.softDelete({ id: loginUserId });
     return result.affected ? true : false;
+  }
+
+  // 로그인한 유저 결제 정보 조회
+  async findUserPaymentInfo({
+    context,
+  }: IUsersServiceFindLoginUser): Promise<PointTransaction[]> {
+    const id = context.req.user.id;
+
+    const paymentInfo = await this.pointsTransactionsRepository.find({
+      where: { user: { id } },
+    });
+    return paymentInfo;
   }
 }

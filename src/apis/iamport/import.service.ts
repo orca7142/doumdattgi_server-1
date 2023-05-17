@@ -16,9 +16,6 @@ import {
   IIamportServiceCheckpaid,
 } from './interfaces/iamport-service.interface';
 
-//try catchfh 예외처리
-//발급 받은 get토큰 resolver로 return해서 다른 부분에서도 토큰을 쓸수 있게 해주기
-
 @Injectable()
 export class IamportService {
   constructor(
@@ -33,7 +30,7 @@ export class IamportService {
     try {
       const getToken = await axios({
         url: 'https://api.iamport.kr/users/getToken',
-        method: 'post', // POST method
+        method: 'post',
         headers: { 'Content-Type': 'application/json' },
         data: {
           imp_key: process.env.IMP_KEY,

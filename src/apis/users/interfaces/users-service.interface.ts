@@ -41,3 +41,8 @@ export interface IUsersServiceUpdateNicknameIntroduce {
   context: IContext;
   updateNicknameIntroduceInput: UpdateNicknameIntroduceInput;
 }
+
+export interface IUsersServiceUpdateProfileImage {
+  context: IContext;
+  url: string;
+}

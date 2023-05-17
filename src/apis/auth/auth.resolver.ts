@@ -2,7 +2,7 @@ import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import { IContext } from 'src/commons/interfaces/context';
 import { UseGuards } from '@nestjs/common';
-import { GqlAuthGuard, GqlAuthRefreshGuard } from './guards/gql-auth.guard';
+import { GqlAuthGuard } from './guards/gql-auth.guard';
 
 @Resolver()
 export class AuthResolver {

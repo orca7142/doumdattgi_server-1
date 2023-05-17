@@ -21,6 +21,7 @@ type PointTransaction {
   impUid: String!
   amount: Int!
   status: POINT_TRANSACTION_STATUS_ENUM!
+  paymentType: String!
   user: User!
   createdAt: DateTime!
 }
@@ -38,6 +39,8 @@ scalar DateTime
 type Product {
   id: String!
   user: User!
+  title: PRODUCT_CATEGORY_ENUM!
+  category: String!
   title: String!
   category: PRODUCT_CATEGORY_ENUM!
   sub_category: String!
@@ -70,6 +73,7 @@ type Request {
 
 type Query {
   fetchLoginUser: User!
+  fetchUserPaymentInfo: [PointTransaction!]!
   fetchPointTransactions(impUid: String!): [PointTransaction!]!
 }
 
@@ -81,8 +85,12 @@ type Mutation {
   checkValidToken(email: String!, token: String!): Boolean!
   createUser(createUserInput: CreateUserInput!): User!
   updateNicknameIntroduce(updateNicknameIntroduceInput: UpdateNicknameIntroduceInput!): User!
+  updateProfileImage(url: String!): User!
   updateUserInfo(updateUserInfoInput: UpdateUserInfoInput!): User!
   deleteUser: Boolean!
+  uploadFile(files: [Upload!]!): [String!]!
+  createPointTransaction(impUid: String!, amount: Int!, paymentType: String!): PointTransaction!
+  cancelPointTransaction(impUid: String!, paymentType: String!): PointTransaction!
   createProduct(createProductInput: CreateProductInput!): Product!
   updateProduct(productId: String!, updateProductInput: UpdateProductInput!): Boolean!
   createPointTransaction(impUid: String!, amount: Int!): PointTransaction!
@@ -108,6 +116,8 @@ input UpdateUserInfoInput {
   portfolio: String
 }
 
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
 input CreateProductInput {
   title: String!
   category: String!

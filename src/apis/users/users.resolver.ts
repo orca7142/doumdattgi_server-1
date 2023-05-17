@@ -10,6 +10,7 @@ import { UseGuards } from '@nestjs/common';
 import { IContext } from 'src/commons/interfaces/context';
 import { UpdateNicknameIntroduceInput } from './dto/update-nicknameIntroduce.input';
 import { UpdateUserInfoInput } from './dto/update-userInfo.input';
+import { PointTransaction } from '../pointTransaction/entities/pointTransaction.entity';
 
 @Resolver()
 export class UsersResolver {
@@ -67,6 +68,19 @@ export class UsersResolver {
     });
   }
 
+  // 프로필 이미지 수정 API
+  @UseGuards(GqlAuthGuard('access'))
+  @Mutation(() => User)
+  updateProfileImage(
+    @Args('url') url: string, //
+    @Context() context: IContext,
+  ): Promise<User> {
+    return this.usersService.updateProfileImage({
+      url,
+      context,
+    });
+  }
+
   // 유저정보 수정 API
   @UseGuards(GqlAuthGuard('access'))
   @Mutation(() => User)
@@ -90,5 +104,14 @@ export class UsersResolver {
     return this.usersService.deleteUser({
       context,
     });
+  }
+
+  // 로그인 유저 결제정보 조회 API
+  @UseGuards(GqlAuthGuard('access'))
+  @Query(() => [PointTransaction])
+  fetchUserPaymentInfo(
+    @Context() context: IContext, //
+  ): Promise<PointTransaction[]> {
+    return this.usersService.findUserPaymentInfo({ context });
   }
 }

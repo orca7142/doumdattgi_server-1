@@ -16,6 +16,7 @@ export class PointsTransactionsResolver {
   createPointTransaction(
     @Args('impUid') impUid: string, //
     @Args({ name: 'amount', type: () => Int }) amount: number,
+    @Args('paymentType') paymentType: string, //
     @Context() context: IContext,
   ): Promise<PointTransaction> {
     const user = context.req.user;
@@ -23,6 +24,7 @@ export class PointsTransactionsResolver {
       impUid,
       amount,
       user,
+      paymentType,
     });
   }
 
@@ -30,12 +32,14 @@ export class PointsTransactionsResolver {
   @Mutation(() => PointTransaction)
   cancelPointTransaction(
     @Args('impUid') impUid: string,
+    @Args('paymentType') paymentType: string,
     @Context() context: IContext,
   ) {
     const user = context.req.user;
     return this.pointsTransactionsService.cancel({
       impUid,
       user,
+      paymentType,
     });
   }
 
