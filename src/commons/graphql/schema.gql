@@ -16,8 +16,61 @@ type User {
   point: Int!
 }
 
+type PointTransaction {
+  id: String!
+  impUid: String!
+  amount: Int!
+  status: POINT_TRANSACTION_STATUS_ENUM!
+  user: User!
+  createdAt: DateTime!
+}
+
+enum POINT_TRANSACTION_STATUS_ENUM {
+  PAYMENT
+  CANCEL
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Product {
+  id: String!
+  user: User!
+  title: String!
+  category: PRODUCT_CATEGORY_ENUM!
+  sub_category: String!
+  summary: String!
+  main_text: String!
+  sellOrBuy: Boolean!
+}
+
+enum PRODUCT_CATEGORY_ENUM {
+  IT
+  DESIGN
+  TRANSLATE
+  VIDEO
+  MARKETING
+  DOCUMENT
+}
+
+type Request {
+  id: String!
+  product: Product!
+  user: User!
+  isAccept: Boolean!
+  price: Int!
+  createAt: DateTime!
+  sentAt: DateTime!
+  completedAt: DateTime!
+  req_title: String!
+  content: String!
+}
+
 type Query {
   fetchLoginUser: User!
+  fetchPointTransactions(impUid: String!): [PointTransaction!]!
 }
 
 type Mutation {
@@ -30,6 +83,10 @@ type Mutation {
   updateNicknameIntroduce(updateNicknameIntroduceInput: UpdateNicknameIntroduceInput!): User!
   updateUserInfo(updateUserInfoInput: UpdateUserInfoInput!): User!
   deleteUser: Boolean!
+  createProduct(createProductInput: CreateProductInput!): Product!
+  updateProduct(productId: String!, updateProductInput: UpdateProductInput!): Boolean!
+  createPointTransaction(impUid: String!, amount: Int!): PointTransaction!
+  cancelPointTransaction(impUid: String!): PointTransaction!
 }
 
 input CreateUserInput {
@@ -49,4 +106,22 @@ input UpdateUserInfoInput {
   name: String
   email: String
   portfolio: String
+}
+
+input CreateProductInput {
+  title: String!
+  category: String!
+  sub_category: String!
+  summary: String!
+  main_text: String!
+  sellOrBuy: Boolean!
+}
+
+input UpdateProductInput {
+  title: String
+  category: String
+  sub_category: String
+  summary: String
+  main_text: String
+  sellOrBuy: Boolean
 }
