@@ -3,7 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Product } from './entites/product.entity';
 import { User } from '../users/entities/user.entity';
 import { ProductResolver } from './product.resolver';
-// import { ProductService } from './product.service';
+import { ProductService } from './product.service';
+import { UsersService } from '../users/users.service';
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import { ProductResolver } from './product.resolver';
   ],
   providers: [
     ProductResolver, //
-    // ProductService,
+    ProductService,
+    UsersService,
   ],
 })
 export class ProductModule {}

@@ -9,6 +9,9 @@ export class CreateProductInput {
   category: string;
 
   @Field(() => String)
+  sub_category: string;
+
+  @Field(() => String)
   summary: string;
 
   @Field(() => String)
@@ -16,7 +19,4 @@ export class CreateProductInput {
 
   @Field(() => Boolean)
   sellOrBuy: boolean;
-
-  @Field(() => String)
-  userId: string;
 }

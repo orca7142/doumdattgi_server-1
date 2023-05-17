@@ -100,9 +100,9 @@ export class UsersService {
   // 회원가입
   async create({ createUserInput }: ICreateUserInput): Promise<User> {
     const { email, password, ...userRest } = createUserInput;
-    const user = await this.findOneByEmail({ email }); 
+    const user = await this.findOneByEmail({ email });
     if (user) throw new ConflictException('이미 등록된 이메일입니다.');
-    const hashedPassword = await bcrypt.hash(password, 10); 
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     return this.usersRepository.save({
       email,

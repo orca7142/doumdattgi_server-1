@@ -7,6 +7,6 @@ export interface IAuthUser {
 }
 
 export interface IContext {
-  req: Request & IAuthUser; 
+  req: Request & IAuthUser;
   res: Response;
 }
