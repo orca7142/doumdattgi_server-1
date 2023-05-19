@@ -22,7 +22,7 @@ import { Repository } from 'typeorm';
 import { sendTokenTemplate } from 'src/commons/utils/utils';
 import { MailerService } from '@nestjs-modules/mailer';
 import * as bcrypt from 'bcrypt';
-import { PointTransaction } from '../pointTransaction/entities/pointTransaction.entity';
+import { Payment } from '../payment/entities/payment.entity';
 
 @Injectable()
 export class UsersService {
@@ -30,8 +30,8 @@ export class UsersService {
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>, //
 
-    @InjectRepository(PointTransaction)
-    private readonly pointsTransactionsRepository: Repository<PointTransaction>,
+    @InjectRepository(Payment)
+    private readonly paymentsRepository: Repository<Payment>,
 
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
@@ -39,8 +39,8 @@ export class UsersService {
   ) {}
 
   // 이메일 중복여부 확인
-  findOneByEmail({ email }: IUsersServiceFindOneByEmail): Promise<User> {
-    return this.usersRepository.findOne({ where: { email } });
+  findOneByEmail({ user_email }: IUsersServiceFindOneByEmail): Promise<User> {
+    return this.usersRepository.findOne({ where: { user_email } });
   }
 
   // 토큰 생성
@@ -53,15 +53,15 @@ export class UsersService {
   }
 
   // 일치하는 이메일 유무 확인하기
-  findOne({ email }: IUsersServiceFindOneByEmail) {
-    return this.usersRepository.findOne({ where: { email } });
+  findOne({ user_email }: IUsersServiceFindOneByEmail) {
+    return this.usersRepository.findOne({ where: { user_email } });
   }
 
   // 이메일 중복 검증 및 이메일 인증번호 전송
   async sendTokenEmail({
-    email,
+    user_email,
   }: IUsersServiceSendTokenEmail): Promise<string> {
-    const user = await this.findOneByEmail({ email });
+    const user = await this.findOneByEmail({ user_email });
     if (user) {
       throw new ConflictException('이미 등록된 이메일입니다');
     }
@@ -74,53 +74,58 @@ export class UsersService {
       html: sendTokenTemplate({ token }),
     });
 
-    const myToken = await this.cacheManager.get(email);
+    const myToken = await this.cacheManager.get(user_email);
 
     if (myToken) {
-      await this.cacheManager.del(email);
+      await this.cacheManager.del(user_email);
     }
-    await this.cacheManager.set(email, token, {
+    await this.cacheManager.set(user_email, token, {
       ttl: 180,
     });
     return token;
   }
 
   // 이메일 인증번호 검증
-  async checkValidateToken({ email, token }: IUsersServiceCheckToken) {
-    const myToken = await this.cacheManager.get(email);
-    return myToken === token ? true : false;
+  async checkValidateToken({
+    user_email,
+    user_token,
+  }: IUsersServiceCheckToken) {
+    const myToken = await this.cacheManager.get(user_email);
+    return myToken === user_token ? true : false;
   }
 
   // 회원가입하기
   async createUser({ createUserInput }: ICreateUserInput): Promise<User> {
-    const { password, ...userInfo } = createUserInput;
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const { user_password, ...userInfo } = createUserInput;
+    const hashedPassword = await bcrypt.hash(user_password, 10);
 
     return this.usersRepository.save({
-      password: hashedPassword,
+      user_password: hashedPassword,
       ...userInfo,
     });
   }
 
   // 회원가입
   async create({ createUserInput }: ICreateUserInput): Promise<User> {
-    const { email, password, ...userRest } = createUserInput;
-    const user = await this.findOneByEmail({ email });
+    const { user_email, user_password, ...userRest } = createUserInput;
+    const user = await this.findOneByEmail({ user_email });
     if (user) throw new ConflictException('이미 등록된 이메일입니다.');
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(user_password, 10);
 
     return this.usersRepository.save({
-      email,
-      password: hashedPassword,
+      user_email,
+      user_password: hashedPassword,
       ...userRest,
     });
   }
 
   // 로그인한 유저 정보 조회
   async findLoginUser({ context }: IUsersServiceFindLoginUser): Promise<User> {
-    const id = context.req.user.id;
+    const user_id = context.req.user.user_id;
 
-    const loginUserInfo = await this.usersRepository.findOne({ where: { id } });
+    const loginUserInfo = await this.usersRepository.findOne({
+      where: { user_id },
+    });
 
     return loginUserInfo;
   }
@@ -130,12 +135,12 @@ export class UsersService {
     updateNicknameIntroduceInput, //
     context,
   }: IUsersServiceUpdateNicknameIntroduce): Promise<User> {
-    const { nickname, introduce } = updateNicknameIntroduceInput;
+    const { user_nickname, user_introduce } = updateNicknameIntroduceInput;
 
     const loginUserInfo = await this.findLoginUser({ context });
 
     const validateNickname = await this.usersRepository.findOne({
-      where: { nickname },
+      where: { user_nickname },
     });
 
     if (validateNickname) {
@@ -143,8 +148,8 @@ export class UsersService {
     } else {
       const result = await this.usersRepository.save({
         ...loginUserInfo,
-        nickname,
-        introduce,
+        user_nickname,
+        user_introduce,
       });
       return result;
     }
@@ -152,14 +157,14 @@ export class UsersService {
 
   // 프로필 이미지 수정
   async updateProfileImage({
-    url, //
+    user_url, //
     context,
   }: IUsersServiceUpdateProfileImage): Promise<User> {
     const loginUserInfo = await this.findLoginUser({ context });
 
     return await this.usersRepository.save({
       ...loginUserInfo,
-      profileImage: url,
+      user_profileImage: user_url,
     });
   }
 
@@ -168,33 +173,35 @@ export class UsersService {
     updateUserInfoInput,
     context,
   }: IUsersServiceUpdateUserInfo): Promise<User> {
-    const { name, email, portfolio } = updateUserInfoInput;
+    const { user_name, user_email, user_portfolio } = updateUserInfoInput;
 
     const loginUserInfo = await this.findLoginUser({ context });
 
     return await this.usersRepository.save({
       ...loginUserInfo,
-      name,
-      email,
-      portfolio,
+      user_name,
+      user_email,
+      user_portfolio,
     });
   }
 
   // 유저 회원탈퇴
   async deleteUser({ context }: IUsersServiceDelete): Promise<boolean> {
-    const loginUserId = (await this.findLoginUser({ context })).id;
-    const result = await this.usersRepository.softDelete({ id: loginUserId });
+    const loginUserId = (await this.findLoginUser({ context })).user_id;
+    const result = await this.usersRepository.softDelete({
+      user_id: loginUserId,
+    });
     return result.affected ? true : false;
   }
 
   // 로그인한 유저 결제 정보 조회
   async findUserPaymentInfo({
     context,
-  }: IUsersServiceFindLoginUser): Promise<PointTransaction[]> {
-    const id = context.req.user.id;
+  }: IUsersServiceFindLoginUser): Promise<Payment[]> {
+    const user_id = context.req.user.user_id;
 
-    const paymentInfo = await this.pointsTransactionsRepository.find({
-      where: { user: { id } },
+    const paymentInfo = await this.paymentsRepository.find({
+      where: { user: { user_id } },
     });
     return paymentInfo;
   }

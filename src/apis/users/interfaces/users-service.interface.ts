@@ -8,20 +8,20 @@ export interface ICreateUserInput {
 }
 
 export interface IUsersServiceDuplicationEmail {
-  email: string;
+  user_email: string;
 }
 
 export interface IUsersServiceFindOneByEmail {
-  email: string;
+  user_email: string;
 }
 
 export interface IUsersServiceSendTokenEmail {
-  email: string;
+  user_email: string;
 }
 
 export interface IUsersServiceCheckToken {
-  email: string;
-  token: string;
+  user_email: string;
+  user_token: string;
 }
 
 export interface IUsersServiceDelete {
@@ -44,5 +44,5 @@ export interface IUsersServiceUpdateNicknameIntroduce {
 
 export interface IUsersServiceUpdateProfileImage {
   context: IContext;
-  url: string;
+  user_url: string;
 }

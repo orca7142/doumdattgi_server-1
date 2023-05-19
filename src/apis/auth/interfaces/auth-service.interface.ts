@@ -2,8 +2,8 @@ import { User } from 'src/apis/users/entities/user.entity';
 import { IAuthUser, IContext } from 'src/commons/interfaces/context';
 
 export interface IAuthServiceLogin {
-  email: string;
-  password: string;
+  user_email: string;
+  user_password: string;
   context: IContext;
 }
 
@@ -22,10 +22,10 @@ export interface IAuthServiceRestoreAccessToken {
 
 export interface IOAuthUser {
   user: {
-    name: string;
-    email: string;
-    password: string;
-    nickname: string;
-    phone: string;
+    user_name: string;
+    user_email: string;
+    user_password: string;
+    user_nickname: string;
+    user_phone: string;
   };
 }

@@ -2,42 +2,48 @@ import { Field, InputType, Int } from '@nestjs/graphql';
 
 @InputType()
 export class CreateProductInput {
-  @Field(() => String)
-  title: string;
-
-  @Field(() => String)
-  category: string;
-
-  @Field(() => String)
-  sub_category: string;
-
-  @Field(() => String)
-  summary: string;
-
-  @Field(() => String)
-  main_text: string;
-
   @Field(() => Boolean)
-  sellOrBuy: boolean;
+  product_sellOrBuy: boolean;
 
   @Field(() => String)
-  workDay: string;
+  product_title: string;
+
+  @Field(() => String)
+  product_category: string;
+
+  @Field(() => String)
+  product_sub_category: string;
+
+  @Field(() => String)
+  product_summary: string;
+
+  @Field(() => String)
+  product_main_text: string;
+
+  @Field(() => String)
+  product_workDay: string;
 
   @Field(() => Int)
-  startTime: number;
+  product_workTime: number;
 
   @Field(() => Int)
-  endTime: number;
+  product_startTime: number;
 
   @Field(() => Int)
-  workTime: number;
+  product_endTime: number;
+
+  @Field(() => [String])
+  product_thumbnailImage: string[];
+
+  @Field(() => [Boolean])
+  product_isMain: boolean[];
 
   @Field(() => String)
-  postNum: string;
+  product_postNum: string;
 
   @Field(() => String)
-  roadAddress: string;
+  product_roadAddress: string;
 
   @Field(() => String)
-  detailAddress: string;
+  product_detailAddress: string;
 }

@@ -7,7 +7,7 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 export class Image {
   @PrimaryGeneratedColumn('uuid')
   @Field(() => String)
-  id: string;
+  image_id: string;
 
   @ManyToOne(() => Product)
   @Field(() => Product)
@@ -15,13 +15,13 @@ export class Image {
 
   @Column()
   @Field(() => Boolean)
-  isMain: boolean;
+  image_isMain: boolean;
 
   @Column()
   @Field(() => Boolean)
-  isThumbnail: boolean;
+  image_isThumbnail: boolean;
 
   @Column()
   @Field(() => String)
-  url: string;
+  image_url: string;
 }

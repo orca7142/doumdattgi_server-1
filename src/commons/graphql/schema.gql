@@ -3,30 +3,30 @@
 # ------------------------------------------------------
 
 type User {
-  id: String!
-  email: String!
-  password: String!
-  name: String!
-  nickname: String!
-  phone: String!
-  profileImage: String
-  introduce: String
-  portfolio: String
-  workRate: Int!
-  point: Int!
+  user_id: String!
+  user_email: String!
+  user_password: String!
+  user_name: String!
+  user_nickname: String!
+  user_phone: String!
+  user_profileImage: String
+  user_introduce: String
+  user_portfolio: String
+  user_workRate: Int!
+  user_point: Int!
 }
 
-type PointTransaction {
-  id: String!
-  impUid: String!
-  amount: Int!
-  status: POINT_TRANSACTION_STATUS_ENUM!
-  paymentType: String!
+type Payment {
+  payment_id: String!
+  payment_impUid: String!
+  payment_amount: Int!
+  payment_status: PAYMENT_STATUS_ENUM!
+  payment_type: String!
   user: User!
-  createdAt: DateTime!
+  payment_createdAt: DateTime!
 }
 
-enum POINT_TRANSACTION_STATUS_ENUM {
+enum PAYMENT_STATUS_ENUM {
   PAYMENT
   CANCEL
 }
@@ -37,22 +37,23 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 scalar DateTime
 
 type Product {
-  id: String!
+  product_id: String!
   user: User!
-  title: String!
-  category: PRODUCT_CATEGORY_ENUM!
-  sub_category: String!
-  summary: String!
-  main_text: String!
-  sellOrBuy: Boolean!
-  workDay: WORKDAY_STATUS_ENUM!
-  startTime: Int!
-  endTime: Int!
-  workTime: Int!
-  postNum: String!
-  roadAddress: String!
-  detailAddress: String!
-  deletedAt: DateTime!
+  product_title: String!
+  product_category: PRODUCT_CATEGORY_ENUM!
+  product_sub_category: String!
+  product_summary: String!
+  product_main_text: String!
+  product_thumbnailImage: [String!]!
+  product_sellOrBuy: Boolean!
+  product_workDay: WORKDAY_STATUS_ENUM!
+  product_startTime: Int!
+  product_endTime: Int!
+  product_workTime: Int!
+  product_postNum: String!
+  product_roadAddress: String!
+  product_detailAddress: String!
+  product_deletedAt: DateTime!
 }
 
 enum PRODUCT_CATEGORY_ENUM {
@@ -71,17 +72,16 @@ enum WORKDAY_STATUS_ENUM {
 }
 
 type Request {
-  id: String!
+  request_id: String!
   product: Product!
   user: User!
-  isAccept: REQUEST_ISACCEPT_ENUM!
-  seller: String!
-  price: Int!
-  createAt: DateTime!
-  sentAt: DateTime!
-  completedAt: DateTime!
-  title: String!
-  content: String!
+  request_isAccept: REQUEST_ISACCEPT_ENUM!
+  request_price: Int!
+  request_createAt: DateTime!
+  request_sentAt: DateTime!
+  request_completedAt: DateTime!
+  request_title: String!
+  request_content: String!
 }
 
 enum REQUEST_ISACCEPT_ENUM {
@@ -91,96 +91,109 @@ enum REQUEST_ISACCEPT_ENUM {
   FINISH
 }
 
+type FetchProductOutput {
+  product_id: String!
+  product_title: String!
+  product_category: String!
+  product_workDay: String!
+  product_url: String!
+  u_nickname: String!
+  u_url: String!
+}
+
 type Query {
   fetchLoginUser: User!
-  fetchUserPaymentInfo: [PointTransaction!]!
-  fetchRequest: [Request!]!
-  fetchWork: [Request!]!
+  fetchUserPaymentInfo: [Payment!]!
   fetchProducts(page: Float!, pageSize: Float!): [Product!]!
   fetchRandomProduct: [Product!]!
-  fetchCategoryProduct(category: String!): [Product!]!
-  fetchNewbieProduct: [Product!]!
-  fetchPointTransactions(impUid: String!): [PointTransaction!]!
+  fetchCategoryProduct(product_category: String!): [Product!]!
+  fetchNewbieProduct: [FetchProductOutput!]!
+  fetchRequest: [Request!]!
+  fetchWork: [Request!]!
+  fetchPayments(payment_impUid: String!): [Payment!]!
 }
 
 type Mutation {
-  login(email: String!, password: String!): String!
+  login(user_email: String!, user_password: String!): String!
   logout: String!
   restoreAccessToken: String!
-  sendTokenEmail(email: String!): String!
-  checkValidToken(email: String!, token: String!): Boolean!
+  sendTokenEmail(user_email: String!): String!
+  checkValidToken(user_email: String!, user_token: String!): Boolean!
   createUser(createUserInput: CreateUserInput!): User!
   updateNicknameIntroduce(updateNicknameIntroduceInput: UpdateNicknameIntroduceInput!): User!
-  updateProfileImage(url: String!): User!
+  updateProfileImage(user_url: String!): User!
   updateUserInfo(updateUserInfoInput: UpdateUserInfoInput!): User!
   deleteUser: Boolean!
   uploadFile(files: [Upload!]!): [String!]!
   createProduct(createProductInput: CreateProductInput!): Product!
-  updateProduct(productId: String!, updateProductInput: UpdateProductInput!): Boolean!
+  updateProduct(product_id: String!, updateProductInput: UpdateProductInput!): Boolean!
+  deleteLoginProduct(product_id: String!): Boolean!
   sendRequest(createRequestInput: CreateRequestInput!): Request!
-  deleteLoginProduct(productId: String!): Boolean!
-  createPointTransaction(impUid: String!, amount: Int!, paymentType: String!): PointTransaction!
-  cancelPointTransaction(impUid: String!, paymentType: String!): PointTransaction!
+  createPayment(payment_impUid: String!, payment_amount: Int!, payment_type: String!): Payment!
+  cancelPayment(payment_impUid: String!, payment_type: String!): Payment!
 }
 
 input CreateUserInput {
-  email: String!
-  password: String!
-  nickname: String!
-  phone: String!
-  name: String!
+  user_email: String!
+  user_password: String!
+  user_nickname: String!
+  user_phone: String!
+  user_name: String!
 }
 
 input UpdateNicknameIntroduceInput {
-  nickname: String
-  introduce: String
+  user_nickname: String
+  user_introduce: String
 }
 
 input UpdateUserInfoInput {
-  name: String
-  email: String
-  portfolio: String
+  user_name: String
+  user_email: String
+  user_portfolio: String
 }
 
 """The `Upload` scalar type represents a file upload."""
 scalar Upload
 
 input CreateProductInput {
-  title: String!
-  category: String!
-  sub_category: String!
-  summary: String!
-  main_text: String!
-  sellOrBuy: Boolean!
-  workDay: String!
-  startTime: Int!
-  endTime: Int!
-  workTime: Int!
-  postNum: String!
-  roadAddress: String!
-  detailAddress: String!
+  product_sellOrBuy: Boolean!
+  product_title: String!
+  product_category: String!
+  product_sub_category: String!
+  product_summary: String!
+  product_main_text: String!
+  product_workDay: String!
+  product_workTime: Int!
+  product_startTime: Int!
+  product_endTime: Int!
+  product_thumbnailImage: [String!]!
+  product_isMain: [Boolean!]!
+  product_postNum: String!
+  product_roadAddress: String!
+  product_detailAddress: String!
 }
 
 input UpdateProductInput {
-  title: String
-  category: String
-  sub_category: String
-  summary: String
-  main_text: String
-  sellOrBuy: Boolean
+  product_sellOrBuy: Boolean
+  product_title: String
+  product_category: String
+  product_sub_category: String
+  product_summary: String
+  product_main_text: String
+  product_workDay: String
+  product_workTime: Int
+  product_startTime: Int
+  product_endTime: Int
+  product_thumbnailImage: [String!]
+  product_isMain: [Boolean!]
+  product_postNum: String
+  product_roadAddress: String
+  product_detailAddress: String
 }
 
 input CreateRequestInput {
-  productId: String!
-  title: String!
-  content: String!
-  seller: String!
-  price: Int!
-  workDay: String
-  startTime: Int
-  endTime: Int
-  workTime: Int
-  postNum: String
-  roadAddress: String
-  detailAddress: String
+  product_id: String!
+  request_title: String!
+  request_content: String!
+  request_price: Int!
 }

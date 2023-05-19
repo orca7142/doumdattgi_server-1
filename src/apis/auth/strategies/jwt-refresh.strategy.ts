@@ -30,8 +30,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
       throw new UnauthorizedException();
     } else {
       return {
-        email: payload.email,
-        id: payload.sub,
+        user_id: payload.sub,
       };
     }
   }

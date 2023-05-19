@@ -24,21 +24,23 @@ export class RequestsService {
     createRequestInput, //
     context,
   }: ICreateRequestInput): Promise<Request> {
-    const { productId, ...rest } = createRequestInput;
-    const loginUserId = (await this.usersService.findLoginUser({ context })).id;
+    const { product_id, ...rest } = createRequestInput;
+    const loginUserId = (await this.usersService.findLoginUser({ context }))
+      .user_id;
     return this.requestsRepository.save({
       ...rest,
-      isAccept: REQUEST_ISACCEPT_ENUM.WAITING,
-      product: { id: productId },
-      user: { id: loginUserId },
+      request_isAccept: REQUEST_ISACCEPT_ENUM.WAITING,
+      product: { product_id },
+      user: { user_id: loginUserId },
     });
   }
 
   // 신청 내역 조회
   async fetchRequest({ context }: IFetchRequestInput): Promise<Request[]> {
-    const loginUserId = (await this.usersService.findLoginUser({ context })).id;
+    const loginUserId = (await this.usersService.findLoginUser({ context }))
+      .user_id;
     const requestInfo = await this.requestsRepository.find({
-      where: { user: { id: loginUserId } },
+      where: { user: { user_id: loginUserId } },
       relations: ['user', 'product'],
     });
     return requestInfo;
@@ -46,9 +48,10 @@ export class RequestsService {
 
   // 작업 진행 내역 조회
   async fetchWork({ context }: IFetchWorkInput): Promise<Request[]> {
-    const loginUserId = (await this.usersService.findLoginUser({ context })).id;
+    const loginUserId = (await this.usersService.findLoginUser({ context }))
+      .user_id;
     const workInfo = await this.requestsRepository.find({
-      where: { user: { id: loginUserId } },
+      where: { user: { user_id: loginUserId } },
       relations: ['user', 'product'],
     });
     return workInfo;

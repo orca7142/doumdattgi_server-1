@@ -10,7 +10,7 @@ import axios from 'axios';
 import { Repository } from 'typeorm';
 
 import { User } from '../users/entities/user.entity';
-import { PointTransaction } from '../pointTransaction/entities/pointTransaction.entity';
+import { Payment } from '../payment/entities/payment.entity';
 import {
   IIamportServiceCancel,
   IIamportServiceCheckpaid,
@@ -19,8 +19,8 @@ import {
 @Injectable()
 export class IamportService {
   constructor(
-    @InjectRepository(PointTransaction)
-    private readonly pointsTransactionsRepository: Repository<PointTransaction>,
+    @InjectRepository(Payment)
+    private readonly paymentsRepository: Repository<Payment>,
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
   ) {}
@@ -47,14 +47,17 @@ export class IamportService {
     }
   }
   // 결제완료 상태인지 검증하기
-  async checkPid({ impUid, amount }: IIamportServiceCheckpaid): Promise<void> {
+  async checkPid({
+    payment_impUid,
+    payment_amount,
+  }: IIamportServiceCheckpaid): Promise<void> {
     try {
       const token = await this.getToken();
       const getPaymentData = await axios.get(
-        `https://api.iamport.kr/payments/${impUid}`,
+        `https://api.iamport.kr/payments/${payment_impUid}`,
         { headers: { Authorization: token } },
       );
-      if (amount !== getPaymentData.data.response.amount) {
+      if (payment_amount !== getPaymentData.data.response.amount) {
         throw new UnprocessableEntityException('잘못된 결제 정보입니다.');
       }
       return getPaymentData.data.response;
@@ -71,14 +74,14 @@ export class IamportService {
   }
 
   // 결제 취소하기
-  async cancel({ impUid }: IIamportServiceCancel): Promise<number> {
+  async cancel({ payment_impUid }: IIamportServiceCancel): Promise<number> {
     try {
       const token = await this.getToken();
 
       const result = await axios.post(
         'https://api.iamport.kr/payments/cancel',
         {
-          imp_uid: impUid,
+          imp_uid: payment_impUid,
         },
         {
           headers: { Authorization: token },

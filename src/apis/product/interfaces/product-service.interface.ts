@@ -2,7 +2,7 @@ import { CreateProductInput } from '../dto/create-product.input';
 import { UpdateProductInput } from '../dto/update-product.input';
 
 export interface IProductServiceFindOne {
-  productId: string;
+  product_id: string;
 }
 
 export interface IProductServiceCreate {
@@ -11,10 +11,10 @@ export interface IProductServiceCreate {
 }
 
 export interface IProductServiceUpdate {
-  productId: string;
+  product_id: string;
   updateProductInput: UpdateProductInput;
 }
 
 export interface IProductServiceDelete {
-  productId: string;
+  product_id: string;
 }

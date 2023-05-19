@@ -7,7 +7,7 @@ import { Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 export class Comment {
   @PrimaryGeneratedColumn('uuid')
   @Field(() => String)
-  id: string;
+  comment_id: string;
 
   @ManyToOne(() => Request)
   @Field(() => Request)

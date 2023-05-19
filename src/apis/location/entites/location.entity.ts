@@ -7,7 +7,7 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 export class Location {
   @PrimaryGeneratedColumn('uuid')
   @Field(() => String)
-  id: string;
+  location_id: string;
 
   @ManyToOne(() => Product)
   @Field(() => Product)
@@ -15,13 +15,13 @@ export class Location {
 
   @Column()
   @Field(() => String)
-  postNum: string;
+  location_postNum: string;
 
   @Column()
   @Field(() => String)
-  roadAddress: string;
+  location_roadAddress: string;
 
   @Column()
   @Field(() => String)
-  detailAddress: string;
+  location_detailAddress: string;
 }

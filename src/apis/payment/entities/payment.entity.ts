@@ -8,37 +8,37 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-export enum POINT_TRANSACTION_STATUS_ENUM {
+export enum PAYMENT_STATUS_ENUM {
   PAYMENT = 'PAYMENT',
   CANCEL = 'CANCEL',
 }
 
-registerEnumType(POINT_TRANSACTION_STATUS_ENUM, {
-  name: 'POINT_TRANSACTION_STATUS_ENUM',
+registerEnumType(PAYMENT_STATUS_ENUM, {
+  name: 'PAYMENT_STATUS_ENUM',
 });
 
 @Entity()
 @ObjectType()
-export class PointTransaction {
+export class Payment {
   @PrimaryGeneratedColumn('uuid')
   @Field(() => String)
-  id: string;
+  payment_id: string;
 
   @Column()
   @Field(() => String)
-  impUid: string;
+  payment_impUid: string;
 
   @Column()
   @Field(() => Int)
-  amount: number;
+  payment_amount: number;
 
-  @Column({ type: 'enum', enum: POINT_TRANSACTION_STATUS_ENUM })
-  @Field(() => POINT_TRANSACTION_STATUS_ENUM)
-  status: string;
+  @Column({ type: 'enum', enum: PAYMENT_STATUS_ENUM })
+  @Field(() => PAYMENT_STATUS_ENUM)
+  payment_status: string;
 
   @Column()
   @Field(() => String)
-  paymentType: string;
+  payment_type: string;
 
   @ManyToOne(() => User)
   @Field(() => User)
@@ -46,5 +46,5 @@ export class PointTransaction {
 
   @CreateDateColumn()
   @Field(() => Date)
-  createdAt: Date;
+  payment_createdAt: Date;
 }

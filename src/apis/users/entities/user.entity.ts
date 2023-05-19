@@ -12,59 +12,59 @@ export class User {
   // 유저ID
   @PrimaryGeneratedColumn('uuid')
   @Field(() => String)
-  id: string;
+  user_id: string;
 
   // 이메일 주소
   @Column()
   @Field(() => String)
-  email: string;
+  user_email: string;
 
   // 비밀번호
   @Column()
   @Field(() => String)
-  password: string;
+  user_password: string;
 
   // 이름
   @Column()
   @Field(() => String)
-  name: string;
+  user_name: string;
 
   // 닉네임
   @Column()
   @Field(() => String)
-  nickname: string;
+  user_nickname: string;
 
   // 휴대전화 번호
   @Column()
   @Field(() => String)
-  phone: string;
+  user_phone: string;
 
   // 프로필 이미지
-  @Column()
+  @Column({ default: '' })
   @Field(() => String, { nullable: true })
-  profileImage: string;
+  user_profileImage: string;
 
   // 자기소개
-  @Column()
+  @Column({ default: '' })
   @Field(() => String, { nullable: true })
-  introduce: string;
+  user_introduce: string;
 
   // 포트폴리오 주소
-  @Column()
+  @Column({ default: '' })
   @Field(() => String, { nullable: true })
-  portfolio: string;
+  user_portfolio: string;
 
   // 작업통계
   @Column({ default: 0 })
   @Field(() => Int)
-  workRate: number;
+  user_workRate: number;
 
   // 포인트
   @Column({ default: 0 })
   @Field(() => Int)
-  point: number;
+  user_point: number;
 
   // 회원탈퇴 시간
   @DeleteDateColumn()
-  deletedAt: Date;
+  user_deletedAt: Date;
 }
