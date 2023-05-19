@@ -11,10 +11,10 @@ export class FilesService {
     const waitedFiles = await Promise.all(files);
     console.log(waitedFiles);
 
-    const bucket = 'doumdattgi-storage';
+    const bucket = process.env.GCS_BUCKET;
     const storage = new Storage({
-      projectId: 'doumdattgi-server',
-      keyFilename: 'gcp-file-storage.json',
+      projectId: process.env.GCS_PROJECT_ID,
+      keyFilename: process.env.GCS_KEYFILENAME,
     }).bucket(bucket);
 
     const results = await Promise.all(

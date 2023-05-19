@@ -11,6 +11,7 @@ import { AuthModule } from './apis/auth/auth.module';
 import { PointsTransactionsModule } from './apis/pointTransaction/pointTransaction.module';
 import { FilesModule } from './apis/files/files.module';
 import { ProductModule } from './apis/product/product.module';
+import { RequestsModule } from './apis/request/request.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ProductModule } from './apis/product/product.module';
     UsersModule,
     FilesModule,
     ProductModule,
+    RequestsModule,
     PointsTransactionsModule,
     ConfigModule.forRoot(),
     GraphQLModule.forRoot<ApolloDriverConfig>({

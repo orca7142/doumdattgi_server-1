@@ -10,7 +10,7 @@ import {
 
 @Entity()
 @ObjectType()
-export class engageIn {
+export class EngageIn {
   @PrimaryGeneratedColumn('uuid')
   @Field(() => String)
   id: string;
