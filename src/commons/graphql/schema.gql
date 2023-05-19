@@ -9,9 +9,9 @@ type User {
   name: String!
   nickname: String!
   phone: String!
-  profileImage: String!
-  introduce: String!
-  portfolio: String!
+  profileImage: String
+  introduce: String
+  portfolio: String
   workRate: Int!
   point: Int!
 }
@@ -74,18 +74,28 @@ type Request {
   id: String!
   product: Product!
   user: User!
-  isAccept: Boolean!
+  isAccept: REQUEST_ISACCEPT_ENUM!
+  seller: String!
   price: Int!
   createAt: DateTime!
   sentAt: DateTime!
   completedAt: DateTime!
-  req_title: String!
+  title: String!
   content: String!
+}
+
+enum REQUEST_ISACCEPT_ENUM {
+  WAITING
+  ACCEPT
+  REFUSE
+  FINISH
 }
 
 type Query {
   fetchLoginUser: User!
   fetchUserPaymentInfo: [PointTransaction!]!
+  fetchRequest: [Request!]!
+  fetchWork: [Request!]!
   fetchProducts(page: Float!, pageSize: Float!): [Product!]!
   fetchRandomProduct: [Product!]!
   fetchCategoryProduct(category: String!): [Product!]!
@@ -107,6 +117,7 @@ type Mutation {
   uploadFile(files: [Upload!]!): [String!]!
   createProduct(createProductInput: CreateProductInput!): Product!
   updateProduct(productId: String!, updateProductInput: UpdateProductInput!): Boolean!
+  sendRequest(createRequestInput: CreateRequestInput!): Request!
   deleteLoginProduct(productId: String!): Boolean!
   createPointTransaction(impUid: String!, amount: Int!, paymentType: String!): PointTransaction!
   cancelPointTransaction(impUid: String!, paymentType: String!): PointTransaction!
@@ -157,6 +168,14 @@ input UpdateProductInput {
   summary: String
   main_text: String
   sellOrBuy: Boolean
+}
+
+input CreateRequestInput {
+  productId: String!
+  title: String!
+  content: String!
+  seller: String!
+  price: Int!
   workDay: String
   startTime: Int
   endTime: Int

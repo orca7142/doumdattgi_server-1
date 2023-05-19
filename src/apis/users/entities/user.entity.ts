@@ -40,18 +40,18 @@ export class User {
   phone: string;
 
   // 프로필 이미지
-  @Column({ default: '' })
-  @Field(() => String)
+  @Column()
+  @Field(() => String, { nullable: true })
   profileImage: string;
 
   // 자기소개
-  @Column({ default: '' })
-  @Field(() => String)
+  @Column()
+  @Field(() => String, { nullable: true })
   introduce: string;
 
   // 포트폴리오 주소
-  @Column({ default: '' })
-  @Field(() => String)
+  @Column()
+  @Field(() => String, { nullable: true })
   portfolio: string;
 
   // 작업통계

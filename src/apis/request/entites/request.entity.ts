@@ -1,14 +1,26 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { Product } from 'src/apis/product/entites/product.entity';
 import { User } from 'src/apis/users/entities/user.entity';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
+export enum REQUEST_ISACCEPT_ENUM {
+  WAITING = 'WAITING',
+  ACCEPT = 'ACCEPT',
+  REFUSE = 'REFUSE',
+  FINISH = 'FINISH',
+}
+
+registerEnumType(REQUEST_ISACCEPT_ENUM, {
+  name: 'REQUEST_ISACCEPT_ENUM',
+});
 
 @Entity()
 @ObjectType()
@@ -24,33 +36,41 @@ export class Request {
 
   @ManyToOne(() => User)
   @Field(() => User)
-  user = User;
+  user: User;
+
+  @Column({ type: 'enum', enum: REQUEST_ISACCEPT_ENUM })
+  @Field(() => REQUEST_ISACCEPT_ENUM)
+  isAccept: REQUEST_ISACCEPT_ENUM;
 
   @Column()
-  @Field(() => Boolean)
-  isAccept: boolean;
+  @Field(() => String)
+  seller: string;
 
   @Column()
   @Field(() => Int)
   price: number;
 
-  @Column()
+  @CreateDateColumn()
   @Field(() => Date)
   createAt: Date;
 
-  @Column()
+  @Column({ default: null })
   @Field(() => Date)
   sentAt: Date;
 
-  @Column()
+  @Column({ default: null })
   @Field(() => Date)
   completedAt: Date;
 
   @Column()
   @Field(() => String)
-  req_title: string;
+  title: string;
 
   @Column()
   @Field(() => String)
   content: string;
+
+  // @Column({ default: null })
+  // @Field(() => [String])
+  // images: string[];
 }
