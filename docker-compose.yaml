@@ -12,10 +12,10 @@ services:
     env_file:
       - ./.env.docker
 
-  doumdattgi-database:
+  doumdattgi:
     image: mysql:latest
     environment:
-      MYSQL_DATABASE: 'doumdattgi-database'
+      MYSQL_DATABASE: 'doumdattgi'
       MYSQL_ROOT_PASSWORD: 'root'
     ports:
       - 3306:3306

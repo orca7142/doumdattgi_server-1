@@ -1,7 +1,8 @@
-import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -17,8 +18,18 @@ export enum PRODUCT_CATEGORY_ENUM {
   DOCUMENT = 'DOCUMENT',
 }
 
+export enum WORKDAY_STATUS_ENUM {
+  WEEKDAY = 'WEEKDAY',
+  WEEKEND = 'WEEKEND',
+  NEGOTIATION = 'NEGOTIATION',
+}
+
 registerEnumType(PRODUCT_CATEGORY_ENUM, {
   name: 'PRODUCT_CATEGORY_ENUM',
+});
+
+registerEnumType(WORKDAY_STATUS_ENUM, {
+  name: 'WORKDAY_STATUS_ENUM',
 });
 
 @Entity()
@@ -67,4 +78,44 @@ export class Product {
   // 생성 날짜
   @CreateDateColumn()
   createdAt: Date;
+
+  // 작업 가능 날짜(주중 / 주말 / 협의)
+  @Column({ type: 'enum', enum: WORKDAY_STATUS_ENUM })
+  @Field(() => WORKDAY_STATUS_ENUM)
+  workDay: string;
+
+  // 시작 작업 가능 시간
+  @Column()
+  @Field(() => Int)
+  startTime: number;
+
+  // 종료 작업 가능 시간
+  @Column()
+  @Field(() => Int)
+  endTime: number;
+
+  // 작업한 시간
+  @Column()
+  @Field(() => Int)
+  workTime: number;
+
+  // 우편번호
+  @Column()
+  @Field(() => String)
+  postNum: string;
+
+  // 도로명 주소
+  @Column()
+  @Field(() => String)
+  roadAddress: string;
+
+  // 상세주소
+  @Column()
+  @Field(() => String)
+  detailAddress: string;
+
+  // 삭제시간
+  @DeleteDateColumn()
+  @Field(() => Date)
+  deletedAt: Date;
 }

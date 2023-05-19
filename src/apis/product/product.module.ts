@@ -5,10 +5,12 @@ import { User } from '../users/entities/user.entity';
 import { ProductResolver } from './product.resolver';
 import { ProductService } from './product.service';
 import { UsersService } from '../users/users.service';
+import { PointTransaction } from '../pointTransaction/entities/pointTransaction.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
+      PointTransaction,
       Product, //
       User,
     ]),
@@ -20,4 +22,3 @@ import { UsersService } from '../users/users.service';
   ],
 })
 export class ProductModule {}
-

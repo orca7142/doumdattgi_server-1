@@ -39,14 +39,20 @@ scalar DateTime
 type Product {
   id: String!
   user: User!
-  title: PRODUCT_CATEGORY_ENUM!
-  category: String!
   title: String!
   category: PRODUCT_CATEGORY_ENUM!
   sub_category: String!
   summary: String!
   main_text: String!
   sellOrBuy: Boolean!
+  workDay: WORKDAY_STATUS_ENUM!
+  startTime: Int!
+  endTime: Int!
+  workTime: Int!
+  postNum: String!
+  roadAddress: String!
+  detailAddress: String!
+  deletedAt: DateTime!
 }
 
 enum PRODUCT_CATEGORY_ENUM {
@@ -56,6 +62,12 @@ enum PRODUCT_CATEGORY_ENUM {
   VIDEO
   MARKETING
   DOCUMENT
+}
+
+enum WORKDAY_STATUS_ENUM {
+  WEEKDAY
+  WEEKEND
+  NEGOTIATION
 }
 
 type Request {
@@ -74,6 +86,10 @@ type Request {
 type Query {
   fetchLoginUser: User!
   fetchUserPaymentInfo: [PointTransaction!]!
+  fetchProducts(page: Float!, pageSize: Float!): [Product!]!
+  fetchRandomProduct: [Product!]!
+  fetchCategoryProduct(category: String!): [Product!]!
+  fetchNewbieProduct: [Product!]!
   fetchPointTransactions(impUid: String!): [PointTransaction!]!
 }
 
@@ -89,12 +105,11 @@ type Mutation {
   updateUserInfo(updateUserInfoInput: UpdateUserInfoInput!): User!
   deleteUser: Boolean!
   uploadFile(files: [Upload!]!): [String!]!
-  createPointTransaction(impUid: String!, amount: Int!, paymentType: String!): PointTransaction!
-  cancelPointTransaction(impUid: String!, paymentType: String!): PointTransaction!
   createProduct(createProductInput: CreateProductInput!): Product!
   updateProduct(productId: String!, updateProductInput: UpdateProductInput!): Boolean!
-  createPointTransaction(impUid: String!, amount: Int!): PointTransaction!
-  cancelPointTransaction(impUid: String!): PointTransaction!
+  deleteLoginProduct(productId: String!): Boolean!
+  createPointTransaction(impUid: String!, amount: Int!, paymentType: String!): PointTransaction!
+  cancelPointTransaction(impUid: String!, paymentType: String!): PointTransaction!
 }
 
 input CreateUserInput {
@@ -118,6 +133,7 @@ input UpdateUserInfoInput {
 
 """The `Upload` scalar type represents a file upload."""
 scalar Upload
+
 input CreateProductInput {
   title: String!
   category: String!
@@ -125,6 +141,13 @@ input CreateProductInput {
   summary: String!
   main_text: String!
   sellOrBuy: Boolean!
+  workDay: String!
+  startTime: Int!
+  endTime: Int!
+  workTime: Int!
+  postNum: String!
+  roadAddress: String!
+  detailAddress: String!
 }
 
 input UpdateProductInput {
@@ -134,4 +157,11 @@ input UpdateProductInput {
   summary: String
   main_text: String
   sellOrBuy: Boolean
+  workDay: String
+  startTime: Int
+  endTime: Int
+  workTime: Int
+  postNum: String
+  roadAddress: String
+  detailAddress: String
 }
