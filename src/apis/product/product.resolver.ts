@@ -1,4 +1,4 @@
-import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Product } from './entites/product.entity';
 import { ProductService } from './product.service';
 import { CreateProductInput } from './dto/create-product.input';
@@ -30,5 +30,36 @@ export class ProductResolver {
     @Args('updateProductInput') updateProductInput: UpdateProductInput,
   ): Promise<boolean> {
     return this.productService.update({ productId, updateProductInput });
+  }
+
+  @UseGuards(GqlAuthGuard('access'))
+  @Mutation(() => Boolean)
+  deleteLoginProduct(@Args('productId') productId: string): Promise<boolean> {
+    return this.productService.delete({ productId });
+  }
+
+  @Query(() => [Product])
+  fetchProducts(
+    @Args('page') page: number,
+    @Args('pageSize') pageSize: number,
+  ): Promise<Product[]> {
+    return this.productService.findAll({ page, pageSize });
+  }
+
+  @Query(() => [Product])
+  fetchRandomProduct(): Promise<Product[]> {
+    return this.productService.findRandom();
+  }
+
+  @Query(() => [Product])
+  fetchCategoryProduct(
+    @Args('category') category: string, //
+  ): Promise<Product[]> {
+    return this.productService.findCategory({ category });
+  }
+
+  @Query(() => [Product])
+  fetchNewbieProduct(): Promise<Product[]> {
+    return this.productService.findNewUser();
   }
 }
