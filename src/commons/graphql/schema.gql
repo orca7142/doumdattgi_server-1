@@ -45,6 +45,14 @@ type Product {
   summary: String!
   main_text: String!
   sellOrBuy: Boolean!
+  workDay: WORKDAY_STATUS_ENUM!
+  startTime: Int!
+  endTime: Int!
+  workTime: Int!
+  postNum: String!
+  roadAddress: String!
+  detailAddress: String!
+  deletedAt: DateTime!
 }
 
 enum PRODUCT_CATEGORY_ENUM {
@@ -54,6 +62,12 @@ enum PRODUCT_CATEGORY_ENUM {
   VIDEO
   MARKETING
   DOCUMENT
+}
+
+enum WORKDAY_STATUS_ENUM {
+  WEEKDAY
+  WEEKEND
+  NEGOTIATION
 }
 
 type Request {
@@ -82,6 +96,10 @@ type Query {
   fetchUserPaymentInfo: [PointTransaction!]!
   fetchRequest: [Request!]!
   fetchWork: [Request!]!
+  fetchProducts(page: Float!, pageSize: Float!): [Product!]!
+  fetchRandomProduct: [Product!]!
+  fetchCategoryProduct(category: String!): [Product!]!
+  fetchNewbieProduct: [Product!]!
   fetchPointTransactions(impUid: String!): [PointTransaction!]!
 }
 
@@ -100,6 +118,7 @@ type Mutation {
   createProduct(createProductInput: CreateProductInput!): Product!
   updateProduct(productId: String!, updateProductInput: UpdateProductInput!): Boolean!
   sendRequest(createRequestInput: CreateRequestInput!): Request!
+  deleteLoginProduct(productId: String!): Boolean!
   createPointTransaction(impUid: String!, amount: Int!, paymentType: String!): PointTransaction!
   cancelPointTransaction(impUid: String!, paymentType: String!): PointTransaction!
 }
@@ -133,6 +152,13 @@ input CreateProductInput {
   summary: String!
   main_text: String!
   sellOrBuy: Boolean!
+  workDay: String!
+  startTime: Int!
+  endTime: Int!
+  workTime: Int!
+  postNum: String!
+  roadAddress: String!
+  detailAddress: String!
 }
 
 input UpdateProductInput {
@@ -150,4 +176,11 @@ input CreateRequestInput {
   content: String!
   seller: String!
   price: Int!
+  workDay: String
+  startTime: Int
+  endTime: Int
+  workTime: Int
+  postNum: String
+  roadAddress: String
+  detailAddress: String
 }
