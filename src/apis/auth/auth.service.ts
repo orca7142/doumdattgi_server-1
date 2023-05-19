@@ -29,16 +29,16 @@ export class AuthService {
 
   // 로그인하기
   async login({
-    email,
-    password,
+    user_email,
+    user_password,
     context,
   }: IAuthServiceLogin): Promise<string> {
-    const user = await this.usersService.findOneByEmail({ email });
+    const user = await this.usersService.findOneByEmail({ user_email });
 
     if (!user)
       throw new UnprocessableEntityException('일치하는 이메일이 없습니다!!');
 
-    const isAuth = await bcrypt.compare(password, user.password);
+    const isAuth = await bcrypt.compare(user_password, user.user_password);
     if (!isAuth)
       throw new UnprocessableEntityException('비밀번호가 틀렸습니다');
 
@@ -53,7 +53,7 @@ export class AuthService {
   // accessToken 발급하기
   getAccessToken({ user }) {
     return this.jwtService.sign(
-      { email: user.email, sub: user.id },
+      { user_email: user.user_email, sub: user.user_id },
       { secret: process.env.JWT_ACCESS_KEY, expiresIn: '1h' },
     );
   }
@@ -66,7 +66,7 @@ export class AuthService {
   // refreshToken 발급하기
   setRefreshToken({ user, res, req }) {
     const refreshToken = this.jwtService.sign(
-      { email: user.email, sub: user.id },
+      { user_email: user.user_email, sub: user.user_id },
       { secret: process.env.JWT_REFRESH_KEY, expiresIn: '2w' },
     );
     // 개발환경
@@ -79,7 +79,9 @@ export class AuthService {
 
   // 소셜로그인시 회원가입 유무에 따라 로그인 또는 회원가입 후 로그인
   async verifyLogin({ req, res }) {
-    let user = await this.usersService.findOne({ email: req.user.email });
+    let user = await this.usersService.findOne({
+      user_email: req.user.user_email,
+    });
 
     if (!user)
       user = await this.usersService.create({

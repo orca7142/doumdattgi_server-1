@@ -13,7 +13,7 @@ import {
 export class EngageIn {
   @PrimaryGeneratedColumn('uuid')
   @Field(() => String)
-  id: string;
+  engageIn_id: string;
 
   @JoinColumn()
   @OneToOne(() => Request)
@@ -22,5 +22,5 @@ export class EngageIn {
 
   @Column()
   @Field(() => Int)
-  price: number;
+  engageIn_price: number;
 }

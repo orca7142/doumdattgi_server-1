@@ -7,7 +7,7 @@
 // export class PointTransaction {
 //   @PrimaryGeneratedColumn('uuid')
 //   @Field(() => String)
-//   id: string;
+//   slot_id: string;
 
 //   @ManyToOne(() => User)
 //   @Field(() => User)
@@ -15,13 +15,13 @@
 
 //   @Column()
 //   @Field(() => Boolean)
-//   first_slot: boolean;
+//   slot_first: boolean;
 
 //   @Column()
 //   @Field(() => Boolean)
-//   second_slot: boolean;
+//   slot_second: boolean;
 
 //   @Column()
 //   @Field(() => Boolean)
-//   third_slot: boolean;
+//   slot_third: boolean;
 // }

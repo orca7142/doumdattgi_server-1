@@ -2,15 +2,12 @@ import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { UsersService } from './users.service';
-import {
-  GqlAuthGuard,
-  GqlAuthRefreshGuard,
-} from '../auth/guards/gql-auth.guard';
+import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { UseGuards } from '@nestjs/common';
 import { IContext } from 'src/commons/interfaces/context';
 import { UpdateNicknameIntroduceInput } from './dto/update-nicknameIntroduce.input';
 import { UpdateUserInfoInput } from './dto/update-userInfo.input';
-import { PointTransaction } from '../pointTransaction/entities/pointTransaction.entity';
+import { Payment } from '../payment/entities/payment.entity';
 
 @Resolver()
 export class UsersResolver {
@@ -21,18 +18,18 @@ export class UsersResolver {
   // 이메일 중복 검증 및 이메일 인증번호 전송 API
   @Mutation(() => String)
   sendTokenEmail(
-    @Args('email') email: string, //
+    @Args('user_email') user_email: string, //
   ): Promise<string> {
-    return this.usersService.sendTokenEmail({ email });
+    return this.usersService.sendTokenEmail({ user_email });
   }
 
   // 이메일 인증번호 검증 API
   @Mutation(() => Boolean)
   checkValidToken(
-    @Args('email') email: string, //
-    @Args('token') token: string,
+    @Args('user_email') user_email: string, //
+    @Args('user_token') user_token: string,
   ): Promise<boolean> {
-    return this.usersService.checkValidateToken({ email, token });
+    return this.usersService.checkValidateToken({ user_email, user_token });
   }
 
   //회원가입 API
@@ -72,11 +69,11 @@ export class UsersResolver {
   @UseGuards(GqlAuthGuard('access'))
   @Mutation(() => User)
   updateProfileImage(
-    @Args('url') url: string, //
+    @Args('user_url') user_url: string, //
     @Context() context: IContext,
   ): Promise<User> {
     return this.usersService.updateProfileImage({
-      url,
+      user_url,
       context,
     });
   }
@@ -108,10 +105,10 @@ export class UsersResolver {
 
   // 로그인 유저 결제정보 조회 API
   @UseGuards(GqlAuthGuard('access'))
-  @Query(() => [PointTransaction])
+  @Query(() => [Payment])
   fetchUserPaymentInfo(
     @Context() context: IContext, //
-  ): Promise<PointTransaction[]> {
+  ): Promise<Payment[]> {
     return this.usersService.findUserPaymentInfo({ context });
   }
 }

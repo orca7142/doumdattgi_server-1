@@ -38,7 +38,7 @@ export class Product {
   // 상품 ID
   @PrimaryGeneratedColumn('uuid')
   @Field(() => String)
-  id: string;
+  product_id: string;
 
   // 유저 정보
   @ManyToOne(() => User)
@@ -48,74 +48,78 @@ export class Product {
   // 제목
   @Column()
   @Field(() => String)
-  title: string;
+  product_title: string;
 
   // 카테고리
   @Column({ type: 'enum', enum: PRODUCT_CATEGORY_ENUM })
   @Field(() => PRODUCT_CATEGORY_ENUM)
-  category: string;
+  product_category: string;
 
   // 서브 카테고리
   @Column()
   @Field(() => String)
-  sub_category: string;
+  product_sub_category: string;
 
   // 요약
   @Column()
   @Field(() => String)
-  summary: string;
+  product_summary: string;
 
   // 본문
   @Column()
   @Field(() => String)
-  main_text: string;
+  product_main_text: string;
+
+  // 썸네일 이미지
+  @Field(() => [String])
+  product_thumbnailImage: string[];
 
   // 구해요/팔아요
   @Column()
   @Field(() => Boolean)
-  sellOrBuy: boolean;
+  product_sellOrBuy: boolean;
 
   // 생성 날짜
   @CreateDateColumn()
-  createdAt: Date;
+  product_createdAt: Date;
 
   // 작업 가능 날짜(주중 / 주말 / 협의)
   @Column({ type: 'enum', enum: WORKDAY_STATUS_ENUM })
   @Field(() => WORKDAY_STATUS_ENUM)
-  workDay: string;
+  product_workDay: string;
 
   // 시작 작업 가능 시간
   @Column()
   @Field(() => Int)
-  startTime: number;
+  product_startTime: number;
 
   // 종료 작업 가능 시간
   @Column()
   @Field(() => Int)
-  endTime: number;
+  product_endTime: number;
 
   // 작업한 시간
   @Column()
   @Field(() => Int)
-  workTime: number;
+  product_workTime: number;
 
   // 우편번호
   @Column()
   @Field(() => String)
-  postNum: string;
+  product_postNum: string;
 
   // 도로명 주소
   @Column()
   @Field(() => String)
-  roadAddress: string;
+  product_roadAddress: string;
 
   // 상세주소
   @Column()
   @Field(() => String)
-  detailAddress: string;
+  product_detailAddress: string;
 
   // 삭제시간
   @DeleteDateColumn()
   @Field(() => Date)
-  deletedAt: Date;
+  product_deletedAt: Date;
 }

@@ -27,7 +27,7 @@ registerEnumType(REQUEST_ISACCEPT_ENUM, {
 export class Request {
   @PrimaryGeneratedColumn('uuid')
   @Field(() => String)
-  id: string;
+  request_id: string;
 
   @JoinColumn()
   @OneToOne(() => Product)
@@ -40,35 +40,35 @@ export class Request {
 
   @Column({ type: 'enum', enum: REQUEST_ISACCEPT_ENUM })
   @Field(() => REQUEST_ISACCEPT_ENUM)
-  isAccept: REQUEST_ISACCEPT_ENUM;
+  request_isAccept: REQUEST_ISACCEPT_ENUM;
 
-  @Column()
-  @Field(() => String)
-  seller: string;
+  // @Column()
+  // @Field(() => String)
+  // request_seller: string;
 
   @Column()
   @Field(() => Int)
-  price: number;
+  request_price: number;
 
   @CreateDateColumn()
   @Field(() => Date)
-  createAt: Date;
+  request_createAt: Date;
 
   @Column({ default: null })
   @Field(() => Date)
-  sentAt: Date;
+  request_sentAt: Date;
 
   @Column({ default: null })
   @Field(() => Date)
-  completedAt: Date;
+  request_completedAt: Date;
 
   @Column()
   @Field(() => String)
-  title: string;
+  request_title: string;
 
   @Column()
   @Field(() => String)
-  content: string;
+  request_content: string;
 
   // @Column({ default: null })
   // @Field(() => [String])

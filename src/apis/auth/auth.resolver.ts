@@ -11,13 +11,13 @@ export class AuthResolver {
   // 로그인 API
   @Mutation(() => String)
   login(
-    @Args('email') email: string, //
-    @Args('password') password: string,
+    @Args('user_email') user_email: string, //
+    @Args('user_password') user_password: string,
     @Context() context: IContext,
   ): Promise<string> {
     return this.authService.login({
-      email, //
-      password,
+      user_email, //
+      user_password,
       context,
     });
   }

@@ -3,20 +3,17 @@ import { Field, InputType, Int } from '@nestjs/graphql';
 @InputType()
 export class CreateRequestInput {
   @Field(() => String)
-  productId: string;
+  product_id: string;
 
   @Field(() => String)
-  title: string;
+  request_title: string;
 
   @Field(() => String)
-  content: string;
+  request_content: string;
 
-  @Field(() => String)
-  seller: string;
-
-  //   @Field(() => [String])
-  //   images: string[];
+  // @Field(() => String)
+  // request_seller: string;
 
   @Field(() => Int)
-  price: number;
+  request_price: number;
 }
