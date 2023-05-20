@@ -8,6 +8,7 @@ import {
 import { UsersService } from '../users/users.service';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { User } from '../users/entities/user.entity';
 import { Product } from '../product/entites/product.entity';
 
 @Injectable()
@@ -15,6 +16,12 @@ export class RequestsService {
   constructor(
     @InjectRepository(Request)
     private readonly requestsRepository: Repository<Request>,
+
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
+
+    @InjectRepository(Product)
+    private readonly productsRepository: Repository<Product>,
 
     private readonly usersService: UsersService,
   ) {}
@@ -43,6 +50,12 @@ export class RequestsService {
       where: { user: { user_id: loginUserId } },
       relations: ['user', 'product'],
     });
+    for (let i = 0; i < requestInfo.length; i++) {
+      await this.productsRepository.findOne({
+        // where: {product_id: }
+      });
+    }
+
     return requestInfo;
   }
 

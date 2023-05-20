@@ -42,10 +42,6 @@ export class Request {
   @Field(() => REQUEST_ISACCEPT_ENUM)
   request_isAccept: REQUEST_ISACCEPT_ENUM;
 
-  // @Column()
-  // @Field(() => String)
-  // request_seller: string;
-
   @Column()
   @Field(() => Int)
   request_price: number;
@@ -69,8 +65,4 @@ export class Request {
   @Column()
   @Field(() => String)
   request_content: string;
-
-  // @Column({ default: null })
-  // @Field(() => [String])
-  // images: string[];
 }
