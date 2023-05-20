@@ -92,21 +92,21 @@ enum REQUEST_ISACCEPT_ENUM {
 }
 
 type FetchProductOutput {
-  product_id: String!
-  product_title: String!
-  product_category: String!
-  product_workDay: String!
-  product_url: String!
-  u_nickname: String!
-  u_url: String!
+  product_product_id: String!
+  product_product_title: String!
+  product_product_category: String!
+  product_product_workDay: String!
+  u_user_nickname: String!
+  u_user_url: String!
+  i_image_url: String!
 }
 
 type Query {
   fetchLoginUser: User!
   fetchUserPaymentInfo: [Payment!]!
-  fetchProducts(page: Float!, pageSize: Float!): [Product!]!
-  fetchRandomProduct: [Product!]!
-  fetchCategoryProduct(product_category: String!): [Product!]!
+  fetchProducts(page: Float!, pageSize: Float!): [FetchProductOutput!]!
+  fetchRandomProduct: [FetchProductOutput!]!
+  fetchCategoryProduct(product_category: String!, page: Float!, pageSize: Float!): [FetchProductOutput!]!
   fetchNewbieProduct: [FetchProductOutput!]!
   fetchRequest: [Request!]!
   fetchWork: [Request!]!

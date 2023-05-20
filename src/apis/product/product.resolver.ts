@@ -39,24 +39,30 @@ export class ProductResolver {
     return this.productsService.delete({ product_id });
   }
 
-  @Query(() => [Product])
+  @Query(() => [FetchProductOutput])
   fetchProducts(
     @Args('page') page: number,
     @Args('pageSize') pageSize: number,
-  ): Promise<Product[]> {
+  ): Promise<FetchProductOutput[]> {
     return this.productsService.findAll({ page, pageSize });
   }
 
-  @Query(() => [Product])
-  fetchRandomProduct(): Promise<Product[]> {
+  @Query(() => [FetchProductOutput])
+  fetchRandomProduct(): Promise<FetchProductOutput[]> {
     return this.productsService.findRandom();
   }
 
-  @Query(() => [Product])
+  @Query(() => [FetchProductOutput])
   fetchCategoryProduct(
     @Args('product_category') product_category: string, //
-  ): Promise<Product[]> {
-    return this.productsService.findCategory({ product_category });
+    @Args('page') page: number,
+    @Args('pageSize') pageSize: number,
+  ): Promise<FetchProductOutput[]> {
+    return this.productsService.findCategory({
+      product_category,
+      page,
+      pageSize,
+    });
   }
 
   @Query(() => [FetchProductOutput])

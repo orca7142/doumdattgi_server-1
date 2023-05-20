@@ -5,9 +5,11 @@ import {
   DeleteDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
+import { Image } from 'src/apis/image/entites/image.entity';
 
 export enum PRODUCT_CATEGORY_ENUM {
   IT = 'IT',
@@ -44,6 +46,9 @@ export class Product {
   @ManyToOne(() => User)
   @Field(() => User)
   user: User;
+
+  @OneToMany(() => Image, (image) => image.product)
+  images: Image[];
 
   // 제목
   @Column()
