@@ -18,10 +18,6 @@ export class Image {
   image_isMain: boolean;
 
   @Column()
-  @Field(() => Boolean)
-  image_isThumbnail: boolean;
-
-  @Column()
   @Field(() => String)
   image_url: string;
 }

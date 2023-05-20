@@ -11,7 +11,6 @@ import { AuthModule } from './apis/auth/auth.module';
 import { FilesModule } from './apis/files/files.module';
 import { ProductModule } from './apis/product/product.module';
 import { RequestsModule } from './apis/request/request.module';
-import { ImagesModule } from './apis/image/images.module';
 import { PaymentsModule } from './apis/payment/payment.module';
 
 @Module({
@@ -19,7 +18,6 @@ import { PaymentsModule } from './apis/payment/payment.module';
     AuthModule,
     UsersModule,
     FilesModule,
-    ImagesModule,
     ProductModule,
     RequestsModule,
     PaymentsModule,
