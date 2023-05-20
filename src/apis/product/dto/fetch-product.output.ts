@@ -1,7 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
-export class FetchProductOutput {
+export class FetchOneProductOutput {
   @Field(() => String)
   product_product_id: string;
 

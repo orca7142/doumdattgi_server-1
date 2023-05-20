@@ -17,6 +17,7 @@ import { Request } from '../request/entites/request.entity';
       Request,
       Product, //
       User,
+      Image,
     ]),
   ],
   providers: [
