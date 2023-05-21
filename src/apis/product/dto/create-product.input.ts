@@ -39,11 +39,11 @@ export class CreateProductInput {
   product_isMain: boolean[];
 
   @Field(() => String)
-  product_postNum: string;
+  product_postNum?: string;
 
   @Field(() => String)
-  product_roadAddress: string;
+  product_roadAddress?: string;
 
   @Field(() => String)
-  product_detailAddress: string;
+  product_detailAddress?: string;
 }

@@ -74,12 +74,18 @@ enum WORKDAY_STATUS_ENUM {
 type Request {
   request_id: String!
   product: Product!
-  user: User!
+  seller_id: String!
+  seller_nickname: String!
+  seller_profileImage: String!
+  buyer_id: String!
+  buyer_nickname: String!
+  buyer_profileImage: String!
   request_isAccept: REQUEST_ISACCEPT_ENUM!
   request_price: Int!
   request_createAt: DateTime!
-  request_sentAt: DateTime!
-  request_completedAt: DateTime!
+  request_startAt: DateTime
+  request_sendAt: DateTime
+  request_completedAt: DateTime
   request_title: String!
   request_content: String!
 }
@@ -108,8 +114,9 @@ type Query {
   fetchRandomProduct: [FetchProductOutput!]!
   fetchCategoryProduct(product_category: String!, page: Float!, pageSize: Float!): [FetchProductOutput!]!
   fetchNewbieProduct: [FetchProductOutput!]!
-  fetchRequest: [Request!]!
-  fetchWork: [Request!]!
+  fetchBuyerRequest: [Request!]!
+  fetchOneRequest(request_id: String!): Request!
+  fetchSellerWork: [Request!]!
   fetchPayments(payment_impUid: String!): [Payment!]!
 }
 
@@ -129,6 +136,8 @@ type Mutation {
   updateProduct(product_id: String!, updateProductInput: UpdateProductInput!): Boolean!
   deleteLoginProduct(product_id: String!): Boolean!
   sendRequest(createRequestInput: CreateRequestInput!): Request!
+  requestAcceptRefuse(acceptRefuse: String!, request_id: String!): Request!
+  requestStart(process: String!, request_id: String!): Boolean!
   createPayment(payment_impUid: String!, payment_amount: Int!, payment_type: String!): Payment!
   cancelPayment(payment_impUid: String!, payment_type: String!): Payment!
 }
