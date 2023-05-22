@@ -48,6 +48,7 @@ export class Product {
   user: User;
 
   @OneToMany(() => Image, (image) => image.product)
+  @Field(() => [Image])
   images: Image[];
 
   // 제목
@@ -125,6 +126,6 @@ export class Product {
 
   // 삭제시간
   @DeleteDateColumn()
-  @Field(() => Date)
+  @Field(() => Date, { nullable: true })
   product_deletedAt: Date;
 }

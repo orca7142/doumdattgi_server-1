@@ -90,10 +90,10 @@ export class ProductResolver {
   }
 
   @UseGuards(GqlAuthGuard('access'))
-  @Query(() => [FetchOneProductOutput])
+  @Query(() => Product)
   async fetchDetailProduct(
     @Args('product_id') product_id: string,
-  ): Promise<FetchOneProductOutput[]> {
+  ): Promise<Product> {
     return this.productsService.findOne({
       product_id,
     });
