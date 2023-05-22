@@ -25,12 +25,57 @@ export class UsersResolver {
 
   // 이메일 인증번호 검증 API
   @Mutation(() => Boolean)
-  checkValidToken(
+  checkValidTokenEMAIL(
     @Args('user_email') user_email: string, //
     @Args('user_token') user_token: string,
   ): Promise<boolean> {
-    return this.usersService.checkValidateToken({ user_email, user_token });
+    return this.usersService.checkValidateTokenEMAIL({
+      user_email,
+      user_token,
+    });
   }
+
+  // 휴대폰 중복 검증 및 문자 인증번호 전송 API
+  @Mutation(() => String)
+  sendTokenSMS(
+    @Args('user_phone') user_phone: string, //
+  ): Promise<string> {
+    return this.usersService.sendTokenSMS({ user_phone });
+  }
+
+  // 휴대폰 인증번호 검증 API
+  @Mutation(() => String)
+  checkValidTokenFindEmailBySMS(
+    @Args('user_phone') user_phone: string, //
+    @Args('user_token') user_token: string,
+  ): Promise<string> {
+    return this.usersService.checkValidTokenFindEmailBySMS({
+      user_phone,
+      user_token,
+    });
+  }
+
+  // 비밀번호 찾기 토큰 인증 API
+  @Mutation(() => Boolean)
+  checkValidTokenFindPwdBySMS(
+    @Args('user_phone') user_phone: string, //
+    @Args('user_token') user_token: string,
+  ): Promise<boolean> {
+    return this.usersService.checkValidTokenFindPwdBySMS({
+      user_phone,
+      user_token,
+    });
+  }
+
+  // 비밀번호 재설정 API
+  // @Mutation(() => String)
+  // resetPassword(
+  //   @Args('new_password') new_password: string, //
+  // ): Promise<void> {
+  //   return this.usersService.resetPassword({
+  //     new_password,
+  //   });
+  // }
 
   //회원가입 API
   @Mutation(() => User)

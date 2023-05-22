@@ -48,6 +48,7 @@ export class Product {
   user: User;
 
   @OneToMany(() => Image, (image) => image.product)
+  @Field(() => [Image])
   images: Image[];
 
   // 제목
@@ -74,10 +75,6 @@ export class Product {
   @Column()
   @Field(() => String)
   product_main_text: string;
-
-  // 썸네일 이미지
-  @Field(() => [String])
-  product_thumbnailImage: string[];
 
   // 구해요/팔아요
   @Column()

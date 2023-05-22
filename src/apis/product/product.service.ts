@@ -10,6 +10,7 @@ import {
 } from './interfaces/product-service.interface';
 import { User } from '../users/entities/user.entity';
 import { Image } from '../image/entites/image.entity';
+import { FetchProductOutput } from './dto/fetch-productNewUser.output';
 import { FetchProductOutput } from './dto/fetch-product.output';
 import { FetchOneProductOutput } from './dto/fetch-productOne.output';
 
@@ -297,31 +298,33 @@ export class ProductService {
     createProductInput,
     user_id,
   }: IProductServiceCreate): Promise<Product> {
-    const { product_thumbnailImage, product_isMain, ...rest } =
-      createProductInput;
+    const { product_thumbnailImage, ...rest } = createProductInput;
+
     const result = await this.productsRepository.save({
       ...rest,
       user: { user_id },
     });
-
-    const tagUrls = product_thumbnailImage;
-    const tagIsMains = product_isMain;
-
     const productId = result.product_id;
-
     const image = [];
 
-    for (let i = 0; i < tagUrls.length; i++) {
+    for (let i = 0; i < product_thumbnailImage.length; i++) {
+      const tagUrls = product_thumbnailImage[i].thumbnailImage;
+      const tagIsMains = product_thumbnailImage[i].isMain;
+
       image.push({
         product: productId,
-        image_isMain: tagIsMains[i],
-        image_url: tagUrls[i],
-        image_isThumbnail: true,
+        image_isMain: tagIsMains,
+        image_url: tagUrls,
       });
     }
-
     await this.imagesRepository.insert(image);
-    return result;
+
+    const result2 = await this.productsRepository.findOne({
+      where: { product_id: result.product_id },
+      relations: ['user', 'images'],
+    });
+
+    return result2;
   }
 
   // 상품 수정 & 업데이트하기
