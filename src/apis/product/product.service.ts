@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entites/product.entity';
 import { Repository } from 'typeorm';
@@ -10,9 +10,7 @@ import {
 } from './interfaces/product-service.interface';
 import { User } from '../users/entities/user.entity';
 import { Image } from '../image/entites/image.entity';
-import { FetchProductOutput } from './dto/fetch-productNewUser.output';
 import { FetchProductOutput } from './dto/fetch-product.output';
-import { FetchOneProductOutput } from './dto/fetch-productOne.output';
 
 @Injectable()
 export class ProductService {
@@ -260,40 +258,6 @@ export class ProductService {
       where: { product_id },
       relations: ['images', 'user'],
     });
-
-    // 유효성 검증: product_id가 유효한 형식인지 확인
-    // if (!/^[0-9]+$/.test(product_id)) {
-    //   throw new NotFoundException('유효하지 않은 상품 ID입니다.');
-    // }
-    // const result = await this.productsRepository
-    //   .createQueryBuilder('product')
-    //   .innerJoin('product.user', 'u', 'product.userUserId = u.user_Id')
-    //   .innerJoin(
-    //     'product.images',
-    //     'i',
-    //     'product.product_id = i.productProductId',
-    //   )
-    //   .select([
-    //     'product.product_id',
-    //     'product.product_title',
-    //     'product.product_category',
-    //     'product.product_workDay',
-    //     'product.product_summary',
-    //     'product.product_main_text',
-    //     'product.product_sellOrBuy',
-    //     'u.user_id',
-    //     'u.user_nickname',
-    //     'u.user_workRate',
-    //     'u.user_portfolio',
-    //     'u.user_introduce',
-    //     'u.user_profileImage',
-    //     'i.image_url',
-    //   ])
-    //   .where('product.product_id = :product_id', {
-    //     product_id,
-    //   })
-    //   .getRawMany();
-    console.log(result);
     return result;
   }
 
