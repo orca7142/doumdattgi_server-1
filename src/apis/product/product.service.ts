@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entites/product.entity';
 import { Repository } from 'typeorm';
@@ -6,14 +6,12 @@ import { UsersService } from '../users/users.service';
 import {
   IProductServiceCreate,
   IProductServiceDelete,
-  IProductServiceFindOne,
   IProductServiceUpdate,
 } from './interfaces/product-service.interface';
 import { User } from '../users/entities/user.entity';
 import { Image } from '../image/entites/image.entity';
-import { FetchProductOutput } from './dto/fetch-productNewUser.output';
-import { HttpExceptionFilter } from 'src/commons/filter/http-exception.filter';
-import { FetchOneProductOutput } from './dto/fetch-product.output';
+import { FetchProductOutput } from './dto/fetch-product.output';
+import { FetchOneProductOutput } from './dto/fetch-productOne.output';
 
 @Injectable()
 export class ProductService {
@@ -30,18 +28,23 @@ export class ProductService {
     private readonly usersService: UsersService,
   ) {}
 
-  // 모든 상품 검색(페이지로 검색 & 최신순으로 검색)
+  // 모든 상품 검색(페이지로 검색 & 최신순으로 검색), <리스트: 전체 리스트>
   async findAll({ page, pageSize }): Promise<FetchProductOutput[]> {
     const result = await this.productsRepository
       .createQueryBuilder('product')
-      .innerJoin('product.user', 'u')
-      .innerJoin('product.images', 'i')
+      .innerJoin('product.user', 'u', 'product.userUserId = u.user_Id')
+      .innerJoin(
+        'product.images',
+        'i',
+        'product.product_id = i.productProductId',
+      )
       .select([
         'product.product_id',
         'product.product_title',
         'product.product_category',
         'product.product_workDay',
         'u.user_nickname',
+        'u.user_profileImage',
         'i.image_url',
       ])
       .where('i.image_isMain = :image_isMain', { image_isMain: 1 })
@@ -53,21 +56,61 @@ export class ProductService {
     return result;
   }
 
-  // 랜덤 4개 상품 검색
-  async findRandom(): Promise<FetchProductOutput[]> {
+  // 모든 상품 중 최신게시글 검색(8개만), <메인페이지: 최신 게시글>
+  async findAllProduct(): Promise<FetchProductOutput[]> {
     const result = await this.productsRepository
       .createQueryBuilder('product')
-      .innerJoin('product.user', 'u')
-      .innerJoin('product.images', 'i')
+      .innerJoin('product.user', 'u', 'product.userUserId = u.user_Id')
+      .innerJoin(
+        'product.images',
+        'i',
+        'product.product_id = i.productProductId',
+      )
       .select([
         'product.product_id',
         'product.product_title',
         'product.product_category',
         'product.product_workDay',
+        'product.product_sellOrBuy',
+        'u.user_profileImage',
         'u.user_nickname',
         'i.image_url',
       ])
       .where('i.image_isMain = :image_isMain', { image_isMain: 1 })
+      .andWhere('product.product_sellOrBuy = :product_sellOrBuy', {
+        product_sellOrBuy: 1,
+      })
+      .orderBy('product.product_createdAt', 'DESC')
+      .limit(8)
+      .getRawMany();
+
+    return result;
+  }
+
+  // 랜덤 4개 상품 검색 <메인페이지: 숨은보석 게시글>
+  async findRandom(): Promise<FetchProductOutput[]> {
+    const result = await this.productsRepository
+      .createQueryBuilder('product')
+      .innerJoin('product.user', 'u', 'product.userUserId = u.user_Id')
+      .innerJoin(
+        'product.images',
+        'i',
+        'product.product_id = i.productProductId',
+      )
+      .select([
+        'product.product_id',
+        'product.product_title',
+        'product.product_category',
+        'product.product_workDay',
+        'product.product_sellOrBuy',
+        'u.user_nickname',
+        'u.user_profileImage',
+        'i.image_url',
+      ])
+      .where('i.image_isMain = :image_isMain', { image_isMain: 1 })
+      .andWhere('product.product_sellOrBuy = :product_sellOrBuy', {
+        product_sellOrBuy: 1,
+      })
       .orderBy('RAND()')
       .take(4)
       .getRawMany();
@@ -75,7 +118,38 @@ export class ProductService {
     return result;
   }
 
-  // 카테고리별로 상품 검색
+  // 구인글 검색 <메인페이지: 지금 구하고 있는 구인글>
+  async findSell(): Promise<FetchProductOutput[]> {
+    const result = await this.productsRepository
+      .createQueryBuilder('product')
+      .innerJoin('product.user', 'u', 'product.userUserId = u.user_Id')
+      .innerJoin(
+        'product.images',
+        'i',
+        'product.product_id = i.productProductId',
+      )
+      .select([
+        'product.product_id',
+        'product.product_title',
+        'product.product_category',
+        'product.product_workDay',
+        'product.product_sellOrBuy',
+        'u.user_nickname',
+        'u.user_profileImage',
+        'i.image_url',
+      ])
+      .where('i.image_isMain = :image_isMain', { image_isMain: 1 })
+      .andWhere('product.product_sellOrBuy = :product_sellOrBuy', {
+        product_sellOrBuy: 0,
+      })
+      .orderBy('RAND()')
+      .take(4)
+      .getRawMany();
+
+    return result;
+  }
+
+  // 카테고리별로 상품 검색 <리스트페이지: 구해요 빼고 나머지>
   async findCategory({
     product_category,
     page,
@@ -83,20 +157,29 @@ export class ProductService {
   }): Promise<FetchProductOutput[]> {
     const result = await this.productsRepository
       .createQueryBuilder('product')
-      .innerJoin('product.user', 'u')
-      .innerJoin('product.images', 'i')
+      .innerJoin('product.user', 'u', 'product.userUserId = u.user_Id')
+      .innerJoin(
+        'product.images',
+        'i',
+        'product.product_id = i.productProductId',
+      )
       .select([
         'product.product_id',
         'product.product_title',
         'product.product_category',
         'product.product_workDay',
+        'product.product_sellOrBuy',
         'u.user_nickname',
+        'u.user_profileImage',
         'i.image_url',
       ])
       .where('product_category LIKE "%":product_category"%"', {
         product_category,
       })
       .andWhere('i.image_isMain = :image_isMain', { image_isMain: 1 })
+      .andWhere('product.product_sellOrBuy = :product_sellOrBuy', {
+        product_sellOrBuy: 1,
+      })
       .orderBy('product.product_createdAt', 'DESC')
       .limit(pageSize)
       .offset(pageSize * (page - 1))
@@ -105,24 +188,63 @@ export class ProductService {
     return result;
   }
 
-  // 신규유저의 상품 검색(work,Rate가 0인 사람들의 상품을 랜덤으로3개 가져온다)
-  async findNewUser(): Promise<FetchProductOutput[]> {
+  // 구해요 카테고리 상품 검색 <리스트 페이지: 구해요>
+  async findSellProduct({ page, pageSize }): Promise<FetchProductOutput[]> {
     const result = await this.productsRepository
       .createQueryBuilder('product')
-      // .innerJoin('user', 'u', 'product.userUserId = u.user_id')
-      // .innerJoin('images', 'i', 'product.product_id = i.productProductId')
-      .innerJoin('product.user', 'u')
-      .innerJoin('product.images', 'i')
+      .innerJoin('product.user', 'u', 'product.userUserId = u.user_Id')
+      .innerJoin(
+        'product.images',
+        'i',
+        'product.product_id = i.productProductId',
+      )
       .select([
         'product.product_id',
         'product.product_title',
         'product.product_category',
         'product.product_workDay',
+        'product.product_sellOrBuy',
+        'u.user_profileImage',
         'u.user_nickname',
+        'i.image_url',
+      ])
+      .where('i.image_isMain = :image_isMain', { image_isMain: 1 })
+      .andWhere('product.product_sellOrBuy = :product_sellOrBuy', {
+        product_sellOrBuy: 0,
+      })
+      .orderBy('product.product_createdAt', 'DESC')
+      .limit(pageSize)
+      .offset(pageSize * (page - 1))
+      .getRawMany();
+
+    return result;
+  }
+
+  // 신규유저의 상품 검색(work,Rate가 0인 사람들의 상품을 랜덤으로3개 가져온다), <메인페이지: 신규@@님의 첫게시물>
+  async findNewUser(): Promise<FetchProductOutput[]> {
+    const result = await this.productsRepository
+      .createQueryBuilder('product')
+      .innerJoin('product.user', 'u', 'product.userUserId = u.user_Id')
+      .innerJoin(
+        'product.images',
+        'i',
+        'product.product_id = i.productProductId',
+      )
+      .select([
+        'product.product_id',
+        'product.product_title',
+        'product.product_category',
+        'product.product_workDay',
+        'product.product_sellOrBuy',
+        'u.user_nickname',
+        'u.user_profileImage',
         'i.image_url',
       ])
       .where('u.user_workRate = :user_workRate', { user_workRate: 0 })
       .andWhere('i.image_isMain = :image_isMain', { image_isMain: 1 })
+      .andWhere('product.product_sellOrBuy = :product_sellOrBuy', {
+        product_sellOrBuy: 1,
+      })
       .limit(3)
       .orderBy('RAND()')
       .getRawMany();
@@ -130,32 +252,45 @@ export class ProductService {
     return result;
   }
 
-  // 구인 글 검색
+  // 구인 글 검색<디테일 페이지>
   // 특정상품에 대한 내용만 검색
-  // async findOne({ product_product_id }: FetchOneProductOutput): Promise<FetchOneProductOutput> {
+  async findOne({ product_id }): Promise<FetchOneProductOutput[]> {
+    // 유효성 검증: product_id가 유효한 형식인지 확인
+    if (!/^[0-9]+$/.test(product_id)) {
+      throw new NotFoundException('유효하지 않은 상품 ID입니다.');
+    }
 
-  //   const result = await this.productsRepository
-  //     .createQueryBuilder('product')
-  //     .innerJoin('product.user', 'u')
-  //     .innerJoin('product.images', 'i')
-  //     .select([
-  //       'product.product_id',
-  //       'product.product_title',
-  //       'product.product_category',
-  //       'product.product_workDay',
-  //       'product.product_summary',
-  //       'product.product_main_text',
-  //       'u.user_nickname',
-  //       'u.user_workRate',
-  //       'u.user_portfolio',
-  //       'u.user_introduce',
-  //       'i.image_url',
-  //     ]);
-  //     .orderBy('product.product_createdAt', 'DESC')
-  //     .getRawMany();
+    const result = await this.productsRepository
+      .createQueryBuilder('product')
+      .innerJoin('product.user', 'u', 'product.userUserId = u.user_Id')
+      .innerJoin(
+        'product.images',
+        'i',
+        'product.product_id = i.productProductId',
+      )
+      .select([
+        'product.product_id',
+        'product.product_title',
+        'product.product_category',
+        'product.product_workDay',
+        'product.product_summary',
+        'product.product_main_text',
+        'product.product_sellOrBuy',
+        'u.user_id',
+        'u.user_nickname',
+        'u.user_workRate',
+        'u.user_portfolio',
+        'u.user_introduce',
+        'u.user_profileImage',
+        'i.image_url',
+      ])
+      .where('product.product_id = :product_id', {
+        product_id,
+      })
+      .getRawMany();
 
-  //     return result
-  // }
+    return result;
+  }
 
   // 상품 작성하기
   async create({
