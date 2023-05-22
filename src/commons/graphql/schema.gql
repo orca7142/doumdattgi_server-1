@@ -96,8 +96,26 @@ type FetchProductOutput {
   product_product_title: String!
   product_product_category: String!
   product_product_workDay: String!
+  product_product_sellOrBuy: Boolean!
   u_user_nickname: String!
-  u_user_url: String!
+  u_user_profileImage: String
+  i_image_url: String!
+}
+
+type FetchOneProductOutput {
+  product_product_id: String!
+  product_product_title: String!
+  product_product_category: String!
+  product_product_workDay: String!
+  product_product_summary: String!
+  product_product_main_text: String!
+  product_product_sellOrBuy: Boolean!
+  u_user_id: String!
+  u_user_nickname: String!
+  u_user_workRate: String!
+  u_user_portfolio: String!
+  u_user_introduce: String!
+  u_user_profileImage: String
   i_image_url: String!
 }
 
@@ -105,9 +123,13 @@ type Query {
   fetchLoginUser: User!
   fetchUserPaymentInfo: [Payment!]!
   fetchProducts(page: Float!, pageSize: Float!): [FetchProductOutput!]!
+  fetchAllProducts: [FetchProductOutput!]!
   fetchRandomProduct: [FetchProductOutput!]!
+  fetchSellProduct: [FetchProductOutput!]!
   fetchCategoryProduct(product_category: String!, page: Float!, pageSize: Float!): [FetchProductOutput!]!
+  fetchSellCategoryProducts(page: Float!, pageSize: Float!): [FetchProductOutput!]!
   fetchNewbieProduct: [FetchProductOutput!]!
+  fetchDetailProduct(product_id: String!): [FetchOneProductOutput!]!
   fetchRequest: [Request!]!
   fetchWork: [Request!]!
   fetchPayments(payment_impUid: String!): [Payment!]!
