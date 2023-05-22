@@ -113,7 +113,7 @@ export class ProductService {
         product_sellOrBuy: 1,
       })
       .orderBy('RAND()')
-      .take(4)
+      .limit(4)
       .getRawMany();
 
     return result;
@@ -144,7 +144,7 @@ export class ProductService {
         product_sellOrBuy: 0,
       })
       .orderBy('RAND()')
-      .take(4)
+      .limit(4)
       .getRawMany();
 
     return result;
@@ -255,41 +255,45 @@ export class ProductService {
 
   // 구인 글 검색<디테일 페이지>
   // 특정상품에 대한 내용만 검색
-  async findOne({ product_id }): Promise<FetchOneProductOutput[]> {
+  async findOne({ product_id }): Promise<Product> {
+    const result = await this.productsRepository.findOne({
+      where: { product_id },
+      relations: ['images', 'user'],
+    });
+
     // 유효성 검증: product_id가 유효한 형식인지 확인
-    if (!/^[0-9]+$/.test(product_id)) {
-      throw new NotFoundException('유효하지 않은 상품 ID입니다.');
-    }
-
-    const result = await this.productsRepository
-      .createQueryBuilder('product')
-      .innerJoin('product.user', 'u', 'product.userUserId = u.user_Id')
-      .innerJoin(
-        'product.images',
-        'i',
-        'product.product_id = i.productProductId',
-      )
-      .select([
-        'product.product_id',
-        'product.product_title',
-        'product.product_category',
-        'product.product_workDay',
-        'product.product_summary',
-        'product.product_main_text',
-        'product.product_sellOrBuy',
-        'u.user_id',
-        'u.user_nickname',
-        'u.user_workRate',
-        'u.user_portfolio',
-        'u.user_introduce',
-        'u.user_profileImage',
-        'i.image_url',
-      ])
-      .where('product.product_id = :product_id', {
-        product_id,
-      })
-      .getRawMany();
-
+    // if (!/^[0-9]+$/.test(product_id)) {
+    //   throw new NotFoundException('유효하지 않은 상품 ID입니다.');
+    // }
+    // const result = await this.productsRepository
+    //   .createQueryBuilder('product')
+    //   .innerJoin('product.user', 'u', 'product.userUserId = u.user_Id')
+    //   .innerJoin(
+    //     'product.images',
+    //     'i',
+    //     'product.product_id = i.productProductId',
+    //   )
+    //   .select([
+    //     'product.product_id',
+    //     'product.product_title',
+    //     'product.product_category',
+    //     'product.product_workDay',
+    //     'product.product_summary',
+    //     'product.product_main_text',
+    //     'product.product_sellOrBuy',
+    //     'u.user_id',
+    //     'u.user_nickname',
+    //     'u.user_workRate',
+    //     'u.user_portfolio',
+    //     'u.user_introduce',
+    //     'u.user_profileImage',
+    //     'i.image_url',
+    //   ])
+    //   .where('product.product_id = :product_id', {
+    //     product_id,
+    //   })
+    //   .getRawMany();
+    console.log(result);
     return result;
   }
 

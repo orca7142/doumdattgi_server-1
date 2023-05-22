@@ -122,6 +122,6 @@ export class Product {
 
   // 삭제시간
   @DeleteDateColumn()
-  @Field(() => Date)
+  @Field(() => Date, { nullable: true })
   product_deletedAt: Date;
 }
