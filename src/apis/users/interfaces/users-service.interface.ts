@@ -15,12 +15,21 @@ export interface IUsersServiceFindOneByEmail {
   user_email: string;
 }
 
+export interface IUsersServiceFindOneByPhone {
+  user_phone: string;
+}
+
 export interface IUsersServiceSendTokenEmail {
   user_email: string;
 }
 
-export interface IUsersServiceCheckToken {
+export interface IUsersServiceCheckTokenEMAIL {
   user_email: string;
+  user_token: string;
+}
+
+export interface IUsersServiceCheckTokenSMS {
+  user_phone: string;
   user_token: string;
 }
 
@@ -45,4 +54,12 @@ export interface IUsersServiceUpdateNicknameIntroduce {
 export interface IUsersServiceUpdateProfileImage {
   context: IContext;
   user_url: string;
+}
+
+export interface IUsersServiceSendTokenSMS {
+  user_phone: string;
+}
+
+export interface IUsersServiceResetPassword {
+  new_password: string;
 }

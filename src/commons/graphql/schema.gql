@@ -36,15 +36,22 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type Image {
+  image_id: String!
+  product: Product!
+  image_isMain: Boolean!
+  image_url: String!
+}
+
 type Product {
   product_id: String!
   user: User!
+  images: [Image!]!
   product_title: String!
   product_category: PRODUCT_CATEGORY_ENUM!
   product_sub_category: String!
   product_summary: String!
   product_main_text: String!
-  product_thumbnailImage: [String!]!
   product_sellOrBuy: Boolean!
   product_workDay: WORKDAY_STATUS_ENUM!
   product_startTime: Int!
@@ -125,7 +132,10 @@ type Mutation {
   logout: String!
   restoreAccessToken: String!
   sendTokenEmail(user_email: String!): String!
-  checkValidToken(user_email: String!, user_token: String!): Boolean!
+  checkValidTokenEMAIL(user_email: String!, user_token: String!): Boolean!
+  sendTokenSMS(user_phone: String!): String!
+  checkValidTokenFindEmailBySMS(user_phone: String!, user_token: String!): String!
+  checkValidTokenFindPwdBySMS(user_phone: String!, user_token: String!): Boolean!
   createUser(createUserInput: CreateUserInput!): User!
   updateNicknameIntroduce(updateNicknameIntroduceInput: UpdateNicknameIntroduceInput!): User!
   updateProfileImage(user_url: String!): User!
@@ -175,11 +185,15 @@ input CreateProductInput {
   product_workTime: Int!
   product_startTime: Int!
   product_endTime: Int!
-  product_thumbnailImage: [String!]!
-  product_isMain: [Boolean!]!
+  product_thumbnailImage: [Thumbnail!]!
   product_postNum: String!
   product_roadAddress: String!
   product_detailAddress: String!
+}
+
+input Thumbnail {
+  thumbnailImage: String!
+  isMain: Boolean!
 }
 
 input UpdateProductInput {
@@ -193,8 +207,7 @@ input UpdateProductInput {
   product_workTime: Int
   product_startTime: Int
   product_endTime: Int
-  product_thumbnailImage: [String!]
-  product_isMain: [Boolean!]
+  product_thumbnailImage: [Thumbnail!]
   product_postNum: String
   product_roadAddress: String
   product_detailAddress: String

@@ -90,7 +90,7 @@ export class AuthService {
         },
       });
     this.setRefreshToken({ user, res, req });
-    res.redirect('http://localhost:5500/frontend/login/index.html');
+    res.redirect('http://localhost:5501/frontend/login/index.html');
   }
 
   // 로그아웃 서비스

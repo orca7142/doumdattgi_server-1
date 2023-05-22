@@ -17,7 +17,7 @@ export class ProductResolver {
   createProduct(
     @Args('createProductInput') createProductInput: CreateProductInput,
     @Context() context: IContext,
-  ) {
+  ): Promise<Product> {
     return this.productsService.create({
       createProductInput,
       user_id: context.req.user.user_id,

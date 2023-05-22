@@ -8,11 +8,15 @@ import { Cache } from 'cache-manager';
 import { User } from './entities/user.entity';
 import {
   ICreateUserInput,
-  IUsersServiceCheckToken,
+  IUsersServiceCheckTokenEMAIL,
+  IUsersServiceCheckTokenSMS,
   IUsersServiceDelete,
   IUsersServiceFindLoginUser,
   IUsersServiceFindOneByEmail,
+  IUsersServiceFindOneByPhone,
+  IUsersServiceResetPassword,
   IUsersServiceSendTokenEmail,
+  IUsersServiceSendTokenSMS,
   IUsersServiceUpdateNicknameIntroduce,
   IUsersServiceUpdateProfileImage,
   IUsersServiceUpdateUserInfo,
@@ -23,6 +27,14 @@ import { sendTokenTemplate } from 'src/commons/utils/utils';
 import { MailerService } from '@nestjs-modules/mailer';
 import * as bcrypt from 'bcrypt';
 import { Payment } from '../payment/entities/payment.entity';
+import coolsms from 'coolsms-node-sdk'; //coolsms 불러오기
+
+const mysms = coolsms; // SDK 가져오기
+
+import 'dotenv/config'; // .env파일 import 하기
+const SMS_KEY = process.env.SMS_KEY;
+const SMS_SECRET = process.env.SMS_SECRET;
+const SMS_SENDER = process.env.SMS_SENDER;
 
 @Injectable()
 export class UsersService {
@@ -41,6 +53,11 @@ export class UsersService {
   // 이메일 중복여부 확인
   findOneByEmail({ user_email }: IUsersServiceFindOneByEmail): Promise<User> {
     return this.usersRepository.findOne({ where: { user_email } });
+  }
+
+  // 휴대폰 번호 중복여부 확인
+  findOneByPhone({ user_phone }: IUsersServiceFindOneByPhone): Promise<User> {
+    return this.usersRepository.findOne({ where: { user_phone } });
   }
 
   // 토큰 생성
@@ -69,7 +86,7 @@ export class UsersService {
 
     await this.mailerService.sendMail({
       from: process.env.EMAIL_USER,
-      to: process.env.EMAIL_USER,
+      to: user_email,
       subject: '[도움닫기] 가입 인증 번호입니다.',
       html: sendTokenTemplate({ token }),
     });
@@ -85,14 +102,80 @@ export class UsersService {
     return token;
   }
 
+  // 휴대폰 중복 검증 및 문자 메시지 전송
+  async sendTokenSMS({
+    user_phone,
+  }: IUsersServiceSendTokenSMS): Promise<string> {
+    const user = await this.findOneByPhone({ user_phone });
+    if (!user) {
+      throw new ConflictException('등록되지 않은 휴대폰번호 입니다');
+    }
+    const token = await this.createToken();
+
+    const messageService = new mysms(SMS_KEY, SMS_SECRET);
+    const result = await messageService.sendOne({
+      autoTypeDetect: true,
+      to: user_phone,
+      from: SMS_SENDER,
+      text: `안녕하세요!! 인증번호는 ${token}입니다!!`,
+    });
+
+    const myToken = await this.cacheManager.get(user_phone);
+
+    if (myToken) {
+      await this.cacheManager.del(user_phone);
+    }
+    await this.cacheManager.set(user_phone, token, {
+      ttl: 180,
+    });
+    return token;
+  }
+
   // 이메일 인증번호 검증
-  async checkValidateToken({
+  async checkValidateTokenEMAIL({
     user_email,
     user_token,
-  }: IUsersServiceCheckToken) {
+  }: IUsersServiceCheckTokenEMAIL) {
     const myToken = await this.cacheManager.get(user_email);
     return myToken === user_token ? true : false;
   }
+
+  // 휴대폰 인증번호 검증
+  async checkValidTokenFindEmailBySMS({
+    user_phone,
+    user_token,
+  }: IUsersServiceCheckTokenSMS): Promise<string> {
+    const myToken = await this.cacheManager.get(user_phone);
+    if (myToken === user_token) {
+      const findEmail = (await this.findOneByPhone({ user_phone })).user_email;
+      return findEmail;
+    } else {
+      throw new ConflictException('일치하는 이메일이 없습니다');
+    }
+  }
+
+  // 비밀번호 찾기 토큰 인증
+  async checkValidTokenFindPwdBySMS({
+    user_phone,
+    user_token,
+  }: IUsersServiceCheckTokenSMS): Promise<boolean> {
+    const myToken = await this.cacheManager.get(user_phone);
+    return myToken === user_token ? true : false;
+  }
+
+  // 비밀번호 재설정
+  // async resetPassword({
+  //   new_password,
+  // }: IUsersServiceResetPassword): Promise<void> {
+  //   const resetPwd = await this.usersRepository.update(
+  //     {
+  //       user_password,
+  //     },
+  //     {
+  //       new_password,
+  //     },
+  //   );
+  // }
 
   // 회원가입하기
   async createUser({ createUserInput }: ICreateUserInput): Promise<User> {

@@ -1,6 +1,15 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
 
 @InputType()
+export class Thumbnail {
+  @Field(() => String)
+  thumbnailImage: string[];
+
+  @Field(() => Boolean)
+  isMain: boolean[];
+}
+
+@InputType()
 export class CreateProductInput {
   @Field(() => Boolean)
   product_sellOrBuy: boolean;
@@ -32,11 +41,8 @@ export class CreateProductInput {
   @Field(() => Int)
   product_endTime: number;
 
-  @Field(() => [String])
-  product_thumbnailImage: string[];
-
-  @Field(() => [Boolean])
-  product_isMain: boolean[];
+  @Field(() => [Thumbnail])
+  product_thumbnailImage: Thumbnail[];
 
   @Field(() => String)
   product_postNum?: string;
