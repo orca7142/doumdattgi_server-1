@@ -13,3 +13,17 @@ export interface IFetchRequestInput {
 export interface IFetchWorkInput {
   context: IContext;
 }
+
+export interface IRequestStartInput {
+  process: string;
+  request_id: string;
+}
+
+export interface IRequestAcceptRefuseInput {
+  acceptRefuse: string;
+  request_id: string;
+}
+
+export interface IFetchOneRequestInput {
+  request_id: string;
+}

@@ -34,9 +34,29 @@ export class Request {
   @Field(() => Product)
   product: Product;
 
-  @ManyToOne(() => User)
-  @Field(() => User)
-  user: User;
+  @Column()
+  @Field(() => String)
+  seller_id: string;
+
+  @Column()
+  @Field(() => String)
+  seller_nickname: string;
+
+  @Column()
+  @Field(() => String)
+  seller_profileImage: string;
+
+  @Column()
+  @Field(() => String)
+  buyer_id: string;
+
+  @Column()
+  @Field(() => String)
+  buyer_nickname: string;
+
+  @Column()
+  @Field(() => String)
+  buyer_profileImage: string;
 
   @Column({ type: 'enum', enum: REQUEST_ISACCEPT_ENUM })
   @Field(() => REQUEST_ISACCEPT_ENUM)
@@ -51,11 +71,15 @@ export class Request {
   request_createAt: Date;
 
   @Column({ default: null })
-  @Field(() => Date)
-  request_sentAt: Date;
+  @Field(() => Date, { nullable: true })
+  request_startAt: Date;
 
   @Column({ default: null })
-  @Field(() => Date)
+  @Field(() => Date, { nullable: true })
+  request_sendAt: Date;
+
+  @Column({ default: null })
+  @Field(() => Date, { nullable: true })
   request_completedAt: Date;
 
   @Column()

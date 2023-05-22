@@ -11,9 +11,6 @@ export class CreateRequestInput {
   @Field(() => String)
   request_content: string;
 
-  // @Field(() => String)
-  // request_seller: string;
-
   @Field(() => Int)
   request_price: number;
 }
