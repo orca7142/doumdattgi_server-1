@@ -73,8 +73,31 @@ export class AuthService {
     res.setHeader('Set-Cookie', `refreshToken=${refreshToken}; path=/`);
 
     // 배포환경
-    // res.setHeader('Set-Cookie', `refreshToken=${refreshToken}; path=/; domain=.mybacksite.com; SameSite=None; Secure; httpOnly;`)
-    // res.setHeader('Access-Control-Allow-Origin', 'https://myfrontsite.com')
+    //   const originList = [
+    //     'http://localhost:3000',
+    //     'http://localhost:3000/',
+    //     'http://127.0.0.1:3000',
+    //     'https://doumdattgi.com',
+    //   ];
+    //   const origin = req.headers.origin;
+    //   if (originList.includes(origin)) {
+    //     res.setHeader('Access-Control-Allow-Origin', origin);
+    //   }
+
+    //   res.setHeader('Access-Control-Allow-Credentials', 'true');
+    //   res.setHeader(
+    //     'Access-Control-Allow-Methods', //
+    //     'GET, HEAD, OPTIONS, POST, PUT',
+    //   );
+    //   res.setHeader(
+    //     'Access-Control-Allow-Headers',
+    //     'Access-Control-Allow-Headers, Origin, Accept, Authorization, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
+    //   );
+
+    //   res.setHeader(
+    //     'Set-Cookie',
+    //     `refreshToken=${refreshToken}; path=/; domain=.doumdattgi-server.com; Secure; httpOnly; SameSite=None;`,
+    //   );
   }
 
   // 소셜로그인시 회원가입 유무에 따라 로그인 또는 회원가입 후 로그인

@@ -61,5 +61,11 @@ export interface IUsersServiceSendTokenSMS {
 }
 
 export interface IUsersServiceResetPassword {
+  user_phone: string;
   new_password: string;
+}
+
+export interface IUsersServiceResetPasswordSettingPage {
+  new_password: string;
+  context: IContext;
 }

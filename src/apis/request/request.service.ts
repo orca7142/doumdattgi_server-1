@@ -13,6 +13,15 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
 import { Product } from '../product/entites/product.entity';
+import {
+  ENGAGEIN_STATUS_ENUM,
+  EngageIn,
+} from '../engageIn/entites/engageIn.entity';
+import {
+  PAYMENT_STATUS_ENUM,
+  Payment,
+} from '../payment/entities/payment.entity';
+import { Slot } from '../slot/entites/slot.entity';
 
 @Injectable()
 export class RequestsService {
@@ -26,6 +35,15 @@ export class RequestsService {
     @InjectRepository(Product)
     private readonly productsRepository: Repository<Product>,
 
+    @InjectRepository(EngageIn)
+    private readonly engageInRepository: Repository<EngageIn>,
+
+    @InjectRepository(Payment)
+    private readonly paymentsRepository: Repository<Payment>,
+
+    // @InjectRepository(Slot)
+    // private readonly slotsRepository: Repository<Slot>,
+
     private readonly usersService: UsersService,
   ) {}
 
@@ -34,7 +52,7 @@ export class RequestsService {
     createRequestInput, //
     context,
   }: ICreateRequestInput): Promise<Request> {
-    const { product_id, ...rest } = createRequestInput;
+    const { product_id, request_price, ...rest } = createRequestInput;
 
     const seller = await this.productsRepository.findOne({
       where: { product_id },
@@ -44,23 +62,55 @@ export class RequestsService {
     const seller_id = seller.user.user_id;
     const seller_nickname = seller.user.user_nickname;
     const seller_profileImage = seller.user.user_profileImage;
+    const seller_email = seller.user.user_email;
 
     const buyer = await this.usersService.findLoginUser({ context });
     const buyer_id = buyer.user_id;
     const buyer_nickname = buyer.user_nickname;
     const buyer_profileImage = buyer.user_profileImage;
+    const buyer_email = buyer.user_email;
 
-    return this.requestsRepository.save({
+    const result = await this.requestsRepository.save({
       ...rest,
+      request_price,
       request_isAccept: REQUEST_ISACCEPT_ENUM.WAITING,
       product: { product_id },
       seller_id,
       seller_nickname,
       seller_profileImage,
+      seller_email,
       buyer_id,
       buyer_nickname,
       buyer_profileImage,
+      buyer_email,
     });
+
+    const buyer_point = buyer.user_point;
+
+    await this.usersRepository.update(
+      {
+        user_id: buyer_id,
+      },
+      {
+        user_point: buyer_point - request_price,
+      },
+    );
+
+    await this.engageInRepository.save({
+      engageIn_price: request_price,
+      request: { request_id: result.request_id },
+      engageIn_status: ENGAGEIN_STATUS_ENUM.WAITING,
+    });
+
+    await this.paymentsRepository.save({
+      payment_impUid: '',
+      payment_amount: -request_price,
+      payment_status: PAYMENT_STATUS_ENUM.PAYMENT,
+      payment_type: '의뢰서 요청',
+      user: { user_id: buyer_id },
+    });
+
+    return result;
   }
 
   // 신청 내역 전체 조회
@@ -92,6 +142,7 @@ export class RequestsService {
     });
     return workInfo;
   }
+
   // 의뢰 수락 / 거절
   async requestAcceptRefuse({
     acceptRefuse, //
@@ -99,15 +150,62 @@ export class RequestsService {
   }: IRequestAcceptRefuseInput): Promise<Request> {
     const date = new Date();
     let isAccept = REQUEST_ISACCEPT_ENUM.WAITING;
-    if (acceptRefuse === '수락하기') isAccept = REQUEST_ISACCEPT_ENUM.ACCEPT;
-    else if (acceptRefuse === '거절하기')
+
+    if (acceptRefuse === '수락하기') {
+      isAccept = REQUEST_ISACCEPT_ENUM.ACCEPT;
+      await this.engageInRepository.update(
+        {
+          request: { request_id },
+        },
+        {
+          engageIn_status: ENGAGEIN_STATUS_ENUM.ACCEPT,
+        },
+      );
+    } else if (acceptRefuse === '거절하기') {
       isAccept = REQUEST_ISACCEPT_ENUM.REFUSE;
-    else if (acceptRefuse === '완료하기')
-      isAccept = REQUEST_ISACCEPT_ENUM.FINISH;
+      await this.engageInRepository.update(
+        {
+          request: { request_id },
+        },
+        {
+          engageIn_status: ENGAGEIN_STATUS_ENUM.REFUSE,
+        },
+      );
+      const buyer = await this.requestsRepository.findOne({
+        where: { request_id },
+      });
+
+      const buyer_id = buyer.buyer_id;
+      const request_price = buyer.request_price;
+
+      // payment 테이블 거절에 의한 (+) 금액 저장
+      await this.paymentsRepository.save({
+        payment_impUid: '',
+        payment_amount: request_price,
+        payment_status: PAYMENT_STATUS_ENUM.CANCEL,
+        payment_type: '의뢰서 요청',
+        user: { user_id: buyer_id },
+      });
+
+      // 의뢰 요청자 돈 다시 돌아가기
+      const userPoint = (
+        await this.usersRepository.findOne({ where: { user_id: buyer_id } })
+      ).user_point;
+
+      await this.usersRepository.update(
+        {
+          user_id: buyer_id,
+        },
+        {
+          user_point: userPoint + request_price,
+        },
+      );
+    }
 
     const request = await this.requestsRepository.findOne({
       where: { request_id },
     });
+
     const result = await this.requestsRepository.save({
       ...request,
       request_id,
@@ -118,13 +216,13 @@ export class RequestsService {
   }
 
   // 프로세스
-  async requestStart({
+  async requestProcess({
     process,
     request_id,
   }: IRequestStartInput): Promise<boolean> {
     const date = new Date();
-    if (process === '작업물 전달') {
-      const result = await this.requestsRepository.update(
+    if (process === '작업 완료하기') {
+      const workComplete = await this.requestsRepository.update(
         {
           request_id,
         },
@@ -132,9 +230,24 @@ export class RequestsService {
           request_sendAt: date,
         },
       );
-      return (await result).affected ? true : false;
-    } else if (process === '완료') {
-      const result = await this.requestsRepository.update(
+      return (await workComplete).affected ? true : false;
+    } else if (process === '작업 완료 확정하기') {
+      const seller_id = (
+        await this.requestsRepository.findOne({ where: { request_id } })
+      ).seller_id;
+      const workRate = (
+        await this.usersRepository.findOne({ where: { user_id: seller_id } })
+      ).user_workRate;
+      await this.usersRepository.update(
+        {
+          user_id: seller_id,
+        },
+        {
+          user_workRate: workRate + 1,
+        },
+      );
+
+      const workCompleteConfirm = await this.requestsRepository.update(
         {
           request_id,
         },
@@ -142,7 +255,39 @@ export class RequestsService {
           request_completedAt: date,
         },
       );
-      return (await result).affected ? true : false;
+
+      const user_id = (
+        await this.requestsRepository.findOne({ where: { request_id } })
+      ).seller_id;
+
+      const user_point = (
+        await this.usersRepository.findOne({ where: { user_id } })
+      ).user_point;
+
+      const requestPrice = (
+        await this.engageInRepository.findOne({
+          where: { request: { request_id } },
+        })
+      ).engageIn_price;
+
+      await this.usersRepository.update(
+        {
+          user_id,
+        },
+        {
+          user_point: user_point + requestPrice,
+        },
+      );
+
+      await this.paymentsRepository.save({
+        payment_impUid: '',
+        payment_amount: requestPrice,
+        payment_status: PAYMENT_STATUS_ENUM.SELL,
+        payment_type: '의뢰 완료',
+        user: { user_id },
+      });
+
+      return (await workCompleteConfirm).affected ? true : false;
     }
   }
 }

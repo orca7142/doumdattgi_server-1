@@ -15,6 +15,7 @@ import {
   IUsersServiceFindOneByEmail,
   IUsersServiceFindOneByPhone,
   IUsersServiceResetPassword,
+  IUsersServiceResetPasswordSettingPage,
   IUsersServiceSendTokenEmail,
   IUsersServiceSendTokenSMS,
   IUsersServiceUpdateNicknameIntroduce,
@@ -113,7 +114,7 @@ export class UsersService {
     const token = await this.createToken();
 
     const messageService = new mysms(SMS_KEY, SMS_SECRET);
-    const result = await messageService.sendOne({
+    await messageService.sendOne({
       autoTypeDetect: true,
       to: user_phone,
       from: SMS_SENDER,
@@ -164,25 +165,59 @@ export class UsersService {
   }
 
   // 비밀번호 재설정
-  // async resetPassword({
-  //   new_password,
-  // }: IUsersServiceResetPassword): Promise<void> {
-  //   const resetPwd = await this.usersRepository.update(
-  //     {
-  //       user_password,
-  //     },
-  //     {
-  //       new_password,
-  //     },
-  //   );
-  // }
+  async resetPassword({
+    user_phone,
+    new_password,
+  }: IUsersServiceResetPassword): Promise<boolean> {
+    const hashedNewPassword = await bcrypt.hash(new_password, 10);
+    const user_id = (await this.findOneByPhone({ user_phone })).user_id;
+    const resetPwd = await this.usersRepository.update(
+      {
+        user_id,
+      },
+      {
+        user_password: hashedNewPassword,
+      },
+    );
+    return resetPwd ? true : false;
+  }
+
+  // 설정 페이지 비밀번호 재설정
+  async resetPasswordSettingPage({
+    new_password,
+    context,
+  }: IUsersServiceResetPasswordSettingPage): Promise<boolean> {
+    const hashedNewPassword = await bcrypt.hash(new_password, 10);
+    const user_id = context.req.user.user_id;
+    const resetPwd = await this.usersRepository.update(
+      {
+        user_id,
+      },
+      {
+        user_password: hashedNewPassword,
+      },
+    );
+    return resetPwd ? true : false;
+  }
 
   // 회원가입하기
   async createUser({ createUserInput }: ICreateUserInput): Promise<User> {
-    const { user_password, ...userInfo } = createUserInput;
+    const { user_password, user_email, user_phone, ...userInfo } =
+      createUserInput;
+    const validatePhone = await this.findOneByPhone({ user_phone });
+    const validateEmail = await this.findOneByEmail({ user_email });
+
+    if (validatePhone) {
+      throw new ConflictException('이미 등록된 휴대폰 번호입니다.');
+    } else if (validateEmail) {
+      throw new ConflictException('이미 등록된 이메일입니다.');
+    }
+
     const hashedPassword = await bcrypt.hash(user_password, 10);
 
     return this.usersRepository.save({
+      user_email,
+      user_phone,
       user_password: hashedPassword,
       ...userInfo,
     });

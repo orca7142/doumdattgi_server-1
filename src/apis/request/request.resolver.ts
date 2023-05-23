@@ -72,13 +72,15 @@ export class RequestsResolver {
   // 프로세스 API
   @UseGuards(GqlAuthGuard('access'))
   @Mutation(() => Boolean)
-  requestStart(
+  requestProcess(
     @Args('process') process: string,
     @Args('request_id') request_id: string, //
+    @Context() context: IContext, //
   ): Promise<boolean> {
-    return this.requestsService.requestStart({
+    return this.requestsService.requestProcess({
       process,
       request_id,
+      context,
     });
   }
 }
