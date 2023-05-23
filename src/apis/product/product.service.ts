@@ -258,6 +258,7 @@ export class ProductService {
       where: { product_id },
       relations: ['images', 'user'],
     });
+    console.log(result);
     return result;
   }
 

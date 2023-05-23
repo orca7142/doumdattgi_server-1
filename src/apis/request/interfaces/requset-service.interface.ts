@@ -17,6 +17,7 @@ export interface IFetchWorkInput {
 export interface IRequestStartInput {
   process: string;
   request_id: string;
+  context: IContext;
 }
 
 export interface IRequestAcceptRefuseInput {
