@@ -7,7 +7,6 @@ import {
   Column,
   DeleteDateColumn,
   Entity,
-  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -29,7 +28,7 @@ export class User {
   product: Product[];
 
   @OneToMany(() => Pick, (pick) => pick.user)
-  @Field(() => Pick)
+  @Field(() => Pick, { nullable: true })
   pick: Pick;
 
   // 이메일 주소

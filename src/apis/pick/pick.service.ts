@@ -14,7 +14,7 @@ export class PicksService {
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
 
-    @InjectRepository(User)
+    @InjectRepository(Product)
     private readonly productsRepository: Repository<Product>,
   ) {}
 
@@ -22,31 +22,33 @@ export class PicksService {
   async create({ product_id, user_id }): Promise<any> {
     console.log('11');
 
-    const product = await this.productsRepository.findOne({
-      where: { product_id },
-      relations: ['user'],
-    });
-    console.log(product);
+    const user_pick = await this.pickRepository
+      .createQueryBuilder('pick')
+      .innerJoin('pick.user', 'u', 'pick.userUserId = u.user_Id')
+      .innerJoin('pick.product', 'p', 'p.pickPickId = pick_id')
+      .select(['u.user_id', 'pick_id', 'p.product_id'])
+      .where('p.product_id = :product_id', { product_id })
+      .andWhere('u.user_id = :user_id', { user_id })
+      .getRawOne();
+    console.log(user_pick.pick_id);
+    // const user_pick = (
+    //   await this.pickRepository.findOne({
+    //     where: { user: { user_id } },
+    //     relations: ['user'],
+    //   })
+    // ).user.user_id;
 
-    const user_pick = (
-      await this.pickRepository.findOne({
-        where: { user: user_id, product: product_id },
-        relations: ['user', 'product'],
-      })
-    ).pick_id;
-    console.log(user_pick);
-
-    // if (!user_pick) {
-    //   await this.pickRepository.save({
-    //     pick_status: true,
-    //     product: { product_id: product },
-    //     user: { user_id },
-    //   });
-    //   return true;
-    // } else {
-    //   await this.delete({ product_id, user_pick });
-    //   return false;
-    // }
+    if (!user_pick) {
+      await this.pickRepository.save({
+        pick_status: true,
+        product: { product_id },
+        user: { user_id },
+      });
+      return true;
+    } else {
+      await this.delete({ product_id, user_pick });
+      return false;
+    }
   }
 
   // 찜 지우기
