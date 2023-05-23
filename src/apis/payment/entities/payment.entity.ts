@@ -11,6 +11,7 @@ import {
 export enum PAYMENT_STATUS_ENUM {
   PAYMENT = 'PAYMENT',
   CANCEL = 'CANCEL',
+  SELL = 'SELL',
 }
 
 registerEnumType(PAYMENT_STATUS_ENUM, {

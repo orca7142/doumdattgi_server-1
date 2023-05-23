@@ -68,14 +68,29 @@ export class UsersResolver {
   }
 
   // 비밀번호 재설정 API
-  // @Mutation(() => String)
-  // resetPassword(
-  //   @Args('new_password') new_password: string, //
-  // ): Promise<void> {
-  //   return this.usersService.resetPassword({
-  //     new_password,
-  //   });
-  // }
+  @Mutation(() => Boolean)
+  resetPassword(
+    @Args('user_phone') user_phone: string, //
+    @Args('new_password') new_password: string,
+  ): Promise<boolean> {
+    return this.usersService.resetPassword({
+      user_phone,
+      new_password,
+    });
+  }
+
+  // 설정페이지 비밀번호 재설정 API
+  @UseGuards(GqlAuthGuard('access'))
+  @Mutation(() => Boolean)
+  resetPasswordSettingPage(
+    @Args('new_password') new_password: string,
+    @Context() context: IContext, //
+  ): Promise<boolean> {
+    return this.usersService.resetPasswordSettingPage({
+      new_password,
+      context,
+    });
+  }
 
   //회원가입 API
   @Mutation(() => User)

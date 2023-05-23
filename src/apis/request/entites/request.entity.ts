@@ -48,6 +48,10 @@ export class Request {
 
   @Column()
   @Field(() => String)
+  seller_email: string;
+
+  @Column()
+  @Field(() => String)
   buyer_id: string;
 
   @Column()
@@ -57,6 +61,10 @@ export class Request {
   @Column()
   @Field(() => String)
   buyer_profileImage: string;
+
+  @Column()
+  @Field(() => String)
+  buyer_email: string;
 
   @Column({ type: 'enum', enum: REQUEST_ISACCEPT_ENUM })
   @Field(() => REQUEST_ISACCEPT_ENUM)

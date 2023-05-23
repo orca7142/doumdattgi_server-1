@@ -15,6 +15,7 @@ type Payment {
 enum PAYMENT_STATUS_ENUM {
   PAYMENT
   CANCEL
+  SELL
 }
 
 """
@@ -95,9 +96,11 @@ type Request {
   seller_id: String!
   seller_nickname: String!
   seller_profileImage: String!
+  seller_email: String!
   buyer_id: String!
   buyer_nickname: String!
   buyer_profileImage: String!
+  buyer_email: String!
   request_isAccept: REQUEST_ISACCEPT_ENUM!
   request_price: Int!
   request_createAt: DateTime!
@@ -201,6 +204,8 @@ type Mutation {
   sendTokenSMS(user_phone: String!): String!
   checkValidTokenFindEmailBySMS(user_phone: String!, user_token: String!): String!
   checkValidTokenFindPwdBySMS(user_phone: String!, user_token: String!): Boolean!
+  resetPassword(user_phone: String!, new_password: String!): Boolean!
+  resetPasswordSettingPage(new_password: String!): Boolean!
   createUser(createUserInput: CreateUserInput!): User!
   updateNicknameIntroduce(updateNicknameIntroduceInput: UpdateNicknameIntroduceInput!): User!
   updateProfileImage(user_url: String!): User!
@@ -212,7 +217,7 @@ type Mutation {
   deleteLoginProduct(product_id: String!): Boolean!
   sendRequest(createRequestInput: CreateRequestInput!): Request!
   requestAcceptRefuse(acceptRefuse: String!, request_id: String!): Request!
-  requestStart(process: String!, request_id: String!): Boolean!
+  requestProcess(process: String!, request_id: String!): Boolean!
   createPayment(payment_impUid: String!, payment_amount: Int!, payment_type: String!): Payment!
   cancelPayment(payment_impUid: String!, payment_type: String!): CancelPaymentOutput!
   createPick(product_id: String!): Boolean!
