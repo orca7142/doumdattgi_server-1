@@ -14,55 +14,30 @@ export class PicksService {
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
 
-    @InjectRepository(User)
+    @InjectRepository(Product)
     private readonly productsRepository: Repository<Product>,
   ) {}
 
   // 찜 올리기고 내리기(찜했으면 지우고 찜 없으면 생성)
-  async create({ product_id, user_id }): Promise<any> {
-    console.log('11');
-
-    const product = await this.productsRepository.findOne({
-      where: { product_id },
-      relations: ['user'],
+  async create({ product_id, user_id }): Promise<string> {
+    const userLike = await this.pickRepository.findOne({
+      where: { user: { user_id }, product: { product_id } },
+      relations: ['user', 'product'],
     });
-    console.log(product);
 
-    const user_pick = (
-      await this.pickRepository.findOne({
-        where: { user: user_id, product: product_id },
-        relations: ['user', 'product'],
-      })
-    ).pick_id;
-    console.log(user_pick);
+    if (userLike === null) {
+      await this.pickRepository.save({
+        user: { user_id },
+        product: { product_id },
+      });
+      return '찜 되었습니다!!';
+    } else if (userLike !== null) {
+      const pick_id = userLike.pick_id;
+      await this.pickRepository.delete({ pick_id });
+      return '찜 삭제 되었습니다';
+    }
 
-    // if (!user_pick) {
-    //   await this.pickRepository.save({
-    //     pick_status: true,
-    //     product: { product_id: product },
-    //     user: { user_id },
-    //   });
-    //   return true;
-    // } else {
-    //   await this.delete({ product_id, user_pick });
-    //   return false;
-    // }
+    // 유저가 찜한 목록 조회
+    // 상품의 찜횟수 조회
   }
-
-  // 찜 지우기
-  async delete({ product_id, user_pick }): Promise<boolean> {
-    const product = (await this.productsRepository.findOne(product_id))
-      .product_id;
-
-    const result = await this.pickRepository.delete({
-      product: { product_id: product },
-      pick_id: user_pick,
-    });
-    //
-    return result.affected ? true : false; //
-  }
-
-  // 유저가 찜한 목록 조회
-
-  // 상품의 찜횟수 조회
 }
