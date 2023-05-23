@@ -54,7 +54,7 @@ export class Product {
 
   // 찜 정보
   @ManyToOne(() => Pick)
-  @Field(() => Pick)
+  @Field(() => Pick, { nullable: true })
   pick: Pick;
 
   // 제목

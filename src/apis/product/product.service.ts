@@ -179,6 +179,48 @@ export class ProductService {
     return result;
   }
 
+  // 검색기능(title로 검색)
+  async findSearch({
+    product_title,
+    page,
+    pageSize,
+  }): Promise<FetchProductOutput[]> {
+    if (!product_title) {
+      throw new Error('Title is required for search.');
+    }
+
+    const result = await this.productsRepository
+      .createQueryBuilder('product')
+      .innerJoin('product.user', 'u', 'product.userUserId = u.user_Id')
+      .innerJoin(
+        'product.images',
+        'i',
+        'product.product_id = i.productProductId',
+      )
+      .select([
+        'product.product_id',
+        'product.product_title',
+        'product.product_category',
+        'product.product_workDay',
+        'product.product_sellOrBuy',
+        'u.user_nickname',
+        'u.user_profileImage',
+        'i.image_url',
+      ])
+      .where('product_title LIKE "%":product_title"%"', { product_title })
+      .andWhere('i.image_isMain = :image_isMain', { image_isMain: 1 })
+      .andWhere('product.product_sellOrBuy = :product_sellOrBuy', {
+        product_sellOrBuy: 1,
+      })
+      .orderBy('product.product_createdAt', 'DESC')
+      .limit(pageSize)
+      .offset(pageSize * (page - 1))
+      .getRawMany();
+
+    if (!result.length) throw new Error('검색에 일치하는 내용이 없습니다');
+    return result;
+  }
+
   // 카테고리별로 상품 검색 <리스트페이지: 구해요 빼고 나머지>
   async findCategory({
     product_category,

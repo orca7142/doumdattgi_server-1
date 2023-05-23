@@ -3,8 +3,6 @@ import { Product } from 'src/apis/product/entites/product.entity';
 import { User } from 'src/apis/users/entities/user.entity';
 import {
   Column,
-  CreateDateColumn,
-  DeleteDateColumn,
   Entity,
   ManyToOne,
   OneToMany,
@@ -16,16 +14,16 @@ import {
 export class Pick {
   // 찜 아이디
   @PrimaryGeneratedColumn('uuid')
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   pick_id: string;
 
-  @OneToMany(() => Product, (product) => product.pick)
+  @ManyToOne(() => Product)
   @Field(() => Product)
   product: Product;
 
   @ManyToOne(() => User)
-  @Field(() => [User])
-  user: User[];
+  @Field(() => User, { nullable: true })
+  user: User;
 
   // 찜 상태
   @Column({ default: false })
