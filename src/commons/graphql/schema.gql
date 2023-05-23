@@ -221,8 +221,6 @@ type Mutation {
   requestProcess(process: String!, request_id: String!): Boolean!
   createPayment(payment_impUid: String!, payment_amount: Int!, payment_type: String!): Payment!
   cancelPayment(payment_impUid: String!, payment_type: String!): CancelPaymentOutput!
-  createPick(product_id: String!): Boolean!
-  fetchUserPick: Pick!
 }
 
 input CreateUserInput {

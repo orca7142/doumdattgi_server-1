@@ -17,7 +17,7 @@ export class Pick {
   @Field(() => String, { nullable: true })
   pick_id: string;
 
-  @OneToMany(() => Product, (product) => product.pick)
+  @ManyToOne(() => Product)
   @Field(() => Product)
   product: Product;
 

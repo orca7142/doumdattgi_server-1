@@ -217,6 +217,7 @@ export class ProductService {
       .offset(pageSize * (page - 1))
       .getRawMany();
 
+    if (!result.length) throw new Error('검색에 일치하는 내용이 없습니다');
     return result;
   }
 
