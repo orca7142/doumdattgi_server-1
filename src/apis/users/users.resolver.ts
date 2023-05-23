@@ -162,13 +162,4 @@ export class UsersResolver {
       context,
     });
   }
-
-  // 로그인 유저 결제정보 조회 API
-  @UseGuards(GqlAuthGuard('access'))
-  @Query(() => [Payment])
-  fetchUserPaymentInfo(
-    @Context() context: IContext, //
-  ): Promise<Payment[]> {
-    return this.usersService.findUserPaymentInfo({ context });
-  }
 }

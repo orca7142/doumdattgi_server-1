@@ -16,6 +16,8 @@ enum PAYMENT_STATUS_ENUM {
   PAYMENT
   CANCEL
   SELL
+  REQUEST
+  REFUND
 }
 
 """
@@ -178,7 +180,6 @@ type CancelPaymentOutput {
 
 type Query {
   fetchLoginUser: User!
-  fetchUserPaymentInfo: [Payment!]!
   fetchProducts(page: Float!, pageSize: Float!): [FetchProductOutput!]!
   fetchAllProducts: [FetchProductOutput!]!
   fetchRandomProduct: [FetchProductOutput!]!
@@ -221,6 +222,7 @@ type Mutation {
   requestProcess(process: String!, request_id: String!): Boolean!
   createPayment(payment_impUid: String!, payment_amount: Int!, payment_type: String!): Payment!
   cancelPayment(payment_impUid: String!, payment_type: String!): CancelPaymentOutput!
+  createPick(product_id: String!): String!
 }
 
 input CreateUserInput {

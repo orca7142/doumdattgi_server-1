@@ -107,7 +107,7 @@ export class RequestsService {
     await this.paymentsRepository.save({
       payment_impUid: '',
       payment_amount: -request_price,
-      payment_status: PAYMENT_STATUS_ENUM.PAYMENT,
+      payment_status: PAYMENT_STATUS_ENUM.REQUEST,
       payment_type: '의뢰서 요청',
       user: { user_id: buyer_id },
     });
@@ -152,10 +152,8 @@ export class RequestsService {
     context,
   }: IRequestAcceptRefuseInput): Promise<Request> {
     const date = new Date();
-    let isAccept = REQUEST_ISACCEPT_ENUM.WAITING;
 
     if (acceptRefuse === '수락하기') {
-      isAccept = REQUEST_ISACCEPT_ENUM.ACCEPT;
       await this.engageInRepository.update(
         {
           request: { request_id },
@@ -193,7 +191,15 @@ export class RequestsService {
         });
       }
     } else if (acceptRefuse === '거절하기') {
-      isAccept = REQUEST_ISACCEPT_ENUM.REFUSE;
+      await this.requestsRepository.update(
+        {
+          request_id,
+        },
+        {
+          request_isAccept: REQUEST_ISACCEPT_ENUM.REFUSE,
+        },
+      );
+
       await this.engageInRepository.update(
         {
           request: { request_id },
@@ -213,8 +219,8 @@ export class RequestsService {
       await this.paymentsRepository.save({
         payment_impUid: '',
         payment_amount: request_price,
-        payment_status: PAYMENT_STATUS_ENUM.CANCEL,
-        payment_type: '의뢰서 요청',
+        payment_status: PAYMENT_STATUS_ENUM.REFUND,
+        payment_type: '의뢰서 요청 거절',
         user: { user_id: buyer_id },
       });
 
@@ -240,7 +246,6 @@ export class RequestsService {
     const result = await this.requestsRepository.save({
       ...request,
       request_id,
-      request_isAccept: isAccept,
       request_startAt: date,
     });
     return result;
@@ -278,14 +283,11 @@ export class RequestsService {
         },
       );
 
-      const workCompleteConfirm = await this.requestsRepository.update(
-        {
-          request_id,
-        },
-        {
-          request_completedAt: date,
-        },
-      );
+      await this.requestsRepository.save({
+        request_id,
+        request_completedAt: date,
+        request_isAccept: REQUEST_ISACCEPT_ENUM.FINISH,
+      });
 
       const user_id = (
         await this.requestsRepository.findOne({ where: { request_id } })
@@ -363,8 +365,6 @@ export class RequestsService {
           },
         );
       }
-
-      return (await workCompleteConfirm).affected ? true : false;
     }
   }
 }

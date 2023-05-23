@@ -10,7 +10,6 @@ import {
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Image } from 'src/apis/image/entites/image.entity';
-import { Pick } from 'src/apis/pick/entites/pick.entity';
 
 export enum PRODUCT_CATEGORY_ENUM {
   IT = 'IT',
@@ -51,11 +50,6 @@ export class Product {
   @OneToMany(() => Image, (image) => image.product)
   @Field(() => [Image])
   images: Image[];
-
-  // 찜 정보
-  @ManyToOne(() => Pick)
-  @Field(() => Pick, { nullable: true })
-  pick: Pick;
 
   // 제목
   @Column()

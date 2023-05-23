@@ -1,6 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Product } from 'src/apis/product/entites/product.entity';
 import { User } from 'src/apis/users/entities/user.entity';
+import { Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import {
   Column,
   Entity,
@@ -22,11 +23,6 @@ export class Pick {
   product: Product;
 
   @ManyToOne(() => User)
-  @Field(() => User, { nullable: true })
+  @Field(() => User)
   user: User;
-
-  // 찜 상태
-  @Column({ default: false })
-  @Field(() => Boolean, { nullable: true })
-  pick_status: boolean;
 }

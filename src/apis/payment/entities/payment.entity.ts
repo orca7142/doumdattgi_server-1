@@ -12,6 +12,8 @@ export enum PAYMENT_STATUS_ENUM {
   PAYMENT = 'PAYMENT',
   CANCEL = 'CANCEL',
   SELL = 'SELL',
+  REQUEST = 'REQUEST',
+  REFUND = 'REFUND',
 }
 
 registerEnumType(PAYMENT_STATUS_ENUM, {
