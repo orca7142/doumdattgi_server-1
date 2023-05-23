@@ -5,6 +5,7 @@ import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { Payment } from '../payment/entities/payment.entity';
 import { Request } from '../request/entites/request.entity';
+import { Pick } from '../pick/entites/pick.entity';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { Request } from '../request/entites/request.entity';
       Request, //
       Payment,
       User,
+      Pick,
     ]),
   ],
   providers: [

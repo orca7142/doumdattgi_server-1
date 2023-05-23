@@ -2,20 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type User {
-  user_id: String!
-  user_email: String!
-  user_password: String!
-  user_name: String!
-  user_nickname: String!
-  user_phone: String!
-  user_profileImage: String
-  user_introduce: String
-  user_portfolio: String
-  user_workRate: Int!
-  user_point: Int!
-}
-
 type Payment {
   payment_id: String!
   payment_impUid: String!
@@ -48,6 +34,7 @@ type Product {
   product_id: String!
   user: User!
   images: [Image!]!
+  pick: Pick!
   product_title: String!
   product_category: PRODUCT_CATEGORY_ENUM!
   product_sub_category: String!
@@ -77,6 +64,30 @@ enum WORKDAY_STATUS_ENUM {
   WEEKDAY
   WEEKEND
   NEGOTIATION
+}
+
+type Pick {
+  pick_id: String!
+  product: Product!
+  user: [User!]!
+  pick_status: Boolean
+}
+
+type User {
+  user_id: String!
+  payment: [Payment!]!
+  product: [Product!]!
+  pick: Pick!
+  user_email: String!
+  user_password: String!
+  user_name: String!
+  user_nickname: String!
+  user_phone: String!
+  user_profileImage: String
+  user_introduce: String
+  user_portfolio: String
+  user_workRate: Int!
+  user_point: Int!
 }
 
 type Request {
@@ -118,6 +129,53 @@ type FetchProductOutput {
   i_image_url: String!
 }
 
+type FetchMyProductOutput {
+  product_product_id: String!
+  product_product_title: String!
+  product_product_category: String!
+  product_product_workDay: String!
+  product_product_sellOrBuy: Boolean!
+  u_user_id: String!
+  u_user_nickname: String!
+  u_user_profileImage: String
+  i_image_url: String!
+}
+
+type FetchSubCategoryOutput {
+  product_product_id: String!
+  product_product_title: String!
+  product_product_category: String!
+  product_product_workDay: String!
+  product_product_sellOrBuy: Boolean!
+  product_product_sub_category: String!
+  u_user_nickname: String!
+  u_user_profileImage: String
+  i_image_url: String!
+}
+
+type FetchPaymentOutput {
+  payment_payment_id: String!
+  payment_payment_impUid: String!
+  payment_payment_amount: Int!
+  payment_payment_status: String!
+  payment_payment_type: String!
+  payment_payment_createdAt: DateTime!
+  u_user_id: String!
+  u_user_email: String!
+  u_user_name: String!
+  u_user_nickname: String!
+  u_user_phone: String!
+}
+
+type CancelPaymentOutput {
+  payment_id: String!
+  payment_impUid: String!
+  payment_amount: Int!
+  payment_status: String!
+  payment_type: String!
+  payment_createdAt: DateTime!
+}
+
 type Query {
   fetchLoginUser: User!
   fetchUserPaymentInfo: [Payment!]!
@@ -126,13 +184,15 @@ type Query {
   fetchRandomProduct: [FetchProductOutput!]!
   fetchSellProduct: [FetchProductOutput!]!
   fetchCategoryProduct(product_category: String!, page: Float!, pageSize: Float!): [FetchProductOutput!]!
+  fetchSubCategoryProduct(product_category: String!, product_sub_category: String!, page: Float!, pageSize: Float!): [FetchSubCategoryOutput!]!
   fetchSellCategoryProducts(page: Float!, pageSize: Float!): [FetchProductOutput!]!
   fetchNewbieProduct: [FetchProductOutput!]!
   fetchDetailProduct(product_id: String!): Product!
+  fetchMyProduct(page: Float!, pageSize: Float!): [FetchMyProductOutput!]!
   fetchBuyerRequest: [Request!]!
   fetchOneRequest(request_id: String!): Request!
   fetchSellerWork: [Request!]!
-  fetchPayments(payment_impUid: String!): [Payment!]!
+  fetchPayments(page: Float!, pageSize: Float!): [FetchPaymentOutput!]!
 }
 
 type Mutation {
@@ -159,7 +219,9 @@ type Mutation {
   requestAcceptRefuse(acceptRefuse: String!, request_id: String!): Request!
   requestProcess(process: String!, request_id: String!): Boolean!
   createPayment(payment_impUid: String!, payment_amount: Int!, payment_type: String!): Payment!
-  cancelPayment(payment_impUid: String!, payment_type: String!): Payment!
+  cancelPayment(payment_impUid: String!, payment_type: String!): CancelPaymentOutput!
+  createPick(product_id: String!): Boolean!
+  fetchUserPick: Pick!
 }
 
 input CreateUserInput {
