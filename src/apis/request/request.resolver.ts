@@ -62,8 +62,10 @@ export class RequestsResolver {
   requestAcceptRefuse(
     @Args('acceptRefuse') acceptRefuse: string,
     @Args('request_id') request_id: string, //
+    @Context() context: IContext, //
   ): Promise<Request> {
     return this.requestsService.requestAcceptRefuse({
+      context,
       acceptRefuse,
       request_id,
     });
@@ -75,12 +77,10 @@ export class RequestsResolver {
   requestProcess(
     @Args('process') process: string,
     @Args('request_id') request_id: string, //
-    @Context() context: IContext, //
   ): Promise<boolean> {
     return this.requestsService.requestProcess({
       process,
       request_id,
-      context,
     });
   }
 }

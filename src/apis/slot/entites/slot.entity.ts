@@ -13,15 +13,15 @@ export class Slot {
   @Field(() => User)
   user: User;
 
-  @Column()
+  @Column({ default: false })
   @Field(() => Boolean)
   slot_first: boolean;
 
-  @Column()
+  @Column({ default: false })
   @Field(() => Boolean)
   slot_second: boolean;
 
-  @Column()
+  @Column({ default: false })
   @Field(() => Boolean)
   slot_third: boolean;
 }

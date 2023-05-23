@@ -86,7 +86,7 @@ export class UsersService {
     const token = await this.createToken();
 
     await this.mailerService.sendMail({
-      from: process.env.EMAIL_USER,
+      from: process.env.EMAIL_SENDER,
       to: user_email,
       subject: '[도움닫기] 가입 인증 번호입니다.',
       html: sendTokenTemplate({ token }),
