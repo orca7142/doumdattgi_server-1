@@ -36,6 +36,7 @@ type Product {
   product_id: String!
   user: User!
   images: [Image!]!
+  pick: Pick
   product_title: String!
   product_category: PRODUCT_CATEGORY_ENUM!
   product_sub_category: String!
@@ -67,10 +68,18 @@ enum WORKDAY_STATUS_ENUM {
   NEGOTIATION
 }
 
+type Pick {
+  pick_id: String
+  product: Product!
+  user: User
+  pick_status: Boolean
+}
+
 type User {
   user_id: String!
   payment: [Payment!]!
   product: [Product!]!
+  pick: Pick
   user_email: String!
   user_password: String!
   user_name: String!
@@ -175,6 +184,7 @@ type Query {
   fetchAllProducts: [FetchProductOutput!]!
   fetchRandomProduct: [FetchProductOutput!]!
   fetchSellProduct: [FetchProductOutput!]!
+  fetchSearchProduct(product_title: String!, page: Float!, pageSize: Float!): [FetchProductOutput!]!
   fetchCategoryProduct(product_category: String!, page: Float!, pageSize: Float!): [FetchProductOutput!]!
   fetchSubCategoryProduct(product_category: String!, product_sub_category: String!, page: Float!, pageSize: Float!): [FetchSubCategoryOutput!]!
   fetchSellCategoryProducts(page: Float!, pageSize: Float!): [FetchProductOutput!]!
