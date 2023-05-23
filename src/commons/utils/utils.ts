@@ -78,6 +78,5 @@ export function welcomeTemplateSMS({ name, phone, prefer }) {
 			</body>
 		</html>
 	`;
-  // console.log(myTemplate);
   return myTemplate;
 }

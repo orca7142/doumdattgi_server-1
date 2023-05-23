@@ -11,6 +11,7 @@ import { ProductService } from '../product/product.service';
 import { ProductResolver } from '../product/product.resolver';
 import { Request } from './entites/request.entity';
 import { Image } from '../image/entites/image.entity';
+import { Slot } from '../slot/entites/slot.entity';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { Image } from '../image/entites/image.entity';
       Product,
       User,
       Request,
+      Slot,
     ]),
   ],
   providers: [

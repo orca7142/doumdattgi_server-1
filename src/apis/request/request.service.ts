@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { REQUEST_ISACCEPT_ENUM, Request } from './entites/request.entity';
 import {
   ICreateRequestInput,
@@ -6,7 +6,7 @@ import {
   IFetchRequestInput,
   IFetchWorkInput,
   IRequestAcceptRefuseInput,
-  IRequestStartInput,
+  IRequestProcessInput,
 } from './interfaces/requset-service.interface';
 import { UsersService } from '../users/users.service';
 import { Repository } from 'typeorm';
@@ -41,8 +41,8 @@ export class RequestsService {
     @InjectRepository(Payment)
     private readonly paymentsRepository: Repository<Payment>,
 
-    // @InjectRepository(Slot)
-    // private readonly slotsRepository: Repository<Slot>,
+    @InjectRepository(Slot)
+    private readonly slotsRepository: Repository<Slot>,
 
     private readonly usersService: UsersService,
   ) {}
@@ -69,6 +69,10 @@ export class RequestsService {
     const buyer_nickname = buyer.user_nickname;
     const buyer_profileImage = buyer.user_profileImage;
     const buyer_email = buyer.user_email;
+    const buyer_point = buyer.user_point;
+
+    if (buyer_point < request_price)
+      throw new ConflictException('보유한 포인트가 부족합니다.');
 
     const result = await this.requestsRepository.save({
       ...rest,
@@ -84,8 +88,6 @@ export class RequestsService {
       buyer_profileImage,
       buyer_email,
     });
-
-    const buyer_point = buyer.user_point;
 
     await this.usersRepository.update(
       {
@@ -147,6 +149,7 @@ export class RequestsService {
   async requestAcceptRefuse({
     acceptRefuse, //
     request_id,
+    context,
   }: IRequestAcceptRefuseInput): Promise<Request> {
     const date = new Date();
     let isAccept = REQUEST_ISACCEPT_ENUM.WAITING;
@@ -161,6 +164,34 @@ export class RequestsService {
           engageIn_status: ENGAGEIN_STATUS_ENUM.ACCEPT,
         },
       );
+      // 슬롯 추가하기
+      const user_id = context.req.user.user_id;
+      const slot_first = (
+        await this.slotsRepository.findOne({ where: { user: { user_id } } })
+      ).slot_first;
+      const slot_second = (
+        await this.slotsRepository.findOne({ where: { user: { user_id } } })
+      ).slot_second;
+      const slot_third = (
+        await this.slotsRepository.findOne({ where: { user: { user_id } } })
+      ).slot_third;
+
+      if (slot_first === false) {
+        await this.slotsRepository.save({
+          user: { user_id },
+          slot_first: true,
+        });
+      } else if (slot_second === false) {
+        await this.slotsRepository.save({
+          user: { user_id },
+          slot_second: true,
+        });
+      } else if (slot_third === false) {
+        await this.slotsRepository.save({
+          user: { user_id },
+          slot_third: true,
+        });
+      }
     } else if (acceptRefuse === '거절하기') {
       isAccept = REQUEST_ISACCEPT_ENUM.REFUSE;
       await this.engageInRepository.update(
@@ -219,7 +250,7 @@ export class RequestsService {
   async requestProcess({
     process,
     request_id,
-  }: IRequestStartInput): Promise<boolean> {
+  }: IRequestProcessInput): Promise<boolean> {
     const date = new Date();
     if (process === '작업 완료하기') {
       const workComplete = await this.requestsRepository.update(
@@ -286,6 +317,52 @@ export class RequestsService {
         payment_type: '의뢰 완료',
         user: { user_id },
       });
+
+      // 슬롯 없애기
+      const slot_first = (
+        await this.slotsRepository.findOne({
+          where: { user: { user_id: seller_id } },
+        })
+      ).slot_first;
+      const slot_second = (
+        await this.slotsRepository.findOne({
+          where: { user: { user_id: seller_id } },
+        })
+      ).slot_second;
+      const slot_third = (
+        await this.slotsRepository.findOne({
+          where: { user: { user_id: seller_id } },
+        })
+      ).slot_third;
+
+      if (slot_third === true) {
+        await this.slotsRepository.update(
+          {
+            user: { user_id },
+          },
+          {
+            slot_third: false,
+          },
+        );
+      } else if (slot_second === true) {
+        await this.slotsRepository.update(
+          {
+            user: { user_id },
+          },
+          {
+            slot_second: false,
+          },
+        );
+      } else if (slot_first === true) {
+        await this.slotsRepository.update(
+          {
+            user: { user_id },
+          },
+          {
+            slot_first: false,
+          },
+        );
+      }
 
       return (await workCompleteConfirm).affected ? true : false;
     }

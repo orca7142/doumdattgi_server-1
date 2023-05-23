@@ -14,17 +14,22 @@ export interface IFetchWorkInput {
   context: IContext;
 }
 
-export interface IRequestStartInput {
+export interface IRequestProcessInput {
   process: string;
   request_id: string;
-  context: IContext;
 }
 
 export interface IRequestAcceptRefuseInput {
   acceptRefuse: string;
   request_id: string;
+  context: IContext;
 }
 
 export interface IFetchOneRequestInput {
   request_id: string;
+}
+
+export interface IValidateSellerBuyerInput {
+  request_id: string;
+  context: IContext;
 }
