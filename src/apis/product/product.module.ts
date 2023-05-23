@@ -8,6 +8,7 @@ import { UsersService } from '../users/users.service';
 import { Payment } from '../payment/entities/payment.entity';
 import { Image } from '../image/entites/image.entity';
 import { Request } from '../request/entites/request.entity';
+import { Pick } from '../pick/entites/pick.entity';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { Request } from '../request/entites/request.entity';
       Product, //
       User,
       Image,
+      Pick,
     ]),
   ],
   providers: [

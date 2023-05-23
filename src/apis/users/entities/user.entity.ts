@@ -1,8 +1,14 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Payment } from 'src/apis/payment/entities/payment.entity';
+import { Pick } from 'src/apis/pick/entites/pick.entity';
+import { Product } from 'src/apis/product/entites/product.entity';
+
 import {
   Column,
   DeleteDateColumn,
   Entity,
+  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -13,6 +19,18 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   @Field(() => String)
   user_id: string;
+
+  @OneToMany(() => Payment, (Payment) => Payment.user)
+  @Field(() => [Payment])
+  payment: Payment[];
+
+  @OneToMany(() => Product, (Product) => Product.user)
+  @Field(() => [Product])
+  product: Product[];
+
+  @OneToMany(() => Pick, (pick) => pick.user)
+  @Field(() => Pick)
+  pick: Pick;
 
   // 이메일 주소
   @Column()

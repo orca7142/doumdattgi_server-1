@@ -11,6 +11,8 @@ import {
 import { User } from '../users/entities/user.entity';
 import { Image } from '../image/entites/image.entity';
 import { FetchProductOutput } from './dto/fetch-product.output';
+import { FetchMyProductOutput } from './dto/fetch-myProduct.output';
+import { FetchSubCategoryOutput } from './dto/fetch-subCategoty.output';
 
 @Injectable()
 export class ProductService {
@@ -55,6 +57,35 @@ export class ProductService {
     return result;
   }
 
+  // 나의 상품 모두 검색 <마이페이지>
+  async findUserAll({ page, pageSize }): Promise<FetchMyProductOutput[]> {
+    const result = await this.productsRepository
+      .createQueryBuilder('product')
+      .innerJoin('product.user', 'u', 'product.userUserId = u.user_Id')
+      .innerJoin(
+        'product.images',
+        'i',
+        'product.product_id = i.productProductId',
+      )
+      .select([
+        'product.product_id',
+        'product.product_title',
+        'product.product_category',
+        'product.product_workDay',
+        'product.product_sellOrBuy',
+        'u.user_id',
+        'u.user_nickname',
+        'u.user_profileImage',
+        'i.image_url',
+      ])
+      .where('i.image_isMain = :image_isMain', { image_isMain: 1 })
+      .orderBy('product.product_createdAt', 'DESC')
+      .offset(pageSize * (page - 1))
+      .limit(pageSize)
+      .getRawMany();
+
+    return result;
+  }
   // 모든 상품 중 최신게시글 검색(8개만), <메인페이지: 최신 게시글>
   async findAllProduct(): Promise<FetchProductOutput[]> {
     const result = await this.productsRepository
@@ -174,6 +205,50 @@ export class ProductService {
       ])
       .where('product_category LIKE "%":product_category"%"', {
         product_category,
+      })
+      .andWhere('i.image_isMain = :image_isMain', { image_isMain: 1 })
+      .andWhere('product.product_sellOrBuy = :product_sellOrBuy', {
+        product_sellOrBuy: 1,
+      })
+      .orderBy('product.product_createdAt', 'DESC')
+      .limit(pageSize)
+      .offset(pageSize * (page - 1))
+      .getRawMany();
+
+    return result;
+  }
+
+  // 카테고서브리별로 상품 검색 <리스트페이지: 구해요 빼고 나머지>
+  async findSubCategory({
+    product_category,
+    product_sub_category,
+    page,
+    pageSize,
+  }): Promise<FetchSubCategoryOutput[]> {
+    const result = await this.productsRepository
+      .createQueryBuilder('product')
+      .innerJoin('product.user', 'u', 'product.userUserId = u.user_Id')
+      .innerJoin(
+        'product.images',
+        'i',
+        'product.product_id = i.productProductId',
+      )
+      .select([
+        'product.product_id',
+        'product.product_title',
+        'product.product_category',
+        'product.product_sub_category',
+        'product.product_workDay',
+        'product.product_sellOrBuy',
+        'u.user_nickname',
+        'u.user_profileImage',
+        'i.image_url',
+      ])
+      .where('product_category LIKE "%":product_category"%"', {
+        product_category,
+      })
+      .andWhere('product_sub_category LIKE "%":product_sub_category"%"', {
+        product_sub_category,
       })
       .andWhere('i.image_isMain = :image_isMain', { image_isMain: 1 })
       .andWhere('product.product_sellOrBuy = :product_sellOrBuy', {

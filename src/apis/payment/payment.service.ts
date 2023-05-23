@@ -18,6 +18,8 @@ import {
   IPaymentsServiceCreateForPayment,
   IPaymentsServiceFindByImpUidAndUser,
 } from './interfaces/payment-service.interface';
+import { FetchPaymentOutput } from './dto/fetch-payment.output';
+import { CancelPaymentOutput } from './dto/cancel-payment.output';
 
 @Injectable()
 export class PaymentsService {
@@ -92,7 +94,38 @@ export class PaymentsService {
   }
 
   // 유저 아이디로 결제내역 조회하기
-  findByImpUidAndUser({
+  async findPayment({
+    user_id,
+    page,
+    pageSize,
+  }): Promise<FetchPaymentOutput[]> {
+    const result = await this.paymentsRepository
+      .createQueryBuilder('payment')
+      .innerJoin('payment.user', 'u', 'payment.userUserId = u.user_Id')
+      .select([
+        'payment.payment_id',
+        'payment.payment_impUid',
+        'payment.payment_amount',
+        'payment.payment_status',
+        'payment.payment_type',
+        'payment.payment_createdAt',
+        'u.user_id',
+        'u.user_email',
+        'u.user_name',
+        'u.user_nickname',
+        'u.user_phone',
+      ])
+      .where('u.user_id = :user_id', { user_id })
+      .orderBy('payment.payment_createdAt', 'DESC')
+      .offset(pageSize * (page - 1))
+      .limit(pageSize)
+      .getRawMany();
+    console.log(result);
+    return result;
+  }
+
+  // 결제내역 조회하기
+  async findByImpUidAndUser({
     payment_impUid,
     user,
   }: IPaymentsServiceFindByImpUidAndUser): Promise<Payment[]> {
@@ -148,7 +181,7 @@ export class PaymentsService {
     payment_impUid,
     user,
     payment_type,
-  }: IPaymentsServiceCancel): Promise<Payment> {
+  }: IPaymentsServiceCancel): Promise<CancelPaymentOutput> {
     const payments = await this.findByImpUidAndUser({ payment_impUid, user });
     this.checkAlreadyCanceled({ payments });
     this.checkHasCancelablePoint({ payments });

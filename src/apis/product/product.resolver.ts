@@ -7,7 +7,8 @@ import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { IContext } from 'src/commons/interfaces/context';
 import { FetchProductOutput } from './dto/fetch-product.output';
-import { FetchOneProductOutput } from './dto/fetch-productOne.output';
+import { FetchMyProductOutput } from './dto/fetch-myProduct.output';
+import { FetchSubCategoryOutput } from './dto/fetch-subCategoty.output';
 
 @Resolver()
 export class ProductResolver {
@@ -76,6 +77,21 @@ export class ProductResolver {
     });
   }
 
+  @Query(() => [FetchSubCategoryOutput])
+  fetchSubCategoryProduct(
+    @Args('product_category') product_category: string, //
+    @Args('product_sub_category') product_sub_category: string, //
+    @Args('page') page: number,
+    @Args('pageSize') pageSize: number,
+  ): Promise<FetchSubCategoryOutput[]> {
+    return this.productsService.findSubCategory({
+      product_category,
+      product_sub_category,
+      page,
+      pageSize,
+    });
+  }
+
   @Query(() => [FetchProductOutput])
   fetchSellCategoryProducts(
     @Args('page') page: number,
@@ -96,6 +112,18 @@ export class ProductResolver {
   ): Promise<Product> {
     return this.productsService.findOne({
       product_id,
+    });
+  }
+
+  @UseGuards(GqlAuthGuard('access'))
+  @Query(() => [FetchMyProductOutput])
+  async fetchMyProduct(
+    @Args('page') page: number,
+    @Args('pageSize') pageSize: number,
+  ): Promise<FetchMyProductOutput[]> {
+    return this.productsService.findUserAll({
+      page,
+      pageSize,
     });
   }
 }

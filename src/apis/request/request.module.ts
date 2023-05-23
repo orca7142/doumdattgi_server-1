@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { RequestsResolver } from './request.resolver';
 import { RequestsService } from './request.service';
 import { User } from '../users/entities/user.entity';
-import { EngageIn } from '../engageIn/entites/engaeIn.entity';
+import { EngageIn } from '../engageIn/entites/engageIn.entity';
 import { Product } from '../product/entites/product.entity';
 import { Payment } from '../payment/entities/payment.entity';
 import { UsersService } from '../users/users.service';
