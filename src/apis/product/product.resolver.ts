@@ -9,7 +9,7 @@ import { IContext } from 'src/commons/interfaces/context';
 import { FetchProductOutput } from './dto/fetch-product.output';
 import { FetchMyProductOutput } from './dto/fetch-myProduct.output';
 import { FetchSubCategoryOutput } from './dto/fetch-subCategoty.output';
-import { title } from 'process';
+import { FetchSearchProductOutput } from './dto/fetch-SearchProduct.output';
 
 @Resolver()
 export class ProductResolver {
@@ -65,13 +65,13 @@ export class ProductResolver {
     return this.productsService.findSell();
   }
 
-  @Query(() => [FetchProductOutput])
+  @Query(() => [FetchSearchProductOutput])
   fetchSearchProduct(
-    @Args('product_title') product_title: string,
+    @Args('search') search: string,
     @Args('page') page: number,
     @Args('pageSize') pageSize: number,
-  ): Promise<FetchProductOutput[]> {
-    return this.productsService.findSearch({ product_title, page, pageSize });
+  ): Promise<FetchSearchProductOutput[]> {
+    return this.productsService.findSearch({ search, page, pageSize });
   }
 
   @Query(() => [FetchProductOutput])
