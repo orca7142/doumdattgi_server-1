@@ -44,12 +44,12 @@ export class CreateProductInput {
   @Field(() => [Thumbnail])
   product_thumbnailImage: Thumbnail[];
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   product_postNum?: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   product_roadAddress?: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   product_detailAddress?: string;
 }

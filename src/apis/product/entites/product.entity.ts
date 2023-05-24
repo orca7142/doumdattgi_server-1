@@ -106,19 +106,19 @@ export class Product {
   product_workTime: number;
 
   // 우편번호
-  @Column()
-  @Field(() => String)
-  product_postNum: string;
+  @Column({ default: '' })
+  @Field(() => String, { nullable: true })
+  product_postNum?: string;
 
   // 도로명 주소
-  @Column()
-  @Field(() => String)
-  product_roadAddress: string;
+  @Column({ default: '' })
+  @Field(() => String, { nullable: true })
+  product_roadAddress?: string;
 
   // 상세주소
-  @Column()
-  @Field(() => String)
-  product_detailAddress: string;
+  @Column({ default: '' })
+  @Field(() => String, { nullable: true })
+  product_detailAddress?: string;
 
   // 삭제시간
   @DeleteDateColumn()

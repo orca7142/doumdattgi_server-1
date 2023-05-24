@@ -46,9 +46,9 @@ type Product {
   product_startTime: Int!
   product_endTime: Int!
   product_workTime: Int!
-  product_postNum: String!
-  product_roadAddress: String!
-  product_detailAddress: String!
+  product_postNum: String
+  product_roadAddress: String
+  product_detailAddress: String
   product_deletedAt: DateTime
 }
 
@@ -128,10 +128,10 @@ type FetchMyProductOutput {
   product_product_category: String!
   product_product_workDay: String!
   product_product_sellOrBuy: Boolean!
-  u_user_id: String!
   u_user_nickname: String!
   u_user_profileImage: String
   i_image_url: String!
+  u_user_id: String!
 }
 
 type FetchSubCategoryOutput {
@@ -140,10 +140,22 @@ type FetchSubCategoryOutput {
   product_product_category: String!
   product_product_workDay: String!
   product_product_sellOrBuy: Boolean!
-  product_product_sub_category: String!
   u_user_nickname: String!
   u_user_profileImage: String
   i_image_url: String!
+  product_product_sub_category: String!
+}
+
+type FetchSearchProductOutput {
+  product_product_id: String!
+  product_product_title: String!
+  product_product_category: String!
+  product_product_workDay: String!
+  product_product_sellOrBuy: Boolean!
+  u_user_nickname: String!
+  u_user_profileImage: String
+  i_image_url: String!
+  product_product_summary: String!
 }
 
 type FetchPaymentOutput {
@@ -169,13 +181,25 @@ type CancelPaymentOutput {
   payment_createdAt: DateTime!
 }
 
+type FetchMyPickOutput {
+  pick_pick_id: String!
+  p_product_id: String!
+  p_product_title: String!
+  p_product_category: String!
+  p_product_workDay: String!
+  p_product_sellOrBuy: Boolean!
+  u_user_nickname: String!
+  u_user_profileImage: String
+  i_image_url: String!
+}
+
 type Query {
   fetchLoginUser: User!
   fetchProducts(page: Float!, pageSize: Float!): [FetchProductOutput!]!
   fetchAllProducts: [FetchProductOutput!]!
   fetchRandomProduct: [FetchProductOutput!]!
   fetchSellProduct: [FetchProductOutput!]!
-  fetchSearchProduct(product_title: String!, page: Float!, pageSize: Float!): [FetchProductOutput!]!
+  fetchSearchProduct(search: String!, page: Float!, pageSize: Float!): [FetchSearchProductOutput!]!
   fetchCategoryProduct(product_category: String!, page: Float!, pageSize: Float!): [FetchProductOutput!]!
   fetchSubCategoryProduct(product_category: String!, product_sub_category: String!, page: Float!, pageSize: Float!): [FetchSubCategoryOutput!]!
   fetchSellCategoryProducts(page: Float!, pageSize: Float!): [FetchProductOutput!]!
@@ -186,6 +210,7 @@ type Query {
   fetchOneRequest(request_id: String!): Request!
   fetchSellerWork: [Request!]!
   fetchPayments(page: Float!, pageSize: Float!): [FetchPaymentOutput!]!
+  fetchPickUserProduct(page: Float!, pageSize: Float!): [FetchMyPickOutput!]!
 }
 
 type Mutation {
@@ -250,9 +275,9 @@ input CreateProductInput {
   product_startTime: Int!
   product_endTime: Int!
   product_thumbnailImage: [Thumbnail!]!
-  product_postNum: String!
-  product_roadAddress: String!
-  product_detailAddress: String!
+  product_postNum: String
+  product_roadAddress: String
+  product_detailAddress: String
 }
 
 input Thumbnail {

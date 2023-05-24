@@ -13,6 +13,7 @@ import { Image } from '../image/entites/image.entity';
 import { FetchProductOutput } from './dto/fetch-product.output';
 import { FetchMyProductOutput } from './dto/fetch-myProduct.output';
 import { FetchSubCategoryOutput } from './dto/fetch-subCategoty.output';
+import { FetchSearchProductOutput } from './dto/fetch-SearchProduct.output';
 
 @Injectable()
 export class ProductService {
@@ -83,7 +84,8 @@ export class ProductService {
       .offset(pageSize * (page - 1))
       .limit(pageSize)
       .getRawMany();
-
+    if (!result.length)
+      throw new Error('내가 만든 상품이 아직 존재하지 않습니다.');
     return result;
   }
   // 모든 상품 중 최신게시글 검색(8개만), <메인페이지: 최신 게시글>
@@ -179,13 +181,13 @@ export class ProductService {
     return result;
   }
 
-  // 검색기능(title로 검색)
+  // 검색기능(title, category, summary로 검색)
   async findSearch({
-    product_title,
+    search,
     page,
     pageSize,
-  }): Promise<FetchProductOutput[]> {
-    if (!product_title) {
+  }): Promise<FetchSearchProductOutput[]> {
+    if (!search) {
       throw new Error('Title is required for search.');
     }
 
@@ -203,11 +205,18 @@ export class ProductService {
         'product.product_category',
         'product.product_workDay',
         'product.product_sellOrBuy',
+        'product.product_summary',
         'u.user_nickname',
         'u.user_profileImage',
         'i.image_url',
       ])
-      .where('product_title LIKE "%":product_title"%"', { product_title })
+      .where('product.product_title LIKE :search', { search: `%${search}%` })
+      .orWhere('product.product_category LIKE :search', {
+        search: `%${search}%`,
+      })
+      .orWhere('product.product_summary LIKE :search', {
+        search: `%${search}%`,
+      })
       .andWhere('i.image_isMain = :image_isMain', { image_isMain: 1 })
       .andWhere('product.product_sellOrBuy = :product_sellOrBuy', {
         product_sellOrBuy: 1,
@@ -257,6 +266,8 @@ export class ProductService {
       .offset(pageSize * (page - 1))
       .getRawMany();
 
+    if (!result.length)
+      throw new Error('이 카테고리로 검색한 상품이 존재하지 않습니다.');
     return result;
   }
 
@@ -301,6 +312,10 @@ export class ProductService {
       .offset(pageSize * (page - 1))
       .getRawMany();
 
+    if (!result.length)
+      throw new Error(
+        '이 카테고리및 서브카테고리로 검색한 상품이 존재하지 않습니다.',
+      );
     return result;
   }
 
@@ -332,6 +347,8 @@ export class ProductService {
       .limit(pageSize)
       .offset(pageSize * (page - 1))
       .getRawMany();
+    if (!result.length)
+      throw new Error('이 카테고리로 검색한 상품이 존재하지 않습니다.');
 
     return result;
   }
