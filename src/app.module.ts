@@ -13,6 +13,7 @@ import { ProductModule } from './apis/product/product.module';
 import { RequestsModule } from './apis/request/request.module';
 import { PaymentsModule } from './apis/payment/payment.module';
 import { PickModule } from './apis/pick/pick.module';
+import { CommentsModule } from './apis/comment/comment.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { PickModule } from './apis/pick/pick.module';
     ProductModule,
     RequestsModule,
     PaymentsModule,
+    CommentsModule,
     PickModule,
     ConfigModule.forRoot(),
     GraphQLModule.forRoot<ApolloDriverConfig>({

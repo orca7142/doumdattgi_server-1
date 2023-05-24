@@ -7,6 +7,7 @@ import { UseGuards } from '@nestjs/common';
 import { IContext } from 'src/commons/interfaces/context';
 import { UpdateNicknameIntroduceInput } from './dto/update-nicknameIntroduce.input';
 import { UpdateUserInfoInput } from './dto/update-userInfo.input';
+import { Slot } from '../slot/entites/slot.entity';
 
 @Resolver()
 export class UsersResolver {
@@ -160,5 +161,14 @@ export class UsersResolver {
     return this.usersService.deleteUser({
       context,
     });
+  }
+
+  // 로그인 유저 슬롯 조회 API
+  @UseGuards(GqlAuthGuard('access'))
+  @Query(() => Slot)
+  fetchUserSlot(
+    @Context() context: IContext, //
+  ): Promise<Slot> {
+    return this.usersService.findUserSlot({ context });
   }
 }

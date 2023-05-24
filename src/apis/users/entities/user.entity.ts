@@ -1,6 +1,7 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { Payment } from 'src/apis/payment/entities/payment.entity';
 import { Product } from 'src/apis/product/entites/product.entity';
+import { Slot } from 'src/apis/slot/entites/slot.entity';
 
 import {
   Column,
@@ -79,4 +80,8 @@ export class User {
   // 회원탈퇴 시간
   @DeleteDateColumn()
   user_deletedAt: Date;
+
+  @OneToMany(() => Slot, (slot) => slot.user)
+  @Field(() => Slot)
+  slot: Slot;
 }
