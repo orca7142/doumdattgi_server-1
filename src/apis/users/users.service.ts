@@ -257,20 +257,16 @@ export class UsersService {
 
     const loginUserInfo = await this.findLoginUser({ context });
 
-    const validateNickname = await this.usersRepository.findOne({
-      where: { user_nickname },
+    await this.usersRepository.save({
+      ...loginUserInfo,
+      user_nickname,
+      user_introduce,
     });
 
-    if (validateNickname) {
-      throw new ConflictException('이미 등록된 닉네임입니다.');
-    } else {
-      const result = await this.usersRepository.save({
-        ...loginUserInfo,
-        user_nickname,
-        user_introduce,
-      });
-      return result;
-    }
+    const result = await this.usersRepository.findOne({
+      where: { user_id: loginUserInfo.user_id },
+    });
+    return result;
   }
 
   // 프로필 이미지 수정

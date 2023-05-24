@@ -7,7 +7,6 @@ import { UseGuards } from '@nestjs/common';
 import { IContext } from 'src/commons/interfaces/context';
 import { UpdateNicknameIntroduceInput } from './dto/update-nicknameIntroduce.input';
 import { UpdateUserInfoInput } from './dto/update-userInfo.input';
-import { Payment } from '../payment/entities/payment.entity';
 
 @Resolver()
 export class UsersResolver {
