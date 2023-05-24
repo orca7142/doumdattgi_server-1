@@ -12,6 +12,7 @@ import { FilesModule } from './apis/files/files.module';
 import { ProductModule } from './apis/product/product.module';
 import { RequestsModule } from './apis/request/request.module';
 import { PaymentsModule } from './apis/payment/payment.module';
+import { PickModule } from './apis/pick/pick.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { PaymentsModule } from './apis/payment/payment.module';
     ProductModule,
     RequestsModule,
     PaymentsModule,
+    PickModule,
     ConfigModule.forRoot(),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,

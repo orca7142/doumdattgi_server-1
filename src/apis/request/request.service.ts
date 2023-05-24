@@ -162,33 +162,50 @@ export class RequestsService {
           engageIn_status: ENGAGEIN_STATUS_ENUM.ACCEPT,
         },
       );
+      await this.requestsRepository.update(
+        {
+          request_id,
+        },
+        {
+          request_isAccept: REQUEST_ISACCEPT_ENUM.ACCEPT,
+        },
+      );
+
       // 슬롯 추가하기
       const user_id = context.req.user.user_id;
-      const slot_first = (
-        await this.slotsRepository.findOne({ where: { user: { user_id } } })
-      ).slot_first;
-      const slot_second = (
-        await this.slotsRepository.findOne({ where: { user: { user_id } } })
-      ).slot_second;
-      const slot_third = (
-        await this.slotsRepository.findOne({ where: { user: { user_id } } })
-      ).slot_third;
+      const userSlot = await this.slotsRepository.findOne({
+        where: { user: { user_id } },
+      });
 
-      if (slot_first === false) {
+      if (userSlot === null) {
         await this.slotsRepository.save({
           user: { user_id },
           slot_first: true,
         });
-      } else if (slot_second === false) {
-        await this.slotsRepository.save({
-          user: { user_id },
-          slot_second: true,
-        });
-      } else if (slot_third === false) {
-        await this.slotsRepository.save({
-          user: { user_id },
-          slot_third: true,
-        });
+      } else {
+        const slot_id = userSlot.slot_id;
+        const slot_first = userSlot.slot_first;
+        const slot_second = userSlot.slot_second;
+        const slot_third = userSlot.slot_third;
+        if (!slot_first) {
+          await this.slotsRepository.save({
+            slot_id,
+            user: { user_id },
+            slot_first: true,
+          });
+        } else if (!slot_second) {
+          await this.slotsRepository.save({
+            slot_id,
+            user: { user_id },
+            slot_second: true,
+          });
+        } else if (!slot_third) {
+          await this.slotsRepository.save({
+            slot_id,
+            user: { user_id },
+            slot_third: true,
+          });
+        }
       }
     } else if (acceptRefuse === '거절하기') {
       await this.requestsRepository.update(
@@ -321,49 +338,49 @@ export class RequestsService {
       });
 
       // 슬롯 없애기
-      const slot_first = (
-        await this.slotsRepository.findOne({
-          where: { user: { user_id: seller_id } },
-        })
-      ).slot_first;
-      const slot_second = (
-        await this.slotsRepository.findOne({
-          where: { user: { user_id: seller_id } },
-        })
-      ).slot_second;
-      const slot_third = (
-        await this.slotsRepository.findOne({
-          where: { user: { user_id: seller_id } },
-        })
-      ).slot_third;
+      const userSlot = await this.slotsRepository.findOne({
+        where: { user: { user_id } },
+      });
+
+      console.log('**********');
+      console.log(userSlot);
+      console.log('***********');
+
+      const slot_id = userSlot.slot_id;
+      const slot_first = userSlot.slot_first;
+      const slot_second = userSlot.slot_second;
+      const slot_third = userSlot.slot_third;
 
       if (slot_third === true) {
-        await this.slotsRepository.update(
+        const slotChangeOne = await this.slotsRepository.update(
           {
-            user: { user_id },
+            slot_id,
           },
           {
             slot_third: false,
           },
         );
+        return (await slotChangeOne).affected ? true : false;
       } else if (slot_second === true) {
-        await this.slotsRepository.update(
+        const slotChangeTwo = await this.slotsRepository.update(
           {
-            user: { user_id },
+            slot_id,
           },
           {
             slot_second: false,
           },
         );
+        return (await slotChangeTwo).affected ? true : false;
       } else if (slot_first === true) {
-        await this.slotsRepository.update(
+        const slotChangeThird = await this.slotsRepository.update(
           {
-            user: { user_id },
+            slot_id,
           },
           {
             slot_first: false,
           },
         );
+        return (await slotChangeThird).affected ? true : false;
       }
     }
   }
