@@ -74,6 +74,7 @@ export class ProductService {
         'product.product_category',
         'product.product_workDay',
         'product.product_sellOrBuy',
+        `product.product_summary`,
         'u.user_id',
         'u.user_nickname',
         'u.user_profileImage',

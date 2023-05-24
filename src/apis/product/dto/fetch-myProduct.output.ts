@@ -5,4 +5,7 @@ import { FetchProductOutput } from './fetch-product.output';
 export class FetchMyProductOutput extends FetchProductOutput {
   @Field(() => String)
   u_user_id: string;
+
+  @Field(() => String)
+  product_product_summary: string;
 }
