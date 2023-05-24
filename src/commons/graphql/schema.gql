@@ -141,6 +141,7 @@ type FetchMyProductOutput {
   u_user_profileImage: String
   i_image_url: String!
   u_user_id: String!
+  product_product_summary: String!
 }
 
 type FetchSubCategoryOutput {
