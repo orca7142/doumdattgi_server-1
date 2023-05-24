@@ -121,6 +121,7 @@ export class RequestsService {
       .user_id;
     const result = await this.requestsRepository.find({
       where: { buyer_id },
+      order: { request_createAt: 'DESC' },
     });
     return result;
   }
@@ -141,6 +142,7 @@ export class RequestsService {
       .user_id;
     const workInfo = await this.requestsRepository.find({
       where: { seller_id },
+      order: { request_createAt: 'DESC' },
     });
     return workInfo;
   }

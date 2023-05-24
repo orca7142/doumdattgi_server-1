@@ -96,6 +96,7 @@ export class PaymentsService {
   // 유저 아이디로 결제내역 조회하기
   async findPayment({
     user_id,
+    payment_status,
     page,
     pageSize,
   }): Promise<FetchPaymentOutput[]> {
@@ -116,6 +117,12 @@ export class PaymentsService {
         'u.user_phone',
       ])
       .where('u.user_id = :user_id', { user_id })
+      .andWhere('payment.payment_status LIKE "%":payment_status"%"', {
+        payment_status,
+      })
+      .orWhere('payment.payment_status LIKE "%":payment_status"%"', {
+        payment_status: '',
+      })
       .orderBy('payment.payment_createdAt', 'DESC')
       .offset(pageSize * (page - 1))
       .limit(pageSize)

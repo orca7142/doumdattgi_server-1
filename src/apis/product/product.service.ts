@@ -84,8 +84,7 @@ export class ProductService {
       .offset(pageSize * (page - 1))
       .limit(pageSize)
       .getRawMany();
-    if (!result.length)
-      throw new Error('내가 만든 상품이 아직 존재하지 않습니다.');
+
     return result;
   }
   // 모든 상품 중 최신게시글 검색(8개만), <메인페이지: 최신 게시글>
@@ -226,7 +225,6 @@ export class ProductService {
       .offset(pageSize * (page - 1))
       .getRawMany();
 
-    if (!result.length) throw new Error('검색에 일치하는 내용이 없습니다');
     return result;
   }
 
@@ -266,8 +264,6 @@ export class ProductService {
       .offset(pageSize * (page - 1))
       .getRawMany();
 
-    if (!result.length)
-      throw new Error('이 카테고리로 검색한 상품이 존재하지 않습니다.');
     return result;
   }
 
@@ -297,10 +293,7 @@ export class ProductService {
         'u.user_profileImage',
         'i.image_url',
       ])
-      .where('product_category LIKE "%":product_category"%"', {
-        product_category,
-      })
-      .andWhere('product_sub_category LIKE "%":product_sub_category"%"', {
+      .where('product_sub_category = :product_sub_category', {
         product_sub_category,
       })
       .andWhere('i.image_isMain = :image_isMain', { image_isMain: 1 })
@@ -312,10 +305,6 @@ export class ProductService {
       .offset(pageSize * (page - 1))
       .getRawMany();
 
-    if (!result.length)
-      throw new Error(
-        '이 카테고리및 서브카테고리로 검색한 상품이 존재하지 않습니다.',
-      );
     return result;
   }
 
@@ -347,8 +336,6 @@ export class ProductService {
       .limit(pageSize)
       .offset(pageSize * (page - 1))
       .getRawMany();
-    if (!result.length)
-      throw new Error('이 카테고리로 검색한 상품이 존재하지 않습니다.');
 
     return result;
   }
@@ -447,9 +434,21 @@ export class ProductService {
     return result ? true : false;
   }
 
-  // 상품 삭제하기
   async delete({ product_id }: IProductServiceDelete): Promise<boolean> {
-    const result = await this.productsRepository.softDelete({ product_id });
-    return result.affected ? true : false; //
+    const product = await this.productsRepository.findOne({
+      where: { product_id },
+    });
+
+    console.log(product);
+    if (!product)
+      throw new Error('상품을 찾을수 없습니다. product_id를 확인하세요');
+
+    try {
+      const result = await this.productsRepository.softDelete({ product_id });
+      return result.affected ? true : false;
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      throw new Error('삭제에 실패하였습니다.');
+    }
   }
 }
