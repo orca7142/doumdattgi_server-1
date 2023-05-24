@@ -234,7 +234,7 @@ type Query {
   fetchBuyerRequest: [Request!]!
   fetchOneRequest(request_id: String!): Request!
   fetchSellerWork: [Request!]!
-  fetchPayments(page: Float!, pageSize: Float!): [FetchPaymentOutput!]!
+  fetchPayments(payment_status: String, page: Float!, pageSize: Float!): [FetchPaymentOutput!]!
   fetchComments(request_id: String!): [FindCommentsOutput!]!
   fetchPickUserProduct(page: Float!, pageSize: Float!): [FetchMyPickOutput!]!
 }
