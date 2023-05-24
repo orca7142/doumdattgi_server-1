@@ -67,6 +67,14 @@ enum WORKDAY_STATUS_ENUM {
   NEGOTIATION
 }
 
+type Slot {
+  slot_id: String!
+  user: User!
+  slot_first: Boolean!
+  slot_second: Boolean!
+  slot_third: Boolean!
+}
+
 type User {
   user_id: String!
   payment: [Payment!]!
@@ -81,6 +89,7 @@ type User {
   user_portfolio: String
   user_workRate: Int!
   user_point: Int!
+  slot: Slot!
 }
 
 type Request {
@@ -193,8 +202,24 @@ type FetchMyPickOutput {
   i_image_url: String!
 }
 
+type Comment {
+  comment_id: String!
+  request: Request!
+  comment_text: String!
+  comment_sellerOrBuyer: String!
+}
+
+type FindCommentsOutput {
+  comment_comment_id: String!
+  r_request_id: String!
+  comment_comment_text: String!
+  comment_comment_sellerOrBuyer: String!
+  comment_comment_createdAt: DateTime!
+}
+
 type Query {
   fetchLoginUser: User!
+  fetchUserSlot: Slot!
   fetchProducts(page: Float!, pageSize: Float!): [FetchProductOutput!]!
   fetchAllProducts: [FetchProductOutput!]!
   fetchRandomProduct: [FetchProductOutput!]!
@@ -210,6 +235,7 @@ type Query {
   fetchOneRequest(request_id: String!): Request!
   fetchSellerWork: [Request!]!
   fetchPayments(payment_status: String, page: Float!, pageSize: Float!): [FetchPaymentOutput!]!
+  fetchComments(request_id: String!): [FindCommentsOutput!]!
   fetchPickUserProduct(page: Float!, pageSize: Float!): [FetchMyPickOutput!]!
 }
 
@@ -238,6 +264,7 @@ type Mutation {
   requestProcess(process: String!, request_id: String!): Boolean!
   createPayment(payment_impUid: String!, payment_amount: Int!, payment_type: String!): Payment!
   cancelPayment(payment_impUid: String!, payment_type: String!): CancelPaymentOutput!
+  createComment(createCommentInput: CreateCommentInput!): Comment!
   createPick(product_id: String!): String!
 }
 
@@ -307,4 +334,10 @@ input CreateRequestInput {
   request_title: String!
   request_content: String!
   request_price: Int!
+}
+
+input CreateCommentInput {
+  request_id: String!
+  sender_id: String!
+  text: String!
 }

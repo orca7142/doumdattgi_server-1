@@ -9,10 +9,12 @@ import { Payment } from '../payment/entities/payment.entity';
 import { Image } from '../image/entites/image.entity';
 import { Request } from '../request/entites/request.entity';
 import { Pick } from '../pick/entites/pick.entity';
+import { Slot } from '../slot/entites/slot.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
+      Slot,
       Image,
       Payment,
       Request,

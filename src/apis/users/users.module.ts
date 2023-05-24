@@ -6,6 +6,7 @@ import { UsersService } from './users.service';
 import { Payment } from '../payment/entities/payment.entity';
 import { Request } from '../request/entites/request.entity';
 import { Pick } from '../pick/entites/pick.entity';
+import { Slot } from '../slot/entites/slot.entity';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { Pick } from '../pick/entites/pick.entity';
       Payment,
       User,
       Pick,
+      Slot,
     ]),
   ],
   providers: [

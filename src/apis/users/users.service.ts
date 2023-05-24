@@ -29,6 +29,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import * as bcrypt from 'bcrypt';
 import { Payment } from '../payment/entities/payment.entity';
 import coolsms from 'coolsms-node-sdk'; //coolsms 불러오기
+import { Slot } from '../slot/entites/slot.entity';
 
 const mysms = coolsms; // SDK 가져오기
 
@@ -45,6 +46,9 @@ export class UsersService {
 
     @InjectRepository(Payment)
     private readonly paymentsRepository: Repository<Payment>,
+
+    @InjectRepository(Slot)
+    private readonly slotsRepository: Repository<Slot>,
 
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
@@ -308,15 +312,16 @@ export class UsersService {
     return result.affected ? true : false;
   }
 
-  // 로그인한 유저 결제 정보 조회
-  async findUserPaymentInfo({
-    context,
-  }: IUsersServiceFindLoginUser): Promise<Payment[]> {
+  // 로그인 유저 슬롯 조회
+  async findUserSlot({
+    context, //
+  }: IUsersServiceFindLoginUser): Promise<Slot> {
     const user_id = context.req.user.user_id;
 
-    const paymentInfo = await this.paymentsRepository.find({
+    const userSlot = await this.slotsRepository.findOne({
       where: { user: { user_id } },
+      relations: ['user'],
     });
-    return paymentInfo;
+    return userSlot;
   }
 }
