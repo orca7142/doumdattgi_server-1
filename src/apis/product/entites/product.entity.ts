@@ -72,7 +72,7 @@ export class Product {
   product_summary: string;
 
   // 본문
-  @Column()
+  @Column({ type: 'text' })
   @Field(() => String)
   product_main_text: string;
 

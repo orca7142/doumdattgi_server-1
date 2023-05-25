@@ -1,4 +1,9 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  CACHE_MANAGER,
+  ConflictException,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { REQUEST_ISACCEPT_ENUM, Request } from './entites/request.entity';
 import {
   ICreateRequestInput,
@@ -22,6 +27,16 @@ import {
   Payment,
 } from '../payment/entities/payment.entity';
 import { Slot } from '../slot/entites/slot.entity';
+import { MailerService } from '@nestjs-modules/mailer';
+import { Cache } from 'cache-manager';
+import coolsms from 'coolsms-node-sdk';
+import { sendRequestTemplate } from 'src/commons/utils/utils';
+const mysms = coolsms;
+
+import 'dotenv/config';
+const SMS_KEY = process.env.SMS_KEY;
+const SMS_SECRET = process.env.SMS_SECRET;
+const SMS_SENDER = process.env.SMS_SENDER;
 
 @Injectable()
 export class RequestsService {
@@ -45,6 +60,10 @@ export class RequestsService {
     private readonly slotsRepository: Repository<Slot>,
 
     private readonly usersService: UsersService,
+
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
+    private readonly mailerService: MailerService,
   ) {}
 
   // 의뢰 요청하기
@@ -63,6 +82,7 @@ export class RequestsService {
     const seller_nickname = seller.user.user_nickname;
     const seller_profileImage = seller.user.user_profileImage;
     const seller_email = seller.user.user_email;
+    const seller_phone = seller.user.user_phone;
 
     const buyer = await this.usersService.findLoginUser({ context });
     const buyer_id = buyer.user_id;
@@ -70,6 +90,27 @@ export class RequestsService {
     const buyer_profileImage = buyer.user_profileImage;
     const buyer_email = buyer.user_email;
     const buyer_point = buyer.user_point;
+
+    const product_title = seller.product_title;
+
+    await this.mailerService.sendMail({
+      from: process.env.EMAIL_SENDER,
+      to: seller_email,
+      subject: '[도움닫기] 외뢰서 요청에 관하여 알려드립니다.',
+      html: sendRequestTemplate({
+        seller_nickname,
+        buyer_nickname,
+        product_title,
+      }),
+    });
+
+    const messageService = new mysms(SMS_KEY, SMS_SECRET);
+    await messageService.sendOne({
+      autoTypeDetect: true,
+      to: seller_phone,
+      from: SMS_SENDER,
+      text: `[도움닫기] ${seller_nickname}님 ${buyer_nickname}께서 ${product_title}글에 대해 외뢰서 요청을 하였습니다. 수락 또는 거절을 해주세요.`,
+    });
 
     if (buyer_point < request_price)
       throw new ConflictException('보유한 포인트가 부족합니다.');
