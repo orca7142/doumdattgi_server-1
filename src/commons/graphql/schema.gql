@@ -32,10 +32,17 @@ type Image {
   image_url: String!
 }
 
+type Pick {
+  pick_id: String
+  product: Product!
+  user: User!
+}
+
 type Product {
   product_id: String!
   user: User!
   images: [Image!]!
+  pick: [Pick!]!
   product_title: String!
   product_category: PRODUCT_CATEGORY_ENUM!
   product_sub_category: String!
@@ -131,19 +138,6 @@ type FetchProductOutput {
   i_image_url: String!
 }
 
-type FetchMyProductOutput {
-  product_product_id: String!
-  product_product_title: String!
-  product_product_category: String!
-  product_product_workDay: String!
-  product_product_sellOrBuy: Boolean!
-  u_user_nickname: String!
-  u_user_profileImage: String
-  i_image_url: String!
-  u_user_id: String!
-  product_product_summary: String!
-}
-
 type FetchSubCategoryOutput {
   product_product_id: String!
   product_product_title: String!
@@ -166,20 +160,6 @@ type FetchSearchProductOutput {
   u_user_profileImage: String
   i_image_url: String!
   product_product_summary: String!
-}
-
-type FetchPaymentOutput {
-  payment_payment_id: String!
-  payment_payment_impUid: String!
-  payment_payment_amount: Int!
-  payment_payment_status: String!
-  payment_payment_type: String!
-  payment_payment_createdAt: DateTime!
-  u_user_id: String!
-  u_user_email: String!
-  u_user_name: String!
-  u_user_nickname: String!
-  u_user_phone: String!
 }
 
 type CancelPaymentOutput {
@@ -226,11 +206,11 @@ type Query {
   fetchSellCategoryProducts(page: Float!, pageSize: Float!): [FetchProductOutput!]!
   fetchNewbieProduct: [FetchProductOutput!]!
   fetchDetailProduct(product_id: String!): Product!
-  fetchMyProduct(page: Float!, pageSize: Float!): [FetchMyProductOutput!]!
+  fetchMyProduct(page: Float!, pageSize: Float!): [Product!]!
   fetchBuyerRequest: [Request!]!
   fetchOneRequest(request_id: String!): Request!
   fetchSellerWork: [Request!]!
-  fetchPayments(payment_status: String, page: Float!, pageSize: Float!): [FetchPaymentOutput!]!
+  fetchPayments(payment_status: String, page: Float!, pageSize: Float!): [Payment!]!
   fetchComments(request_id: String!): [Comment!]!
   fetchPickUserProduct(page: Float!, pageSize: Float!): [FetchMyPickOutput!]!
 }

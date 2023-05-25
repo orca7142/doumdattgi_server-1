@@ -4,7 +4,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Like, Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { Payment, PAYMENT_STATUS_ENUM } from './entities/payment.entity';
 import { IamportService } from '../iamport/import.service';
@@ -18,7 +18,6 @@ import {
   IPaymentsServiceCreateForPayment,
   IPaymentsServiceFindByImpUidAndUser,
 } from './interfaces/payment-service.interface';
-import { FetchPaymentOutput } from './dto/fetch-payment.output';
 import { CancelPaymentOutput } from './dto/cancel-payment.output';
 
 @Injectable()
@@ -99,41 +98,17 @@ export class PaymentsService {
     payment_status,
     page,
     pageSize,
-  }): Promise<FetchPaymentOutput[]> {
-    // const result1 = await this.paymentsRepository.find({
-    //   where: { user: { user_id } },
-    //   relations: ['user'],
-    //   order: { payment_createdAt: 'DESC' },
-    // });
-    // console.log(result1);
-    const result = await this.paymentsRepository
-      .createQueryBuilder('payment')
-      .innerJoin('payment.user', 'u', 'payment.userUserId = u.user_Id')
-      .select([
-        'payment.payment_id',
-        'payment.payment_impUid',
-        'payment.payment_amount',
-        'payment.payment_status',
-        'payment.payment_type',
-        'payment.payment_createdAt',
-        'u.user_id',
-        'u.user_email',
-        'u.user_name',
-        'u.user_nickname',
-        'u.user_phone',
-      ])
-      .where('u.user_id = :user_id', { user_id })
-      .andWhere('payment.payment_status LIKE "%":payment_status"%"', {
-        payment_status,
-      })
-      .orWhere('payment.payment_status LIKE "%":payment_status"%"', {
-        payment_status: '',
-      })
-      .orderBy('payment.payment_createdAt', 'DESC')
-      .offset(pageSize * (page - 1))
-      .limit(pageSize)
-      .getRawMany();
-    // console.log(result);
+  }): Promise<Payment[]> {
+    const result = await this.paymentsRepository.find({
+      where: {
+        user: { user_id },
+        payment_status: Like(`%${payment_status}%`),
+      },
+      relations: ['user'],
+      order: { payment_createdAt: 'DESC' },
+      skip: pageSize * (page - 1),
+      take: pageSize,
+    });
     return result;
   }
 
