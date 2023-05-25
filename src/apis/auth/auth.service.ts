@@ -10,8 +10,11 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { Cache } from 'cache-manager';
 import {
+  IAuthServiceGetAccessToken,
+  IAuthServiceLogOut,
   IAuthServiceLogin,
   IAuthServiceRestoreAccessToken,
+  IAuthServiceSetRefreshToken,
 } from './interfaces/auth-service.interface';
 import * as jwt from 'jsonwebtoken';
 import type { JwtPayload } from 'jsonwebtoken';
@@ -51,9 +54,9 @@ export class AuthService {
   }
 
   // accessToken 발급하기
-  getAccessToken({ user }) {
+  getAccessToken({ user }: IAuthServiceGetAccessToken) {
     return this.jwtService.sign(
-      { user_email: user.user_email, sub: user.user_id },
+      { sub: user.user_id, user_email: user.user_email },
       { secret: process.env.JWT_ACCESS_KEY, expiresIn: '1h' },
     );
   }
@@ -64,7 +67,7 @@ export class AuthService {
   }
 
   // refreshToken 발급하기
-  setRefreshToken({ user, res, req }) {
+  setRefreshToken({ user, req, res }: IAuthServiceSetRefreshToken) {
     const refreshToken = this.jwtService.sign(
       { user_email: user.user_email, sub: user.user_id },
       { secret: process.env.JWT_REFRESH_KEY, expiresIn: '2w' },
@@ -73,31 +76,33 @@ export class AuthService {
     res.setHeader('Set-Cookie', `refreshToken=${refreshToken}; path=/`);
 
     // 배포환경
-    //   const originList = [
-    //     'http://localhost:3000',
-    //     'http://localhost:3000/',
-    //     'http://127.0.0.1:3000',
-    //     'https://doumdattgi.com',
-    //   ];
-    //   const origin = req.headers.origin;
-    //   if (originList.includes(origin)) {
-    //     res.setHeader('Access-Control-Allow-Origin', origin);
-    //   }
+    /*
+    const originList = [
+        'http://localhost:3000',
+        'http://localhost:3000/',
+        'http://127.0.0.1:3000',
+        'https://doumdattgi.com',
+      ];
+      const origin = req.headers.origin;
+      if (originList.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+      }
 
-    //   res.setHeader('Access-Control-Allow-Credentials', 'true');
-    //   res.setHeader(
-    //     'Access-Control-Allow-Methods', //
-    //     'GET, HEAD, OPTIONS, POST, PUT',
-    //   );
-    //   res.setHeader(
-    //     'Access-Control-Allow-Headers',
-    //     'Access-Control-Allow-Headers, Origin, Accept, Authorization, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
-    //   );
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+      res.setHeader(
+        'Access-Control-Allow-Methods', //
+        'GET, HEAD, OPTIONS, POST, PUT',
+      );
+      res.setHeader(
+        'Access-Control-Allow-Headers',
+        'Access-Control-Allow-Headers, Origin, Accept, Authorization, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
+      );
 
-    //   res.setHeader(
-    //     'Set-Cookie',
-    //     `refreshToken=${refreshToken}; path=/; domain=.doumdattgi-server.com; Secure; httpOnly; SameSite=None;`,
-    //   );
+      res.setHeader(
+        'Set-Cookie',
+        `refreshToken=${refreshToken}; path=/; domain=.doumdattgi-server.com; Secure; httpOnly; SameSite=None;`,
+      );
+      */
   }
 
   // 소셜로그인시 회원가입 유무에 따라 로그인 또는 회원가입 후 로그인
@@ -112,15 +117,14 @@ export class AuthService {
           ...req.user,
         },
       });
-    this.setRefreshToken({ user, res, req });
+    this.setRefreshToken({ user, req, res });
     res.redirect('http://localhost:5501/frontend/login/index.html');
   }
 
   // 로그아웃 서비스
-  async logout(headers) {
-    console.log(headers.headers);
-    const refreshToken = headers.headers.cookie.replace('refreshToken=', '');
-    const accessToken = headers.headers.authorization.replace('Bearer ', '');
+  async logout({ req }: IAuthServiceLogOut) {
+    const refreshToken = req.headers.cookie.replace('refreshToken=', '');
+    const accessToken = req.headers.authorization.replace('Bearer ', '');
 
     try {
       const accessTokenVerify = jwt.verify(

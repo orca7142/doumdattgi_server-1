@@ -7,13 +7,18 @@ export interface IAuthServiceLogin {
   context: IContext;
 }
 
+export interface IAuthServiceLogOut {
+  req: IContext['req'];
+}
+
 export interface IAuthServiceGetAccessToken {
   user: User | IAuthUser['user'];
 }
 
 export interface IAuthServiceSetRefreshToken {
   user: User;
-  context: IContext;
+  req?: IContext['req'];
+  res?: IContext['res'];
 }
 
 export interface IAuthServiceRestoreAccessToken {

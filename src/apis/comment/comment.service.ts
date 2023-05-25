@@ -15,31 +15,38 @@ export class CommentsService {
     private readonly commentsRepository: Repository<Comment>,
   ) {}
 
+  // 댓글 저장하기
+  async saveComment({ request_id, text, sender_id, buyerSeller }) {
+    return await this.commentsRepository.save({
+      request: { request_id },
+      comment_text: text,
+      sender_id,
+      user: { user_id: buyerSeller },
+    });
+  }
+  // 판매자, 구매자 찾기
+  async findSellerBuyer({ request_id }) {
+    return await this.requestsRepository.findOne({
+      where: { request_id },
+    });
+  }
+
   // 댓글 생성하기
   async createComment({
     createCommentInput,
   }: ICommentServiceCreate): Promise<boolean> {
     const { request_id, sender_id, text } = createCommentInput;
-    const user = await this.requestsRepository.findOne({
-      where: { request_id },
-    });
-    const seller_id = user.seller_id;
-    const buyer_id = user.buyer_id;
+
+    const seller_id = (await this.findSellerBuyer({ request_id })).seller_id;
+    const buyer_id = (await this.findSellerBuyer({ request_id })).buyer_id;
+
     if (sender_id === seller_id) {
-      await this.commentsRepository.save({
-        request: { request_id },
-        comment_text: text,
-        sender_id,
-        user: { user_id: buyer_id },
-      });
+      const buyerSeller = buyer_id;
+      await this.saveComment({ request_id, text, sender_id, buyerSeller });
       return true;
     } else if (sender_id === buyer_id) {
-      await this.commentsRepository.save({
-        request: { request_id },
-        comment_text: text,
-        sender_id,
-        user: { user_id: seller_id },
-      });
+      const buyerSeller = seller_id;
+      await this.saveComment({ request_id, text, sender_id, buyerSeller });
       return true;
     }
     return false;
@@ -47,19 +54,8 @@ export class CommentsService {
 
   // 댓글 조회하기
   async findComments({ request_id, user_id }): Promise<Comment[]> {
-    const userInfo = await this.requestsRepository.findOne({
-      where: { request_id },
-    });
-
-    const seller_id = userInfo.seller_id;
-    const buyer_id = userInfo.buyer_id;
-
-    console.log('**********');
-    console.log(user_id);
-    console.log('**********');
-    console.log('**********');
-    console.log(userInfo);
-    console.log('**********');
+    const seller_id = (await this.findSellerBuyer({ request_id })).seller_id;
+    const buyer_id = (await this.findSellerBuyer({ request_id })).buyer_id;
 
     if (user_id === seller_id) {
       user_id = buyer_id;

@@ -52,7 +52,7 @@ export class PaymentsResolver {
   ): Promise<Payment[]> {
     const user_id = context.req.user.user_id;
     return this.paymentsService.findPayment({
-      user_id,
+      user_id: context.req.user.user_id,
       payment_status,
       page,
       pageSize,
