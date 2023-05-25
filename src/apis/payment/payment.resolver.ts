@@ -44,16 +44,15 @@ export class PaymentsResolver {
   }
 
   @UseGuards(GqlAuthGuard('access'))
-  @Query(() => [FetchPaymentOutput])
+  @Query(() => [Payment])
   fetchPayments(
     @Args('payment_status', { nullable: true }) payment_status: string,
     @Args('page') page: number,
     @Args('pageSize') pageSize: number,
     @Context() context: IContext,
-  ): Promise<FetchPaymentOutput[]> {
-    const user_id = context.req.user.user_id;
+  ): Promise<Payment[]> {
     return this.paymentsService.findPayment({
-      user_id,
+      user_id: context.req.user.user_id,
       payment_status,
       page,
       pageSize,

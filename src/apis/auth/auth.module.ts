@@ -22,7 +22,7 @@ import { JwtNaverStrategy } from './strategies/jwt-social-naver.strategy';
     JwtGoogleStrategy,
     JwtKakaoStrategy,
     JwtNaverStrategy,
-    AuthResolver, //
+    AuthResolver,
     AuthService,
   ],
   controllers: [

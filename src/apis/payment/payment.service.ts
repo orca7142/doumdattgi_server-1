@@ -99,42 +99,14 @@ export class PaymentsService {
     payment_status,
     page,
     pageSize,
-  }): Promise<FetchPaymentOutput[]> {
-    // const result1 = await this.paymentsRepository.find({
-    //   where: { user: { user_id } },
-    //   relations: ['user'],
-    //   order: { payment_createdAt: 'DESC' },
-    // });
-    // console.log(result1);
-    const result = await this.paymentsRepository
-      .createQueryBuilder('payment')
-      .innerJoin('payment.user', 'u', 'payment.userUserId = u.user_Id')
-      .select([
-        'payment.payment_id',
-        'payment.payment_impUid',
-        'payment.payment_amount',
-        'payment.payment_status',
-        'payment.payment_type',
-        'payment.payment_createdAt',
-        'u.user_id',
-        'u.user_email',
-        'u.user_name',
-        'u.user_nickname',
-        'u.user_phone',
-      ])
-      .where('u.user_id = :user_id', { user_id })
-      .andWhere('payment.payment_status LIKE "%":payment_status"%"', {
-        payment_status,
-      })
-      .orWhere('payment.payment_status LIKE "%":payment_status"%"', {
-        payment_status: '',
-      })
-      .orderBy('payment.payment_createdAt', 'DESC')
-      .offset(pageSize * (page - 1))
-      .limit(pageSize)
-      .getRawMany();
-    // console.log(result);
-    return result;
+  }): Promise<Payment[]> {
+    const result1 = await this.paymentsRepository.find({
+      where: { user: { user_id } },
+      relations: ['user'],
+      order: { payment_createdAt: 'DESC' },
+    });
+    console.log(result1);
+    return result1;
   }
 
   // 결제내역 조회하기

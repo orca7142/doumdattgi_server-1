@@ -8,7 +8,7 @@ import { IOAuthUser } from './interfaces/auth-service.interface';
 @Controller()
 export class AuthController {
   constructor(
-    private readonly usersService: UsersService, //
+    private readonly usersService: UsersService,
 
     private readonly authService: AuthService,
   ) {}

@@ -11,24 +11,24 @@ export class AuthResolver {
   // 로그인 API
   @Mutation(() => String)
   login(
-    @Args('user_email') user_email: string, //
+    @Args('user_email') user_email: string,
     @Args('user_password') user_password: string,
     @Context() context: IContext,
   ): Promise<string> {
     return this.authService.login({
-      user_email, //
+      user_email,
       user_password,
       context,
     });
   }
 
   // 로그아웃 API
+  @UseGuards(GqlAuthGuard('access'))
   @Mutation(() => String)
   async logout(
     @Context() context: IContext, //
-  ) {
-    const headers = context.req.headers;
-    await this.authService.logout({ headers });
+  ): Promise<string> {
+    await this.authService.logout({ req: context.req });
     return '로그아웃에 성공했습니다';
   }
 

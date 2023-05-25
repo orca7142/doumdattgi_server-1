@@ -168,20 +168,6 @@ type FetchSearchProductOutput {
   product_product_summary: String!
 }
 
-type FetchPaymentOutput {
-  payment_payment_id: String!
-  payment_payment_impUid: String!
-  payment_payment_amount: Int!
-  payment_payment_status: String!
-  payment_payment_type: String!
-  payment_payment_createdAt: DateTime!
-  u_user_id: String!
-  u_user_email: String!
-  u_user_name: String!
-  u_user_nickname: String!
-  u_user_phone: String!
-}
-
 type CancelPaymentOutput {
   payment_id: String!
   payment_impUid: String!
@@ -230,7 +216,7 @@ type Query {
   fetchBuyerRequest: [Request!]!
   fetchOneRequest(request_id: String!): Request!
   fetchSellerWork: [Request!]!
-  fetchPayments(payment_status: String, page: Float!, pageSize: Float!): [FetchPaymentOutput!]!
+  fetchPayments(payment_status: String, page: Float!, pageSize: Float!): [Payment!]!
   fetchComments(request_id: String!): [Comment!]!
   fetchPickUserProduct(page: Float!, pageSize: Float!): [FetchMyPickOutput!]!
 }
