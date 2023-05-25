@@ -4,7 +4,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Like, Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { Payment, PAYMENT_STATUS_ENUM } from './entities/payment.entity';
 import { IamportService } from '../iamport/import.service';
@@ -18,7 +18,6 @@ import {
   IPaymentsServiceCreateForPayment,
   IPaymentsServiceFindByImpUidAndUser,
 } from './interfaces/payment-service.interface';
-import { FetchPaymentOutput } from './dto/fetch-payment.output';
 import { CancelPaymentOutput } from './dto/cancel-payment.output';
 
 @Injectable()
@@ -100,13 +99,17 @@ export class PaymentsService {
     page,
     pageSize,
   }): Promise<Payment[]> {
-    const result1 = await this.paymentsRepository.find({
-      where: { user: { user_id } },
+    const result = await this.paymentsRepository.find({
+      where: {
+        user: { user_id },
+        payment_status: Like(`%${payment_status}%`),
+      },
       relations: ['user'],
       order: { payment_createdAt: 'DESC' },
+      skip: pageSize * (page - 1),
+      take: pageSize,
     });
-    console.log(result1);
-    return result1;
+    return result;
   }
 
   // 결제내역 조회하기
