@@ -21,6 +21,9 @@ export class FetchMyPickOutput {
   p_product_sellOrBuy: boolean;
 
   @Field(() => String)
+  p_product_summary: string;
+
+  @Field(() => String)
   u_user_nickname: string;
 
   @Field(() => String, { nullable: true })
