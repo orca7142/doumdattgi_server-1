@@ -4,7 +4,6 @@ import { Repository } from 'typeorm';
 import { ICommentServiceCreate } from './interfaces/comment-service.interface';
 import { Request } from '../request/entites/request.entity';
 import { Comment } from './entities/comment.entity';
-import { FindCommentsOutput } from './dto/findComments.output';
 
 @Injectable()
 export class CommentsService {
@@ -19,35 +18,63 @@ export class CommentsService {
   // 댓글 생성하기
   async createComment({
     createCommentInput,
-  }: ICommentServiceCreate): Promise<Comment> {
+  }: ICommentServiceCreate): Promise<boolean> {
     const { request_id, sender_id, text } = createCommentInput;
-    return await this.commentsRepository.save({
-      request: { request_id },
-      comment_text: text,
-      comment_sellerOrBuyer: sender_id,
+    const user = await this.requestsRepository.findOne({
+      where: { request_id },
     });
+    const seller_id = user.seller_id;
+    const buyer_id = user.buyer_id;
+    if (sender_id === seller_id) {
+      await this.commentsRepository.save({
+        request: { request_id },
+        comment_text: text,
+        sender_id,
+        user: { user_id: buyer_id },
+      });
+      return true;
+    } else if (sender_id === buyer_id) {
+      await this.commentsRepository.save({
+        request: { request_id },
+        comment_text: text,
+        sender_id,
+        user: { user_id: seller_id },
+      });
+      return true;
+    }
+    return false;
   }
 
   // 댓글 조회하기
-  async findComments({ request_id }): Promise<FindCommentsOutput[]> {
-    const result = await this.commentsRepository
-      .createQueryBuilder('comment')
-      .innerJoin(
-        'comment.request',
-        'r',
-        'comment.requestRequestId = r.request_Id',
-      )
-      .select([
-        'comment.comment_id',
-        'r.request_id',
-        'comment.comment_text',
-        'comment.comment_sellerOrBuyer',
-        'comment.comment_createdAt',
-      ])
-      .where('r.request_id = :request_id', { request_id })
-      .orderBy('comment.comment_createdAt', 'ASC')
-      .getRawMany();
+  async findComments({ request_id, user_id }): Promise<Comment[]> {
+    const userInfo = await this.requestsRepository.findOne({
+      where: { request_id },
+    });
 
-    return result;
+    const seller_id = userInfo.seller_id;
+    const buyer_id = userInfo.buyer_id;
+
+    console.log('**********');
+    console.log(user_id);
+    console.log('**********');
+    console.log('**********');
+    console.log(userInfo);
+    console.log('**********');
+
+    if (user_id === seller_id) {
+      user_id = buyer_id;
+      return await this.commentsRepository.find({
+        where: { request: { request_id } },
+        relations: ['user', 'request'],
+        order: { comment_createdAt: 'DESC' },
+      });
+    } else if (user_id === buyer_id) {
+      user_id = seller_id;
+      return await this.commentsRepository.find({
+        where: { request: { request_id } },
+        relations: ['user', 'request'],
+        order: { comment_createdAt: 'DESC' },
+      });
+    }
   }
 }

@@ -206,15 +206,9 @@ type Comment {
   comment_id: String!
   request: Request!
   comment_text: String!
-  comment_sellerOrBuyer: String!
-}
-
-type FindCommentsOutput {
-  comment_comment_id: String!
-  r_request_id: String!
-  comment_comment_text: String!
-  comment_comment_sellerOrBuyer: String!
-  comment_comment_createdAt: DateTime!
+  sender_id: String!
+  user: User!
+  comment_createdAt: DateTime!
 }
 
 type Query {
@@ -235,7 +229,7 @@ type Query {
   fetchOneRequest(request_id: String!): Request!
   fetchSellerWork: [Request!]!
   fetchPayments(payment_status: String, page: Float!, pageSize: Float!): [FetchPaymentOutput!]!
-  fetchComments(request_id: String!): [FindCommentsOutput!]!
+  fetchComments(request_id: String!): [Comment!]!
   fetchPickUserProduct(page: Float!, pageSize: Float!): [FetchMyPickOutput!]!
 }
 
@@ -264,7 +258,7 @@ type Mutation {
   requestProcess(process: String!, request_id: String!): Boolean!
   createPayment(payment_impUid: String!, payment_amount: Int!, payment_type: String!): Payment!
   cancelPayment(payment_impUid: String!, payment_type: String!): CancelPaymentOutput!
-  createComment(createCommentInput: CreateCommentInput!): Comment!
+  createComment(createCommentInput: CreateCommentInput!): Boolean!
   createPick(product_id: String!): String!
 }
 
