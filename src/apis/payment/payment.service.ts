@@ -100,6 +100,12 @@ export class PaymentsService {
     page,
     pageSize,
   }): Promise<FetchPaymentOutput[]> {
+    // const result1 = await this.paymentsRepository.find({
+    //   where: { user: { user_id } },
+    //   relations: ['user'],
+    //   order: { payment_createdAt: 'DESC' },
+    // });
+    // console.log(result1);
     const result = await this.paymentsRepository
       .createQueryBuilder('payment')
       .innerJoin('payment.user', 'u', 'payment.userUserId = u.user_Id')
@@ -127,7 +133,7 @@ export class PaymentsService {
       .offset(pageSize * (page - 1))
       .limit(pageSize)
       .getRawMany();
-    console.log(result);
+    // console.log(result);
     return result;
   }
 

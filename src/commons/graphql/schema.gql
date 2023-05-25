@@ -198,6 +198,7 @@ type FetchMyPickOutput {
   p_product_category: String!
   p_product_workDay: String!
   p_product_sellOrBuy: Boolean!
+  p_product_summary: String!
   u_user_nickname: String!
   u_user_profileImage: String
   i_image_url: String!

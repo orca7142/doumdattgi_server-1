@@ -57,6 +57,7 @@ export class PicksService {
         'p.product_category',
         'p.product_workDay',
         'p.product_sellOrBuy',
+        'p.product_summary',
         'u.user_nickname',
         'u.user_profileImage',
         'i.image_url',
