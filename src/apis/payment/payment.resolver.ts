@@ -4,7 +4,6 @@ import { IContext } from 'src/commons/interfaces/context';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { Payment } from './entities/payment.entity';
 import { PaymentsService } from './payment.service';
-import { FetchPaymentOutput } from './dto/fetch-payment.output';
 import { CancelPaymentOutput } from './dto/cancel-payment.output';
 
 @Resolver()
@@ -44,13 +43,13 @@ export class PaymentsResolver {
   }
 
   @UseGuards(GqlAuthGuard('access'))
-  @Query(() => [FetchPaymentOutput])
+  @Query(() => [Payment])
   fetchPayments(
     @Args('payment_status', { nullable: true }) payment_status: string,
     @Args('page') page: number,
     @Args('pageSize') pageSize: number,
     @Context() context: IContext,
-  ): Promise<FetchPaymentOutput[]> {
+  ): Promise<Payment[]> {
     const user_id = context.req.user.user_id;
     return this.paymentsService.findPayment({
       user_id,

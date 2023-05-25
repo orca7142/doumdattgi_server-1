@@ -7,7 +7,6 @@ import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { IContext } from 'src/commons/interfaces/context';
 import { FetchProductOutput } from './dto/fetch-product.output';
-import { FetchMyProductOutput } from './dto/fetch-myProduct.output';
 import { FetchSubCategoryOutput } from './dto/fetch-subCategoty.output';
 import { FetchSearchProductOutput } from './dto/fetch-SearchProduct.output';
 
@@ -140,12 +139,15 @@ export class ProductResolver {
 
   // 나의 상품들 검색 API
   @UseGuards(GqlAuthGuard('access'))
-  @Query(() => [FetchMyProductOutput])
+  @Query(() => [Product])
   async fetchMyProduct(
     @Args('page') page: number,
     @Args('pageSize') pageSize: number,
-  ): Promise<FetchMyProductOutput[]> {
+    @Context() context: IContext,
+  ): Promise<Product[]> {
+    const user_id = context.req.user.user_id;
     return this.productsService.findUserAll({
+      user_id,
       page,
       pageSize,
     });

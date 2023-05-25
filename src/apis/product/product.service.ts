@@ -11,7 +11,6 @@ import {
 import { User } from '../users/entities/user.entity';
 import { Image } from '../image/entites/image.entity';
 import { FetchProductOutput } from './dto/fetch-product.output';
-import { FetchMyProductOutput } from './dto/fetch-myProduct.output';
 import { FetchSubCategoryOutput } from './dto/fetch-subCategoty.output';
 import { FetchSearchProductOutput } from './dto/fetch-SearchProduct.output';
 
@@ -59,35 +58,20 @@ export class ProductService {
   }
 
   // 나의 상품 모두 검색 <마이페이지>
-  async findUserAll({ page, pageSize }): Promise<FetchMyProductOutput[]> {
-    const result = await this.productsRepository
-      .createQueryBuilder('product')
-      .innerJoin('product.user', 'u', 'product.userUserId = u.user_Id')
-      .innerJoin(
-        'product.images',
-        'i',
-        'product.product_id = i.productProductId',
-      )
-      .select([
-        'product.product_id',
-        'product.product_title',
-        'product.product_category',
-        'product.product_workDay',
-        'product.product_sellOrBuy',
-        `product.product_summary`,
-        'u.user_id',
-        'u.user_nickname',
-        'u.user_profileImage',
-        'i.image_url',
-      ])
-      .where('i.image_isMain = :image_isMain', { image_isMain: 1 })
-      .orderBy('product.product_createdAt', 'DESC')
-      .offset(pageSize * (page - 1))
-      .limit(pageSize)
-      .getRawMany();
-
+  async findUserAll({ user_id, page, pageSize }): Promise<Product[]> {
+    const result = await this.productsRepository.find({
+      where: {
+        user: { user_id },
+        images: { image_isMain: true },
+      },
+      relations: ['user', 'images'],
+      order: { product_createdAt: 'DESC' },
+      skip: pageSize * (page - 1),
+      take: pageSize,
+    });
     return result;
   }
+
   // 모든 상품 중 최신게시글 검색(8개만), <메인페이지: 최신 게시글>
   async findAllProduct(): Promise<FetchProductOutput[]> {
     const result = await this.productsRepository
@@ -211,12 +195,6 @@ export class ProductService {
         'i.image_url',
       ])
       .where('product.product_title LIKE :search', { search: `%${search}%` })
-      .orWhere('product.product_category LIKE :search', {
-        search: `%${search}%`,
-      })
-      .orWhere('product.product_summary LIKE :search', {
-        search: `%${search}%`,
-      })
       .andWhere('i.image_isMain = :image_isMain', { image_isMain: 1 })
       .andWhere('product.product_sellOrBuy = :product_sellOrBuy', {
         product_sellOrBuy: 1,
