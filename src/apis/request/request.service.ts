@@ -93,17 +93,6 @@ export class RequestsService {
 
     const product_title = seller.product_title;
 
-    await this.mailerService.sendMail({
-      from: process.env.EMAIL_SENDER,
-      to: seller_email,
-      subject: '[도움닫기] 외뢰서 요청에 관하여 알려드립니다.',
-      html: sendRequestTemplate({
-        seller_nickname,
-        buyer_nickname,
-        product_title,
-      }),
-    });
-
     const messageService = new mysms(SMS_KEY, SMS_SECRET);
     await messageService.sendOne({
       autoTypeDetect: true,
@@ -114,6 +103,17 @@ export class RequestsService {
 
     if (buyer_point < request_price)
       throw new ConflictException('보유한 포인트가 부족합니다.');
+
+    await this.mailerService.sendMail({
+      from: process.env.EMAIL_SENDER,
+      to: seller_email,
+      subject: '[도움닫기] 외뢰서 요청에 관하여 알려드립니다.',
+      html: sendRequestTemplate({
+        seller_nickname,
+        buyer_nickname,
+        product_title,
+      }),
+    });
 
     const result = await this.requestsRepository.save({
       ...rest,
@@ -196,7 +196,27 @@ export class RequestsService {
   }: IRequestAcceptRefuseInput): Promise<Request> {
     const date = new Date();
 
+    const requestUser = await this.requestsRepository.findOne({
+      where: { request_id },
+    });
+
+    const sellerNickname = requestUser.seller_nickname;
+    const buyerNickname = requestUser.buyer_nickname;
+    const requestTitle = requestUser.request_title;
+    const buyer = requestUser.buyer_id;
+    const buyer_phone = (
+      await this.usersRepository.findOne({ where: { user_id: buyer } })
+    ).user_phone;
+
     if (acceptRefuse === '수락하기') {
+      const messageService = new mysms(SMS_KEY, SMS_SECRET);
+      await messageService.sendOne({
+        autoTypeDetect: true,
+        to: buyer_phone,
+        from: SMS_SENDER,
+        text: `[도움닫기] ${buyerNickname}님 ${sellerNickname}께서 ${requestTitle}글에 대해 외뢰서 요청을 수락하였습니다.`,
+      });
+
       await this.engageInRepository.update(
         {
           request: { request_id },
@@ -251,6 +271,13 @@ export class RequestsService {
         }
       }
     } else if (acceptRefuse === '거절하기') {
+      const messageService = new mysms(SMS_KEY, SMS_SECRET);
+      await messageService.sendOne({
+        autoTypeDetect: true,
+        to: buyer_phone,
+        from: SMS_SENDER,
+        text: `[도움닫기] ${buyerNickname}님 ${sellerNickname}께서 ${requestTitle}글에 대해 외뢰서 요청을 거절하였습니다.`,
+      });
       await this.requestsRepository.update(
         {
           request_id,
@@ -317,7 +344,32 @@ export class RequestsService {
     request_id,
   }: IRequestProcessInput): Promise<boolean> {
     const date = new Date();
+
+    const requestUser = await this.requestsRepository.findOne({
+      where: { request_id },
+    });
+
+    const sellerNickname = requestUser.seller_nickname;
+    const buyerNickname = requestUser.buyer_nickname;
+    const requestTitle = requestUser.request_title;
+    const buyer = requestUser.buyer_id;
+    const seller = requestUser.seller_id;
+    const buyer_phone = (
+      await this.usersRepository.findOne({ where: { user_id: buyer } })
+    ).user_phone;
+    const seller_phone = (
+      await this.usersRepository.findOne({ where: { user_id: seller } })
+    ).user_phone;
+    const messageService = new mysms(SMS_KEY, SMS_SECRET);
+
     if (process === '작업 완료하기') {
+      await messageService.sendOne({
+        autoTypeDetect: true,
+        to: buyer_phone,
+        from: SMS_SENDER,
+        text: `[도움닫기] ${buyerNickname}님 ${sellerNickname}께서 ${requestTitle} 외뢰서 작업을 완료하였습니다.`,
+      });
+
       const workComplete = await this.requestsRepository.update(
         {
           request_id,
@@ -328,6 +380,13 @@ export class RequestsService {
       );
       return (await workComplete).affected ? true : false;
     } else if (process === '작업 완료 확정하기') {
+      await messageService.sendOne({
+        autoTypeDetect: true,
+        to: seller_phone,
+        from: SMS_SENDER,
+        text: `[도움닫기] ${sellerNickname}님 ${buyerNickname}께서 ${requestTitle} 외뢰서 작업을 완료 확정하였습니다.`,
+      });
+
       const seller_id = (
         await this.requestsRepository.findOne({ where: { request_id } })
       ).seller_id;
@@ -384,10 +443,6 @@ export class RequestsService {
       const userSlot = await this.slotsRepository.findOne({
         where: { user: { user_id } },
       });
-
-      console.log('**********');
-      console.log(userSlot);
-      console.log('***********');
 
       const slot_id = userSlot.slot_id;
       const slot_first = userSlot.slot_first;

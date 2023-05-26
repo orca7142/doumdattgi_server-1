@@ -240,7 +240,7 @@ type Mutation {
   requestProcess(process: String!, request_id: String!): Boolean!
   createPayment(payment_impUid: String!, payment_amount: Int!, payment_type: String!): Payment!
   cancelPayment(payment_impUid: String!, payment_type: String!): CancelPaymentOutput!
-  createComment(createCommentInput: CreateCommentInput!): Boolean!
+  createComment(createCommentInput: CreateCommentInput!): Comment!
   createPick(product_id: String!): String!
 }
 

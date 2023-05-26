@@ -20,7 +20,7 @@ export class Comment {
   @Field(() => Request)
   request: Request;
 
-  @Column()
+  @Column({ type: 'text' })
   @Field(() => String)
   comment_text: string;
 

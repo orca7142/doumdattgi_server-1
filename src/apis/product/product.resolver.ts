@@ -131,8 +131,10 @@ export class ProductResolver {
   @Query(() => Product)
   async fetchDetailProduct(
     @Args('product_id') product_id: string,
+    @Context() context: IContext,
   ): Promise<Product> {
     return this.productsService.findOne({
+      user_id: context.req.user.user_id,
       product_id,
     });
   }

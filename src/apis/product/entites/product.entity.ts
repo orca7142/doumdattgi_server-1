@@ -11,6 +11,7 @@ import {
 import { User } from '../../users/entities/user.entity';
 import { Image } from 'src/apis/image/entites/image.entity';
 import { Pick } from 'src/apis/pick/entites/pick.entity';
+import { Thumbnail } from '../dto/create-product.input';
 
 export enum PRODUCT_CATEGORY_ENUM {
   IT = 'IT',
