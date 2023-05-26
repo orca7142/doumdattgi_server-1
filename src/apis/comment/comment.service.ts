@@ -16,12 +16,12 @@ export class CommentsService {
   ) {}
 
   // 댓글 저장하기
-  async saveComment({ request_id, text, sender_id, buyerSeller }) {
+  async saveComment({ request_id, text, sender_id }) {
     return await this.commentsRepository.save({
       request: { request_id },
       comment_text: text,
       sender_id,
-      user: { user_id: buyerSeller },
+      user: { user_id: sender_id },
     });
   }
   // 판매자, 구매자 찾기
@@ -34,43 +34,18 @@ export class CommentsService {
   // 댓글 생성하기
   async createComment({
     createCommentInput,
-  }: ICommentServiceCreate): Promise<boolean> {
+  }: ICommentServiceCreate): Promise<Comment> {
     const { request_id, sender_id, text } = createCommentInput;
 
-    const seller_id = (await this.findSellerBuyer({ request_id })).seller_id;
-    const buyer_id = (await this.findSellerBuyer({ request_id })).buyer_id;
-
-    if (sender_id === seller_id) {
-      const buyerSeller = buyer_id;
-      await this.saveComment({ request_id, text, sender_id, buyerSeller });
-      return true;
-    } else if (sender_id === buyer_id) {
-      const buyerSeller = seller_id;
-      await this.saveComment({ request_id, text, sender_id, buyerSeller });
-      return true;
-    }
-    return false;
+    return await this.saveComment({ request_id, text, sender_id });
   }
 
   // 댓글 조회하기
-  async findComments({ request_id, user_id }): Promise<Comment[]> {
-    const seller_id = (await this.findSellerBuyer({ request_id })).seller_id;
-    const buyer_id = (await this.findSellerBuyer({ request_id })).buyer_id;
-
-    if (user_id === seller_id) {
-      user_id = buyer_id;
-      return await this.commentsRepository.find({
-        where: { request: { request_id } },
-        relations: ['user', 'request'],
-        order: { comment_createdAt: 'DESC' },
-      });
-    } else if (user_id === buyer_id) {
-      user_id = seller_id;
-      return await this.commentsRepository.find({
-        where: { request: { request_id } },
-        relations: ['user', 'request'],
-        order: { comment_createdAt: 'DESC' },
-      });
-    }
+  async findComments({ request_id }): Promise<Comment[]> {
+    return await this.commentsRepository.find({
+      where: { request: { request_id } },
+      relations: ['user', 'request'],
+      order: { comment_createdAt: 'DESC' },
+    });
   }
 }

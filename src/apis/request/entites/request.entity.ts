@@ -92,7 +92,7 @@ export class Request {
   @Field(() => String)
   request_title: string;
 
-  @Column()
+  @Column({ type: 'text' })
   @Field(() => String)
   request_content: string;
 }

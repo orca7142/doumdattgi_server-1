@@ -8,6 +8,7 @@ import {
   DeleteDateColumn,
   Entity,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -81,7 +82,7 @@ export class User {
   @DeleteDateColumn()
   user_deletedAt: Date;
 
-  @OneToMany(() => Slot, (slot) => slot.user)
+  @OneToOne(() => Slot, (slot) => slot.user)
   @Field(() => Slot)
   slot: Slot;
 }

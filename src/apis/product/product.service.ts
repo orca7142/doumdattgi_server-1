@@ -13,6 +13,7 @@ import { Image } from '../image/entites/image.entity';
 import { FetchProductOutput } from './dto/fetch-product.output';
 import { FetchSubCategoryOutput } from './dto/fetch-subCategoty.output';
 import { FetchSearchProductOutput } from './dto/fetch-SearchProduct.output';
+import { Slot } from '../slot/entites/slot.entity';
 
 @Injectable()
 export class ProductService {
@@ -25,6 +26,9 @@ export class ProductService {
 
     @InjectRepository(Image)
     private readonly imagesRepository: Repository<Image>, //
+
+    @InjectRepository(Slot)
+    private readonly slotsRepository: Repository<Slot>,
 
     private readonly usersService: UsersService,
   ) {}
@@ -353,13 +357,36 @@ export class ProductService {
 
   // 구인 글 검색<디테일 페이지>
   // 특정상품에 대한 내용만 검색
-  async findOne({ product_id }): Promise<Product> {
-    const result = await this.productsRepository.findOne({
-      where: { product_id },
-      relations: ['images', 'user'],
+  async findOne({ product_id, user_id }): Promise<Product> {
+    const productUserId = (
+      await this.productsRepository.findOne({
+        where: { product_id },
+        relations: ['user'],
+      })
+    ).user.user_id;
+
+    const userSlot = await this.slotsRepository.findOne({
+      where: { user: { user_id: productUserId } },
+      relations: ['user'],
     });
-    console.log(result);
-    return result;
+
+    if (userSlot === null) {
+      const createSlot = await this.slotsRepository.create({
+        user: { user_id: productUserId },
+        slot_first: false,
+        slot_second: false,
+        slot_third: false,
+      });
+      await this.slotsRepository.save({
+        ...createSlot,
+      });
+    } else {
+      const result = await this.productsRepository.findOne({
+        where: { product_id },
+        relations: ['images', 'user', 'user.slot'],
+      });
+      return result;
+    }
   }
 
   // 상품 작성하기
@@ -401,16 +428,56 @@ export class ProductService {
     product_id,
     updateProductInput,
   }: IProductServiceUpdate): Promise<boolean> {
-    const result = await this.productsRepository.update(
-      {
-        product_id,
-      },
-      {
-        ...updateProductInput,
-      },
-    );
+    const image = [];
+    const { product_thumbnailImage, ...rest } = updateProductInput;
 
-    return result ? true : false;
+    if (!product_thumbnailImage.length) {
+      const result = await this.productsRepository.update(
+        {
+          product_id,
+        },
+        {
+          ...rest,
+        },
+      );
+      return result ? true : false;
+    } else {
+      for (let i = 0; i < product_thumbnailImage.length; i++) {
+        const tagUrls = product_thumbnailImage[i].thumbnailImage;
+        const tagIsMains = product_thumbnailImage[i].isMain;
+
+        image.push({
+          product: { product_id },
+          image_isMain: tagIsMains,
+          image_url: tagUrls,
+        });
+        const findImage = await this.imagesRepository.find({
+          where: { product: { product_id } },
+        });
+
+        for (let k = 0; k < findImage.length; k++) {
+          const image_id = findImage[k].image_id;
+          await this.imagesRepository.delete({ image_id });
+        }
+
+        for (let j = 0; j < image.length; j++) {
+          await this.imagesRepository.save({
+            product: { product_id },
+            image_isMain: image[j].image_isMain,
+            image_url: image[j].image_url,
+          });
+        }
+      }
+      const result = await this.productsRepository.update(
+        {
+          product_id,
+        },
+        {
+          ...rest,
+        },
+      );
+      return result ? true : false;
+    }
   }
 
   async delete({ product_id }: IProductServiceDelete): Promise<boolean> {

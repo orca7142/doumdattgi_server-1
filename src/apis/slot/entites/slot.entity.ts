@@ -1,6 +1,12 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { User } from 'src/apis/users/entities/user.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 @ObjectType()
@@ -9,7 +15,8 @@ export class Slot {
   @Field(() => String)
   slot_id: string;
 
-  @ManyToOne(() => User)
+  @JoinColumn()
+  @OneToOne(() => User, (user) => user.slot)
   @Field(() => User)
   user: User;
 

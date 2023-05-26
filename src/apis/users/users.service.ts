@@ -323,17 +323,17 @@ export class UsersService {
       relations: ['user'],
     });
 
-    console.log('**********');
-    console.log(userSlot);
-    console.log('**********');
-
     if (userSlot === null) {
-      return await this.slotsRepository.create({
+      const createSlot = this.slotsRepository.create({
         user: { user_id },
         slot_first: false,
         slot_second: false,
         slot_third: false,
       });
+      const saveSlot = await this.slotsRepository.save({
+        ...createSlot,
+      });
+      return saveSlot;
     }
     return userSlot;
   }
