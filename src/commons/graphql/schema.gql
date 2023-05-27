@@ -213,6 +213,7 @@ type Query {
   fetchPayments(payment_status: String, page: Float!, pageSize: Float!): [Payment!]!
   fetchComments(request_id: String!): [Comment!]!
   fetchPickUserProduct(page: Float!, pageSize: Float!): [FetchMyPickOutput!]!
+  fetchPickOrNot(product_id: String!): Boolean!
 }
 
 type Mutation {
