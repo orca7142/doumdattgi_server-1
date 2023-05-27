@@ -42,3 +42,10 @@ export interface IPaymentsServiceCancel {
   payment_type: string;
   user: IAuthUser['user'];
 }
+
+export interface IPaymentsServiceFindPayment {
+  user_id: string;
+  payment_status: string;
+  page: number;
+  pageSize: number;
+}

@@ -6,6 +6,13 @@ import { UsersService } from '../users/users.service';
 import {
   IProductServiceCreate,
   IProductServiceDelete,
+  IProductServiceFindAll,
+  IProductServiceFindCategory,
+  IProductServiceFindOne,
+  IProductServiceFindSearch,
+  IProductServiceFindSellProduct,
+  IProductServiceFindSubCategory,
+  IProductServiceFindUserAll,
   IProductServiceUpdate,
 } from './interfaces/product-service.interface';
 import { User } from '../users/entities/user.entity';
@@ -33,8 +40,10 @@ export class ProductService {
     private readonly usersService: UsersService,
   ) {}
 
-  // 모든 상품 검색(페이지로 검색 & 최신순으로 검색), <리스트: 전체 리스트>
-  async findAll({ page, pageSize }): Promise<FetchProductOutput[]> {
+  async findAll({
+    page,
+    pageSize,
+  }: IProductServiceFindAll): Promise<FetchProductOutput[]> {
     const result = await this.productsRepository
       .createQueryBuilder('product')
       .innerJoin('product.user', 'u', 'product.userUserId = u.user_Id')
@@ -61,8 +70,11 @@ export class ProductService {
     return result;
   }
 
-  // 나의 상품 모두 검색 <마이페이지>
-  async findUserAll({ user_id, page, pageSize }): Promise<Product[]> {
+  async findUserAll({
+    user_id,
+    page,
+    pageSize,
+  }: IProductServiceFindUserAll): Promise<Product[]> {
     const result = await this.productsRepository.find({
       where: {
         user: { user_id },
@@ -76,7 +88,6 @@ export class ProductService {
     return result;
   }
 
-  // 모든 상품 중 최신게시글 검색(8개만), <메인페이지: 최신 게시글>
   async findAllProduct(): Promise<FetchProductOutput[]> {
     const result = await this.productsRepository
       .createQueryBuilder('product')
@@ -107,7 +118,6 @@ export class ProductService {
     return result;
   }
 
-  // 랜덤 4개 상품 검색 <메인페이지: 숨은보석 게시글>
   async findRandom(): Promise<FetchProductOutput[]> {
     const result = await this.productsRepository
       .createQueryBuilder('product')
@@ -138,7 +148,6 @@ export class ProductService {
     return result;
   }
 
-  // 구인글 검색 <메인페이지: 지금 구하고 있는 구인글>
   async findSell(): Promise<FetchProductOutput[]> {
     const result = await this.productsRepository
       .createQueryBuilder('product')
@@ -169,12 +178,11 @@ export class ProductService {
     return result;
   }
 
-  // 검색기능(title, category, summary로 검색)
   async findSearch({
     search,
     page,
     pageSize,
-  }): Promise<FetchSearchProductOutput[]> {
+  }: IProductServiceFindSearch): Promise<FetchSearchProductOutput[]> {
     if (!search) {
       throw new Error('Title is required for search.');
     }
@@ -211,12 +219,11 @@ export class ProductService {
     return result;
   }
 
-  // 카테고리별로 상품 검색 <리스트페이지: 구해요 빼고 나머지>
   async findCategory({
     product_category,
     page,
     pageSize,
-  }): Promise<FetchProductOutput[]> {
+  }: IProductServiceFindCategory): Promise<FetchProductOutput[]> {
     const result = await this.productsRepository
       .createQueryBuilder('product')
       .innerJoin('product.user', 'u', 'product.userUserId = u.user_Id')
@@ -250,13 +257,11 @@ export class ProductService {
     return result;
   }
 
-  // 카테고서브리별로 상품 검색 <리스트페이지: 구해요 빼고 나머지>
   async findSubCategory({
-    product_category,
     product_sub_category,
     page,
     pageSize,
-  }): Promise<FetchSubCategoryOutput[]> {
+  }: IProductServiceFindSubCategory): Promise<FetchSubCategoryOutput[]> {
     const result = await this.productsRepository
       .createQueryBuilder('product')
       .innerJoin('product.user', 'u', 'product.userUserId = u.user_Id')
@@ -291,8 +296,10 @@ export class ProductService {
     return result;
   }
 
-  // 구해요 카테고리 상품 검색 <리스트 페이지: 구해요>
-  async findSellProduct({ page, pageSize }): Promise<FetchProductOutput[]> {
+  async findSellProduct({
+    page,
+    pageSize,
+  }: IProductServiceFindSellProduct): Promise<FetchProductOutput[]> {
     const result = await this.productsRepository
       .createQueryBuilder('product')
       .innerJoin('product.user', 'u', 'product.userUserId = u.user_Id')
@@ -323,7 +330,6 @@ export class ProductService {
     return result;
   }
 
-  // 신규유저의 상품 검색(work,Rate가 0인 사람들의 상품을 랜덤으로3개 가져온다), <메인페이지: 신규@@님의 첫게시물>
   async findNewUser(): Promise<FetchProductOutput[]> {
     const result = await this.productsRepository
       .createQueryBuilder('product')
@@ -355,9 +361,7 @@ export class ProductService {
     return result;
   }
 
-  // 구인 글 검색<디테일 페이지>
-  // 특정상품에 대한 내용만 검색
-  async findOne({ product_id, user_id }): Promise<Product> {
+  async findOne({ product_id }: IProductServiceFindOne): Promise<Product> {
     const productUserId = (
       await this.productsRepository.findOne({
         where: { product_id },
@@ -389,7 +393,6 @@ export class ProductService {
     }
   }
 
-  // 상품 작성하기
   async create({
     createProductInput,
     user_id,
@@ -423,7 +426,6 @@ export class ProductService {
     return result2;
   }
 
-  // 상품 수정 & 업데이트하기
   async update({
     product_id,
     updateProductInput,
@@ -485,7 +487,6 @@ export class ProductService {
       where: { product_id },
     });
 
-    console.log(product);
     if (!product)
       throw new Error('상품을 찾을수 없습니다. product_id를 확인하세요');
 
@@ -493,7 +494,6 @@ export class ProductService {
       const result = await this.productsRepository.softDelete({ product_id });
       return result.affected ? true : false;
     } catch (error) {
-      console.error('Error deleting product:', error);
       throw new Error('삭제에 실패하였습니다.');
     }
   }

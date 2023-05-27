@@ -15,7 +15,7 @@ export class PaymentsResolver {
   createPayment(
     @Args('payment_impUid') payment_impUid: string, //
     @Args({ name: 'payment_amount', type: () => Int }) payment_amount: number,
-    @Args('payment_type') payment_type: string, //
+    @Args('payment_type') payment_type: string,
     @Context() context: IContext,
   ): Promise<Payment> {
     const user = context.req.user;
@@ -33,7 +33,7 @@ export class PaymentsResolver {
     @Args('payment_impUid') payment_impUid: string,
     @Args('payment_type') payment_type: string,
     @Context() context: IContext,
-  ) {
+  ): Promise<CancelPaymentOutput> {
     const user = context.req.user;
     return this.paymentsService.cancel({
       payment_impUid,
@@ -50,7 +50,6 @@ export class PaymentsResolver {
     @Args('pageSize') pageSize: number,
     @Context() context: IContext,
   ): Promise<Payment[]> {
-    const user_id = context.req.user.user_id;
     return this.paymentsService.findPayment({
       user_id: context.req.user.user_id,
       payment_status,

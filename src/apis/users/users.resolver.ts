@@ -15,7 +15,6 @@ export class UsersResolver {
     private readonly usersService: UsersService, //
   ) {}
 
-  // 이메일 중복 검증 및 이메일 인증번호 전송 API
   @Mutation(() => String)
   sendTokenEmail(
     @Args('user_email') user_email: string, //
@@ -23,10 +22,9 @@ export class UsersResolver {
     return this.usersService.sendTokenEmail({ user_email });
   }
 
-  // 이메일 인증번호 검증 API
   @Mutation(() => Boolean)
   checkValidTokenEMAIL(
-    @Args('user_email') user_email: string, //
+    @Args('user_email') user_email: string,
     @Args('user_token') user_token: string,
   ): Promise<boolean> {
     return this.usersService.checkValidateTokenEMAIL({
@@ -35,7 +33,6 @@ export class UsersResolver {
     });
   }
 
-  // 휴대폰 중복 검증 및 문자 인증번호 전송 API
   @Mutation(() => String)
   sendTokenSMS(
     @Args('user_phone') user_phone: string, //
@@ -43,10 +40,9 @@ export class UsersResolver {
     return this.usersService.sendTokenSMS({ user_phone });
   }
 
-  // 휴대폰 인증번호 검증 API
   @Mutation(() => String)
   checkValidTokenFindEmailBySMS(
-    @Args('user_phone') user_phone: string, //
+    @Args('user_phone') user_phone: string,
     @Args('user_token') user_token: string,
   ): Promise<string> {
     return this.usersService.checkValidTokenFindEmailBySMS({
@@ -55,10 +51,9 @@ export class UsersResolver {
     });
   }
 
-  // 비밀번호 찾기 토큰 인증 API
   @Mutation(() => Boolean)
   checkValidTokenFindPwdBySMS(
-    @Args('user_phone') user_phone: string, //
+    @Args('user_phone') user_phone: string,
     @Args('user_token') user_token: string,
   ): Promise<boolean> {
     return this.usersService.checkValidTokenFindPwdBySMS({
@@ -67,10 +62,9 @@ export class UsersResolver {
     });
   }
 
-  // 비밀번호 재설정 API
   @Mutation(() => Boolean)
   resetPassword(
-    @Args('user_phone') user_phone: string, //
+    @Args('user_phone') user_phone: string,
     @Args('new_password') new_password: string,
   ): Promise<boolean> {
     return this.usersService.resetPassword({
@@ -79,12 +73,11 @@ export class UsersResolver {
     });
   }
 
-  // 설정페이지 비밀번호 재설정 API
   @UseGuards(GqlAuthGuard('access'))
   @Mutation(() => Boolean)
   resetPasswordSettingPage(
     @Args('new_password') new_password: string,
-    @Context() context: IContext, //
+    @Context() context: IContext,
   ): Promise<boolean> {
     return this.usersService.resetPasswordSettingPage({
       new_password,
@@ -92,7 +85,6 @@ export class UsersResolver {
     });
   }
 
-  //회원가입 API
   @Mutation(() => User)
   createUser(
     @Args('createUserInput') createUserInput: CreateUserInput,
@@ -102,7 +94,6 @@ export class UsersResolver {
     });
   }
 
-  // 로그인 유저 정보 조회 API
   @UseGuards(GqlAuthGuard('access'))
   @Query(() => User)
   fetchLoginUser(
@@ -111,13 +102,12 @@ export class UsersResolver {
     return this.usersService.findLoginUser({ context });
   }
 
-  // 닉네임 및 자기소개 수정 API
   @UseGuards(GqlAuthGuard('access'))
   @Mutation(() => User)
   updateNicknameIntroduce(
     @Args('updateNicknameIntroduceInput')
     updateNicknameIntroduceInput: UpdateNicknameIntroduceInput,
-    @Context() context: IContext, //
+    @Context() context: IContext,
   ): Promise<User> {
     return this.usersService.updateNicknameIntroduce({
       updateNicknameIntroduceInput,
@@ -125,11 +115,10 @@ export class UsersResolver {
     });
   }
 
-  // 프로필 이미지 수정 API
   @UseGuards(GqlAuthGuard('access'))
   @Mutation(() => User)
   updateProfileImage(
-    @Args('user_url') user_url: string, //
+    @Args('user_url') user_url: string,
     @Context() context: IContext,
   ): Promise<User> {
     return this.usersService.updateProfileImage({
@@ -138,13 +127,12 @@ export class UsersResolver {
     });
   }
 
-  // 유저정보 수정 API
   @UseGuards(GqlAuthGuard('access'))
   @Mutation(() => User)
   updateUserInfo(
     @Args('updateUserInfoInput')
     updateUserInfoInput: UpdateUserInfoInput,
-    @Context() context: IContext, //
+    @Context() context: IContext,
   ): Promise<User> {
     return this.usersService.updateUserInfo({
       updateUserInfoInput,
@@ -152,7 +140,6 @@ export class UsersResolver {
     });
   }
 
-  // 유저 회원 탈퇴 API
   @UseGuards(GqlAuthGuard('access'))
   @Mutation(() => Boolean)
   deleteUser(
@@ -163,7 +150,6 @@ export class UsersResolver {
     });
   }
 
-  // 로그인 유저 슬롯 조회 API
   @UseGuards(GqlAuthGuard('access'))
   @Query(() => Slot)
   fetchUserSlot(

@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ICommentServiceCreate } from './interfaces/comment-service.interface';
+import {
+  ICommentServiceCreate,
+  ICommentServiceFindComments,
+  ICommentServiceFindSellerBuyer,
+  ICommentServiceSaveComment,
+} from './interfaces/comment-service.interface';
 import { Request } from '../request/entites/request.entity';
 import { Comment } from './entities/comment.entity';
 
@@ -15,8 +20,11 @@ export class CommentsService {
     private readonly commentsRepository: Repository<Comment>,
   ) {}
 
-  // 댓글 저장하기
-  async saveComment({ request_id, text, sender_id }) {
+  async saveComment({
+    request_id,
+    text,
+    sender_id,
+  }: ICommentServiceSaveComment): Promise<Comment> {
     return await this.commentsRepository.save({
       request: { request_id },
       comment_text: text,
@@ -24,14 +32,14 @@ export class CommentsService {
       user: { user_id: sender_id },
     });
   }
-  // 판매자, 구매자 찾기
-  async findSellerBuyer({ request_id }) {
+  async findSellerBuyer({
+    request_id,
+  }: ICommentServiceFindSellerBuyer): Promise<Request> {
     return await this.requestsRepository.findOne({
       where: { request_id },
     });
   }
 
-  // 댓글 생성하기
   async createComment({
     createCommentInput,
   }: ICommentServiceCreate): Promise<Comment> {
@@ -40,8 +48,9 @@ export class CommentsService {
     return await this.saveComment({ request_id, text, sender_id });
   }
 
-  // 댓글 조회하기
-  async findComments({ request_id }): Promise<Comment[]> {
+  async findComments({
+    request_id,
+  }: ICommentServiceFindComments): Promise<Comment[]> {
     return await this.commentsRepository.find({
       where: { request: { request_id } },
       relations: ['user', 'request'],

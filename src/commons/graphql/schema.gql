@@ -202,7 +202,7 @@ type Query {
   fetchSellProduct: [FetchProductOutput!]!
   fetchSearchProduct(search: String!, page: Float!, pageSize: Float!): [FetchSearchProductOutput!]!
   fetchCategoryProduct(product_category: String!, page: Float!, pageSize: Float!): [FetchProductOutput!]!
-  fetchSubCategoryProduct(product_category: String!, product_sub_category: String!, page: Float!, pageSize: Float!): [FetchSubCategoryOutput!]!
+  fetchSubCategoryProduct(product_sub_category: String!, page: Float!, pageSize: Float!): [FetchSubCategoryOutput!]!
   fetchSellCategoryProducts(page: Float!, pageSize: Float!): [FetchProductOutput!]!
   fetchNewbieProduct: [FetchProductOutput!]!
   fetchDetailProduct(product_id: String!): Product!

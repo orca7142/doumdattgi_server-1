@@ -6,7 +6,6 @@ import { Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 @Entity()
 @ObjectType()
 export class Pick {
-  // 찜 아이디
   @PrimaryGeneratedColumn('uuid')
   @Field(() => String, { nullable: true })
   pick_id: string;

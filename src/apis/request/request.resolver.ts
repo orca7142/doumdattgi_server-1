@@ -10,12 +10,11 @@ import { Request } from './entites/request.entity';
 export class RequestsResolver {
   constructor(private readonly requestsService: RequestsService) {}
 
-  // 의뢰 요청하기 API
   @UseGuards(GqlAuthGuard('access'))
   @Mutation(() => Request)
   sendRequest(
     @Args('createRequestInput') createRequestInput: CreateRequestInput,
-    @Context() context: IContext, //
+    @Context() context: IContext,
   ): Promise<Request> {
     return this.requestsService.sendRequest({
       createRequestInput,
@@ -23,7 +22,6 @@ export class RequestsResolver {
     });
   }
 
-  // 신청 내역 전체 조회 API
   @UseGuards(GqlAuthGuard('access'))
   @Query(() => [Request])
   fetchBuyerRequest(
@@ -34,7 +32,6 @@ export class RequestsResolver {
     });
   }
 
-  // 특정 신청 내역 조회 API
   @UseGuards(GqlAuthGuard('access'))
   @Query(() => Request)
   fetchOneRequest(
@@ -45,7 +42,6 @@ export class RequestsResolver {
     });
   }
 
-  // 작업 진행 내역 조회 API
   @UseGuards(GqlAuthGuard('access'))
   @Query(() => [Request])
   fetchSellerWork(
@@ -56,13 +52,12 @@ export class RequestsResolver {
     });
   }
 
-  // 의뢰 수락 / 거절 API
   @UseGuards(GqlAuthGuard('access'))
   @Mutation(() => Request)
   requestAcceptRefuse(
     @Args('acceptRefuse') acceptRefuse: string,
-    @Args('request_id') request_id: string, //
-    @Context() context: IContext, //
+    @Args('request_id') request_id: string,
+    @Context() context: IContext,
   ): Promise<Request> {
     return this.requestsService.requestAcceptRefuse({
       context,
@@ -71,12 +66,11 @@ export class RequestsResolver {
     });
   }
 
-  // 프로세스 API
   @UseGuards(GqlAuthGuard('access'))
   @Mutation(() => Boolean)
   requestProcess(
     @Args('process') process: string,
-    @Args('request_id') request_id: string, //
+    @Args('request_id') request_id: string,
   ): Promise<boolean> {
     return this.requestsService.requestProcess({
       process,

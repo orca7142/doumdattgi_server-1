@@ -9,7 +9,6 @@ import { FetchMyPickOutput } from './dto/fetch-myPick.output';
 export class PickResolver {
   constructor(private readonly picksService: PicksService) {}
 
-  // 찜 생성 및 삭제 API
   @UseGuards(GqlAuthGuard('access'))
   @Mutation(() => String)
   createPick(
@@ -22,7 +21,6 @@ export class PickResolver {
     });
   }
 
-  // 유저가 찜한 목록 조회 API
   @UseGuards(GqlAuthGuard('access'))
   @Query(() => [FetchMyPickOutput])
   fetchPickUserProduct(
