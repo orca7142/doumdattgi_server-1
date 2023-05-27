@@ -9,6 +9,7 @@ import {
   IPickServiceCreate,
   IPickServiceFetchPickUser,
 } from './interfaces/pick-service.interface';
+import { IPickServiceFetchPickOrNot } from './interfaces/pick-service.interface';
 
 @Injectable()
 export class PicksService {
@@ -74,5 +75,15 @@ export class PicksService {
     if (!result.length)
       throw new Error('해당 유저가 찜한 상품이 존재하지 않습니다.');
     return result;
+  }
+
+  async fetchPickOrNot({
+    user_id,
+    product_id,
+  }: IPickServiceFetchPickOrNot): Promise<boolean> {
+    const result = await this.picksRepository.findOne({
+      where: { user: { user_id }, product: { product_id } },
+    });
+    return result ? true : false;
   }
 }

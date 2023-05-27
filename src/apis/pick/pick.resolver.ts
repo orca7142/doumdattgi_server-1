@@ -4,6 +4,7 @@ import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { IContext } from 'src/commons/interfaces/context';
 import { FetchMyPickOutput } from './dto/fetch-myPick.output';
+import { Pick } from './entites/pick.entity';
 
 @Resolver()
 export class PickResolver {
@@ -32,6 +33,18 @@ export class PickResolver {
       user_id: context.req.user.user_id,
       page,
       pageSize,
+    });
+  }
+
+  @UseGuards(GqlAuthGuard('access'))
+  @Query(() => Boolean)
+  fetchPickOrNot(
+    @Context() context: IContext,
+    @Args('product_id') product_id: string,
+  ): Promise<boolean> {
+    return this.picksService.fetchPickOrNot({
+      user_id: context.req.user.user_id,
+      product_id,
     });
   }
 }

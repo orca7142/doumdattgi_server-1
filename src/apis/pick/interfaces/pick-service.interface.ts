@@ -8,3 +8,8 @@ export interface IPickServiceFetchPickUser {
   page: number;
   pageSize: number;
 }
+
+export interface IPickServiceFetchPickOrNot {
+  user_id: string;
+  product_id: string;
+}
