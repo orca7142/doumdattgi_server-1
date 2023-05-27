@@ -18,7 +18,7 @@ import { Slot } from '../slot/entites/slot.entity';
       Image,
       Payment,
       Request,
-      Product, //
+      Product,
       User,
       Image,
       Pick,

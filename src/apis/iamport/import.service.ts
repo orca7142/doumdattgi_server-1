@@ -25,7 +25,6 @@ export class IamportService {
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  // 토큰 발급
   async getToken(): Promise<string> {
     try {
       const getToken = await axios({
@@ -46,7 +45,7 @@ export class IamportService {
       );
     }
   }
-  // 결제완료 상태인지 검증하기
+
   async checkPid({
     payment_impUid,
     payment_amount,
@@ -73,7 +72,6 @@ export class IamportService {
     }
   }
 
-  // 결제 취소하기
   async cancel({ payment_impUid }: IIamportServiceCancel): Promise<number> {
     try {
       const token = await this.getToken();

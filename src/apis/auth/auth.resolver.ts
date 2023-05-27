@@ -8,7 +8,6 @@ import { GqlAuthGuard } from './guards/gql-auth.guard';
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
-  // 로그인 API
   @Mutation(() => String)
   login(
     @Args('user_email') user_email: string,
@@ -22,7 +21,6 @@ export class AuthResolver {
     });
   }
 
-  // 로그아웃 API
   @UseGuards(GqlAuthGuard('access'))
   @Mutation(() => String)
   async logout(
@@ -32,7 +30,6 @@ export class AuthResolver {
     return '로그아웃에 성공했습니다';
   }
 
-  // accessToken 재발급 API
   @UseGuards(GqlAuthGuard('refresh'))
   @Mutation(() => String)
   restoreAccessToken(

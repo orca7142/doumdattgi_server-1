@@ -17,6 +17,7 @@ import {
   IPaymentsServiceCreateFindOneByImUid,
   IPaymentsServiceCreateForPayment,
   IPaymentsServiceFindByImpUidAndUser,
+  IPaymentsServiceFindPayment,
 } from './interfaces/payment-service.interface';
 import { CancelPaymentOutput } from './dto/cancel-payment.output';
 
@@ -34,7 +35,6 @@ export class PaymentsService {
     private readonly dataSource: DataSource,
   ) {}
 
-  // 중복 결제인지 확인
   findOneByImpUid({
     payment_impUid,
   }: IPaymentsServiceCreateFindOneByImUid): Promise<Payment> {
@@ -43,7 +43,6 @@ export class PaymentsService {
     });
   }
 
-  // 이미 결제됐던 id인지 검증하기
   async checkDuplication({
     payment_impUid,
   }: IPaymentsServiceCheckDuplication): Promise<void> {
@@ -51,7 +50,6 @@ export class PaymentsService {
     if (result) throw new ConflictException('이미 등록된 결제입니다.');
   }
 
-  // 포인트 충전 및 검증
   async create({
     payment_impUid,
     payment_amount,
@@ -92,13 +90,12 @@ export class PaymentsService {
     }
   }
 
-  // 유저 아이디로 결제내역 조회하기
   async findPayment({
     user_id,
     payment_status,
     page,
     pageSize,
-  }): Promise<Payment[]> {
+  }: IPaymentsServiceFindPayment): Promise<Payment[]> {
     const result = await this.paymentsRepository.find({
       where: {
         user: { user_id },
@@ -112,7 +109,6 @@ export class PaymentsService {
     return result;
   }
 
-  // 결제내역 조회하기
   async findByImpUidAndUser({
     payment_impUid,
     user,
@@ -123,7 +119,6 @@ export class PaymentsService {
     });
   }
 
-  // 이미 취소됐던 id인지 검증하기
   checkAlreadyCanceled({
     payments,
   }: IPaymentsServiceCheckAlreadyCanceled): void {
@@ -134,7 +129,6 @@ export class PaymentsService {
       throw new ConflictException('이미 취소된 결제 아이디입니다.');
   }
 
-  //포인트가 취소하기에 충분히 있는지 검증하기(결제내역이 없거나, 결제금액보다 포이트가 적은지 확인)
   checkHasCancelablePoint({
     payments,
   }: IPaymentsServiceCheckHasCancelablePoint): void {
@@ -148,7 +142,6 @@ export class PaymentsService {
       throw new UnprocessableEntityException('포인트가 부족합니다.');
   }
 
-  // 최종 검증 및 포인트 충전
   async createForPayment({
     payment_impUid,
     payment_amount,
@@ -164,7 +157,6 @@ export class PaymentsService {
     return this.create({ payment_impUid, payment_amount, user, payment_type });
   }
 
-  // 포인트 환불 및 취소된 결과 등록하기
   async cancel({
     payment_impUid,
     user,

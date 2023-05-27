@@ -66,7 +66,6 @@ export class RequestsService {
     private readonly mailerService: MailerService,
   ) {}
 
-  // 의뢰 요청하기
   async sendRequest({
     createRequestInput, //
     context,
@@ -156,7 +155,6 @@ export class RequestsService {
     return result;
   }
 
-  // 신청 내역 전체 조회
   async fetchBuyerRequest({ context }: IFetchRequestInput): Promise<Request[]> {
     const buyer_id = (await this.usersService.findLoginUser({ context }))
       .user_id;
@@ -167,7 +165,6 @@ export class RequestsService {
     return result;
   }
 
-  // 특정 신청 내역 전체 조회
   async fetchOneRequest({
     request_id,
   }: IFetchOneRequestInput): Promise<Request> {
@@ -177,7 +174,6 @@ export class RequestsService {
     return result;
   }
 
-  // 작업 진행 내역 조회
   async fetchSellerWork({ context }: IFetchWorkInput): Promise<Request[]> {
     const seller_id = (await this.usersService.findLoginUser({ context }))
       .user_id;
@@ -188,9 +184,8 @@ export class RequestsService {
     return workInfo;
   }
 
-  // 의뢰 수락 / 거절
   async requestAcceptRefuse({
-    acceptRefuse, //
+    acceptRefuse,
     request_id,
     context,
   }: IRequestAcceptRefuseInput): Promise<Request> {
@@ -234,7 +229,6 @@ export class RequestsService {
         },
       );
 
-      // 슬롯 추가하기
       const user_id = context.req.user.user_id;
       const userSlot = await this.slotsRepository.findOne({
         where: { user: { user_id } },
@@ -302,7 +296,6 @@ export class RequestsService {
       const buyer_id = buyer.buyer_id;
       const request_price = buyer.request_price;
 
-      // payment 테이블 거절에 의한 (+) 금액 저장
       await this.paymentsRepository.save({
         payment_impUid: '',
         payment_amount: request_price,
@@ -311,7 +304,6 @@ export class RequestsService {
         user: { user_id: buyer_id },
       });
 
-      // 의뢰 요청자 돈 다시 돌아가기
       const userPoint = (
         await this.usersRepository.findOne({ where: { user_id: buyer_id } })
       ).user_point;
@@ -338,7 +330,6 @@ export class RequestsService {
     return result;
   }
 
-  // 프로세스
   async requestProcess({
     process,
     request_id,
@@ -439,7 +430,6 @@ export class RequestsService {
         user: { user_id },
       });
 
-      // 슬롯 없애기
       const userSlot = await this.slotsRepository.findOne({
         where: { user: { user_id } },
       });

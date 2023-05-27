@@ -28,12 +28,12 @@ import { sendTokenTemplate } from 'src/commons/utils/utils';
 import { MailerService } from '@nestjs-modules/mailer';
 import * as bcrypt from 'bcrypt';
 import { Payment } from '../payment/entities/payment.entity';
-import coolsms from 'coolsms-node-sdk'; //coolsms 불러오기
+import coolsms from 'coolsms-node-sdk';
 import { Slot } from '../slot/entites/slot.entity';
 
-const mysms = coolsms; // SDK 가져오기
+const mysms = coolsms;
 
-import 'dotenv/config'; // .env파일 import 하기
+import 'dotenv/config';
 const SMS_KEY = process.env.SMS_KEY;
 const SMS_SECRET = process.env.SMS_SECRET;
 const SMS_SENDER = process.env.SMS_SENDER;
@@ -42,7 +42,7 @@ const SMS_SENDER = process.env.SMS_SENDER;
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private readonly usersRepository: Repository<User>, //
+    private readonly usersRepository: Repository<User>,
 
     @InjectRepository(Payment)
     private readonly paymentsRepository: Repository<Payment>,
@@ -55,18 +55,15 @@ export class UsersService {
     private readonly mailerService: MailerService,
   ) {}
 
-  // 이메일 중복여부 확인
   findOneByEmail({ user_email }: IUsersServiceFindOneByEmail): Promise<User> {
     return this.usersRepository.findOne({ where: { user_email } });
   }
 
-  // 휴대폰 번호 중복여부 확인
   findOneByPhone({ user_phone }: IUsersServiceFindOneByPhone): Promise<User> {
     return this.usersRepository.findOne({ where: { user_phone } });
   }
 
-  // 토큰 생성
-  async createToken() {
+  async createToken(): Promise<string> {
     const token = await String(Math.floor(Math.random() * 1000000)).padStart(
       6,
       '0',
@@ -74,12 +71,10 @@ export class UsersService {
     return token;
   }
 
-  // 일치하는 이메일 유무 확인하기
-  findOne({ user_email }: IUsersServiceFindOneByEmail) {
+  findOne({ user_email }: IUsersServiceFindOneByEmail): Promise<User> {
     return this.usersRepository.findOne({ where: { user_email } });
   }
 
-  // 이메일 중복 검증 및 이메일 인증번호 전송
   async sendTokenEmail({
     user_email,
   }: IUsersServiceSendTokenEmail): Promise<string> {
@@ -107,7 +102,6 @@ export class UsersService {
     return token;
   }
 
-  // 휴대폰 중복 검증 및 문자 메시지 전송
   async sendTokenSMS({
     user_phone,
   }: IUsersServiceSendTokenSMS): Promise<string> {
@@ -136,16 +130,14 @@ export class UsersService {
     return token;
   }
 
-  // 이메일 인증번호 검증
   async checkValidateTokenEMAIL({
     user_email,
     user_token,
-  }: IUsersServiceCheckTokenEMAIL) {
+  }: IUsersServiceCheckTokenEMAIL): Promise<boolean> {
     const myToken = await this.cacheManager.get(user_email);
     return myToken === user_token ? true : false;
   }
 
-  // 휴대폰 인증번호 검증
   async checkValidTokenFindEmailBySMS({
     user_phone,
     user_token,
@@ -159,7 +151,6 @@ export class UsersService {
     }
   }
 
-  // 비밀번호 찾기 토큰 인증
   async checkValidTokenFindPwdBySMS({
     user_phone,
     user_token,
@@ -168,7 +159,6 @@ export class UsersService {
     return myToken === user_token ? true : false;
   }
 
-  // 비밀번호 재설정
   async resetPassword({
     user_phone,
     new_password,
@@ -186,7 +176,6 @@ export class UsersService {
     return resetPwd ? true : false;
   }
 
-  // 설정 페이지 비밀번호 재설정
   async resetPasswordSettingPage({
     new_password,
     context,
@@ -204,7 +193,6 @@ export class UsersService {
     return resetPwd ? true : false;
   }
 
-  // 회원가입하기
   async createUser({ createUserInput }: ICreateUserInput): Promise<User> {
     const { user_password, user_email, user_phone, ...userInfo } =
       createUserInput;
@@ -227,7 +215,6 @@ export class UsersService {
     });
   }
 
-  // 회원가입
   async create({ createUserInput }: ICreateUserInput): Promise<User> {
     const { user_email, user_password, ...userRest } = createUserInput;
     const user = await this.findOneByEmail({ user_email });
@@ -241,7 +228,6 @@ export class UsersService {
     });
   }
 
-  // 로그인한 유저 정보 조회
   async findLoginUser({ context }: IUsersServiceFindLoginUser): Promise<User> {
     const user_id = context.req.user.user_id;
 
@@ -252,9 +238,8 @@ export class UsersService {
     return loginUserInfo;
   }
 
-  // 닉네임 및 자기소개 수정
   async updateNicknameIntroduce({
-    updateNicknameIntroduceInput, //
+    updateNicknameIntroduceInput,
     context,
   }: IUsersServiceUpdateNicknameIntroduce): Promise<User> {
     const { user_nickname, user_introduce } = updateNicknameIntroduceInput;
@@ -273,9 +258,8 @@ export class UsersService {
     return result;
   }
 
-  // 프로필 이미지 수정
   async updateProfileImage({
-    user_url, //
+    user_url,
     context,
   }: IUsersServiceUpdateProfileImage): Promise<User> {
     const loginUserInfo = await this.findLoginUser({ context });
@@ -286,7 +270,6 @@ export class UsersService {
     });
   }
 
-  // 유저정보 수정 (이름, 이메일, 포트폴리오)
   async updateUserInfo({
     updateUserInfoInput,
     context,
@@ -303,7 +286,6 @@ export class UsersService {
     });
   }
 
-  // 유저 회원탈퇴
   async deleteUser({ context }: IUsersServiceDelete): Promise<boolean> {
     const loginUserId = (await this.findLoginUser({ context })).user_id;
     const result = await this.usersRepository.softDelete({
@@ -312,10 +294,7 @@ export class UsersService {
     return result.affected ? true : false;
   }
 
-  // 로그인 유저 슬롯 조회
-  async findUserSlot({
-    context, //
-  }: IUsersServiceFindLoginUser): Promise<Slot> {
+  async findUserSlot({ context }: IUsersServiceFindLoginUser): Promise<Slot> {
     const user_id = context.req.user.user_id;
 
     const userSlot = await this.slotsRepository.findOne({

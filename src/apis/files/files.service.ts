@@ -2,14 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { IFilesServiceUpload } from './interfaces/files-service.interface';
 import { Storage } from '@google-cloud/storage';
 
-// 사진 업로드
 @Injectable()
 export class FilesService {
   async upload({ files }: IFilesServiceUpload): Promise<string[]> {
-    console.log(files);
-
     const waitedFiles = await Promise.all(files);
-    console.log(waitedFiles);
 
     const bucket = process.env.GCS_BUCKET;
     const storage = new Storage({
@@ -34,8 +30,6 @@ export class FilesService {
           }),
       ),
     );
-    console.log('파일 전송이 완료되었습니다.');
-    console.log(results);
     return results;
   }
 }

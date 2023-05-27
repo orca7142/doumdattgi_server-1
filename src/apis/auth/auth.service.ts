@@ -30,7 +30,6 @@ export class AuthService {
     private readonly cacheManager: Cache,
   ) {}
 
-  // 로그인하기
   async login({
     user_email,
     user_password,
@@ -53,7 +52,6 @@ export class AuthService {
     return this.getAccessToken({ user });
   }
 
-  // accessToken 발급하기
   getAccessToken({ user }: IAuthServiceGetAccessToken) {
     return this.jwtService.sign(
       { sub: user.user_id, user_email: user.user_email },
@@ -61,12 +59,10 @@ export class AuthService {
     );
   }
 
-  // accessToken 복구하기
   restoreAccessToken({ user }: IAuthServiceRestoreAccessToken): string {
     return this.getAccessToken({ user });
   }
 
-  // refreshToken 발급하기
   setRefreshToken({ user, req, res }: IAuthServiceSetRefreshToken) {
     const refreshToken = this.jwtService.sign(
       { user_email: user.user_email, sub: user.user_id },
@@ -105,7 +101,6 @@ export class AuthService {
       */
   }
 
-  // 소셜로그인시 회원가입 유무에 따라 로그인 또는 회원가입 후 로그인
   async verifyLogin({ req, res }) {
     let user = await this.usersService.findOne({
       user_email: req.user.user_email,
@@ -121,7 +116,6 @@ export class AuthService {
     res.redirect('http://localhost:5501/frontend/login/index.html');
   }
 
-  // 로그아웃 서비스
   async logout({ req }: IAuthServiceLogOut) {
     const refreshToken = req.headers.cookie.replace('refreshToken=', '');
     const accessToken = req.headers.authorization.replace('Bearer ', '');
@@ -145,7 +139,6 @@ export class AuthService {
     }
   }
 
-  // 레디스 저장 서비스
   async saveRedis({ accessToken, refreshToken, accessTTL, refreshTTL }) {
     await this.cacheManager.set(`accessToken: ${accessToken}`, accessToken, {
       ttl: accessTTL,

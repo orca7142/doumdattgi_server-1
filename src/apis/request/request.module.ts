@@ -16,7 +16,7 @@ import { Slot } from '../slot/entites/slot.entity';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      Image, //
+      Image,
       Payment,
       EngageIn,
       Product,
@@ -26,11 +26,11 @@ import { Slot } from '../slot/entites/slot.entity';
     ]),
   ],
   providers: [
-    RequestsResolver, //
+    RequestsResolver,
     RequestsService,
     UsersService,
     ProductService,
-    ProductResolver, //
+    ProductResolver,
   ],
 })
 export class RequestsModule {}

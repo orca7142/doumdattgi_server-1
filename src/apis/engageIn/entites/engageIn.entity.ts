@@ -2,7 +2,6 @@ import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { Request } from 'src/apis/request/entites/request.entity';
 import {
   Column,
-  DeleteDateColumn,
   Entity,
   JoinColumn,
   OneToOne,

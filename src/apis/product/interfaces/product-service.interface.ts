@@ -18,3 +18,37 @@ export interface IProductServiceUpdate {
 export interface IProductServiceDelete {
   product_id: string;
 }
+
+export interface IProductServiceFindAll {
+  page: number;
+  pageSize: number;
+}
+
+export interface IProductServiceFindUserAll {
+  user_id: string;
+  page: number;
+  pageSize: number;
+}
+
+export interface IProductServiceFindSearch {
+  search: string;
+  page: number;
+  pageSize: number;
+}
+
+export interface IProductServiceFindCategory {
+  product_category: string;
+  page: number;
+  pageSize: number;
+}
+
+export interface IProductServiceFindSubCategory {
+  product_sub_category: string;
+  page: number;
+  pageSize: number;
+}
+
+export interface IProductServiceFindSellProduct {
+  page: number;
+  pageSize: number;
+}
