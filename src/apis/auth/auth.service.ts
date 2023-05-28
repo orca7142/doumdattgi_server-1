@@ -69,36 +69,35 @@ export class AuthService {
       { secret: process.env.JWT_REFRESH_KEY, expiresIn: '2w' },
     );
     // 개발환경
-    res.setHeader('Set-Cookie', `refreshToken=${refreshToken}; path=/`);
+    //res.setHeader('Set-Cookie', `refreshToken=${refreshToken}; path=/`);
 
     // 배포환경
-    /*
     const originList = [
-        'http://localhost:3000',
-        'http://localhost:3000/',
-        'http://127.0.0.1:3000',
-        'https://doumdattgi.com',
-      ];
-      const origin = req.headers.origin;
-      if (originList.includes(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-      }
+      'http://localhost:3000',
+      'http://localhost:3000/',
+      'http://127.0.0.1:3000',
+      'https://doumdattgi.com',
+      'https://doumdattgi.com/',
+    ];
+    const origin = req.headers.origin;
+    if (originList.includes(origin)) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+    }
 
-      res.setHeader('Access-Control-Allow-Credentials', 'true');
-      res.setHeader(
-        'Access-Control-Allow-Methods', //
-        'GET, HEAD, OPTIONS, POST, PUT',
-      );
-      res.setHeader(
-        'Access-Control-Allow-Headers',
-        'Access-Control-Allow-Headers, Origin, Accept, Authorization, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
-      );
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader(
+      'Access-Control-Allow-Methods', //
+      'GET, HEAD, OPTIONS, POST, PUT',
+    );
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Access-Control-Allow-Headers, Origin, Accept, Authorization, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
+    );
 
-      res.setHeader(
-        'Set-Cookie',
-        `refreshToken=${refreshToken}; path=/; domain=.doumdattgi-server.com; Secure; httpOnly; SameSite=None;`,
-      );
-      */
+    res.setHeader(
+      'Set-Cookie',
+      `refreshToken=${refreshToken}; path=/; domain=.doumdattgi-server.com; Secure; httpOnly; SameSite=None;`,
+    );
   }
 
   async verifyLogin({ req, res }) {
@@ -113,7 +112,7 @@ export class AuthService {
         },
       });
     this.setRefreshToken({ user, req, res });
-    res.redirect('http://localhost:5501/frontend/login/index.html');
+    res.redirect('https://doumdattgi.com/');
   }
 
   async logout({ req }: IAuthServiceLogOut) {
