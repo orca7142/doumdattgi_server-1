@@ -97,7 +97,7 @@ export class RequestsService {
       autoTypeDetect: true,
       to: seller_phone,
       from: SMS_SENDER,
-      text: `[도움닫기] ${seller_nickname}님 ${buyer_nickname}께서 ${product_title}글에 대해 외뢰서 요청을 하였습니다. 수락 또는 거절을 해주세요.`,
+      text: `[도움닫기] ${seller_nickname}님 ${buyer_nickname}께서 ${product_title}글에 대해 의뢰서 요청을 하였습니다. 수락 또는 거절을 해주세요.`,
     });
 
     if (buyer_point < request_price)
@@ -106,7 +106,7 @@ export class RequestsService {
     await this.mailerService.sendMail({
       from: process.env.EMAIL_SENDER,
       to: seller_email,
-      subject: '[도움닫기] 외뢰서 요청에 관하여 알려드립니다.',
+      subject: '[도움닫기] 의뢰서 요청에 관하여 알려드립니다.',
       html: sendRequestTemplate({
         seller_nickname,
         buyer_nickname,
@@ -209,7 +209,7 @@ export class RequestsService {
         autoTypeDetect: true,
         to: buyer_phone,
         from: SMS_SENDER,
-        text: `[도움닫기] ${buyerNickname}님 ${sellerNickname}께서 ${requestTitle}글에 대해 외뢰서 요청을 수락하였습니다.`,
+        text: `[도움닫기] ${buyerNickname}님 ${sellerNickname}께서 ${requestTitle}글에 대해 의뢰서 요청을 수락하였습니다.`,
       });
 
       await this.engageInRepository.update(
@@ -270,7 +270,7 @@ export class RequestsService {
         autoTypeDetect: true,
         to: buyer_phone,
         from: SMS_SENDER,
-        text: `[도움닫기] ${buyerNickname}님 ${sellerNickname}께서 ${requestTitle}글에 대해 외뢰서 요청을 거절하였습니다.`,
+        text: `[도움닫기] ${buyerNickname}님 ${sellerNickname}께서 ${requestTitle}글에 대해 의뢰서 요청을 거절하였습니다.`,
       });
       await this.requestsRepository.update(
         {
@@ -358,7 +358,7 @@ export class RequestsService {
         autoTypeDetect: true,
         to: buyer_phone,
         from: SMS_SENDER,
-        text: `[도움닫기] ${buyerNickname}님 ${sellerNickname}께서 ${requestTitle} 외뢰서 작업을 완료하였습니다.`,
+        text: `[도움닫기] ${buyerNickname}님 ${sellerNickname}께서 ${requestTitle} 의뢰서 작업을 완료하였습니다.`,
       });
 
       const workComplete = await this.requestsRepository.update(
@@ -375,7 +375,7 @@ export class RequestsService {
         autoTypeDetect: true,
         to: seller_phone,
         from: SMS_SENDER,
-        text: `[도움닫기] ${sellerNickname}님 ${buyerNickname}께서 ${requestTitle} 외뢰서 작업을 완료 확정하였습니다.`,
+        text: `[도움닫기] ${sellerNickname}님 ${buyerNickname}께서 ${requestTitle} 의뢰서 작업을 완료 확정하였습니다.`,
       });
 
       const seller_id = (
