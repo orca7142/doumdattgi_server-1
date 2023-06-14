@@ -8,7 +8,7 @@ import { Comment } from './entities/comment.entity';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      Request, //
+      Request, 
       Comment,
     ]),
   ],
