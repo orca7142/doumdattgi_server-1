@@ -55,14 +55,17 @@ export class UsersService {
     private readonly mailerService: MailerService,
   ) {}
 
+  // 이메일 이미 존재하는지 확인하는 함수
   findOneByEmail({ user_email }: IUsersServiceFindOneByEmail): Promise<User> {
     return this.usersRepository.findOne({ where: { user_email } });
   }
 
+  // 휴대폰 번호 이미 존재하는지 확인하는 함수
   findOneByPhone({ user_phone }: IUsersServiceFindOneByPhone): Promise<User> {
     return this.usersRepository.findOne({ where: { user_phone } });
   }
 
+  // 토큰 생성 함수
   async createToken(): Promise<string> {
     const token = await String(Math.floor(Math.random() * 1000000)).padStart(
       6,
@@ -71,13 +74,57 @@ export class UsersService {
     return token;
   }
 
+  // 이메일로 유저 찾는 함수
   findOne({ user_email }: IUsersServiceFindOneByEmail): Promise<User> {
     return this.usersRepository.findOne({ where: { user_email } });
   }
 
+  // 이메일 형식 검증 함수
+  validateEmail({ user_email }) {
+    if (!user_email.includes('@')) {
+      throw new ConflictException('이매일의 형식이 잘못되었습니다');
+    }
+    const splitEmail = user_email.split('@');
+    if (splitEmail[0].length > 64 || splitEmail[1].length > 255) {
+      throw new ConflictException('이매일의 길이가 최대길이를 초과하였습니다');
+    }
+  }
+
+  // 비밀번호 형식 검증 함수
+  validatePassword({ user_password }) {
+    const regPwd = /^[a-z0-9_]{4,20}$/;
+    if (user_password.length < 8 || user_password > 16) {
+      throw new ConflictException(
+        '비밀번호의 길이가 8 ~ 16 자리를 만족하지 않습니다',
+      );
+    } else if (!regPwd.test(user_password)) {
+      throw new ConflictException(
+        '비밀번호가 영문과 숫자를 모두 포함하고 있지 않습니다',
+      );
+    }
+  }
+
+  // 닉네임 형식 검증 함수
+  validateNickname({ user_nickname }) {
+    if (user_nickname.length < 2 || user_nickname.length > 15) {
+      throw new ConflictException('닉네임이 길이 조건에 부합하지 않습니다');
+    }
+  }
+
+  // 휴대폰 번호 형식 검증 함수
+  validatePhone({ user_phone }) {
+    const regPhone = /^01([0|1|6|7|8|9])([0-9]{3,4})([0-9]{4})$/;
+    if (!regPhone.test(user_phone)) {
+      throw new ConflictException('휴대폰 번호 형식이 잘못되었습니다');
+    }
+  }
+
+  // 이메일 인증번호 전송 함수
   async sendTokenEmail({
     user_email,
   }: IUsersServiceSendTokenEmail): Promise<string> {
+    this.validateEmail({ user_email });
+
     const user = await this.findOneByEmail({ user_email });
     if (user) {
       throw new ConflictException('이미 등록된 이메일입니다');
@@ -102,6 +149,7 @@ export class UsersService {
     return token;
   }
 
+  // 문자 인증번호 전송 함수
   async sendTokenSMS({
     user_phone,
   }: IUsersServiceSendTokenSMS): Promise<string> {
@@ -130,6 +178,7 @@ export class UsersService {
     return token;
   }
 
+  // 이메일 인증번호 검증 함수
   async checkValidateTokenEMAIL({
     user_email,
     user_token,
@@ -138,6 +187,7 @@ export class UsersService {
     return myToken === user_token ? true : false;
   }
 
+  // 문자 인증번호 인증 이후 이메일 찾는 함수
   async checkValidTokenFindEmailBySMS({
     user_phone,
     user_token,
@@ -151,6 +201,7 @@ export class UsersService {
     }
   }
 
+  // 문자 인증번호 검증 함수
   async checkValidTokenFindPwdBySMS({
     user_phone,
     user_token,
@@ -159,6 +210,7 @@ export class UsersService {
     return myToken === user_token ? true : false;
   }
 
+  // 비밀번호 초기화 함수
   async resetPassword({
     user_phone,
     new_password,
@@ -176,6 +228,7 @@ export class UsersService {
     return resetPwd ? true : false;
   }
 
+  // 설정 페이지 비밀번호 변경 함수
   async resetPasswordSettingPage({
     new_password,
     context,
@@ -193,9 +246,15 @@ export class UsersService {
     return resetPwd ? true : false;
   }
 
+  // 회원가입 함수
   async createUser({ createUserInput }: ICreateUserInput): Promise<User> {
-    const { user_password, user_email, user_phone, ...userInfo } =
+    const { user_password, user_email, user_phone, user_nickname, user_name } =
       createUserInput;
+
+    this.validatePassword({ user_password });
+    this.validateNickname({ user_nickname });
+    this.validatePhone({ user_phone });
+
     const validatePhone = await this.findOneByPhone({ user_phone });
     const validateEmail = await this.findOneByEmail({ user_email });
 
@@ -211,7 +270,8 @@ export class UsersService {
       user_email,
       user_phone,
       user_password: hashedPassword,
-      ...userInfo,
+      user_nickname,
+      user_name,
     });
   }
 
@@ -228,6 +288,7 @@ export class UsersService {
     });
   }
 
+  // 로그인한 유저 정보 조회 함수
   async findLoginUser({ context }: IUsersServiceFindLoginUser): Promise<User> {
     const user_id = context.req.user.user_id;
 
@@ -238,6 +299,7 @@ export class UsersService {
     return loginUserInfo;
   }
 
+  // 닉네임 또는 자기소개 수정 함수
   async updateNicknameIntroduce({
     updateNicknameIntroduceInput,
     context,
@@ -258,6 +320,7 @@ export class UsersService {
     return result;
   }
 
+  // 프로필 이미지 수정 함수
   async updateProfileImage({
     user_url,
     context,
@@ -270,6 +333,7 @@ export class UsersService {
     });
   }
 
+  // 유저정보 수정 함수
   async updateUserInfo({
     updateUserInfoInput,
     context,
@@ -286,6 +350,7 @@ export class UsersService {
     });
   }
 
+  // 회원 탈퇴 함수
   async deleteUser({ context }: IUsersServiceDelete): Promise<boolean> {
     const loginUserId = (await this.findLoginUser({ context })).user_id;
     const result = await this.usersRepository.softDelete({
@@ -294,6 +359,7 @@ export class UsersService {
     return result.affected ? true : false;
   }
 
+  // 유저 슬롯 조회 함수
   async findUserSlot({ context }: IUsersServiceFindLoginUser): Promise<Slot> {
     const user_id = context.req.user.user_id;
 
