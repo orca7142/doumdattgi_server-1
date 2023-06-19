@@ -162,6 +162,18 @@ type FetchSearchProductOutput {
   product_product_summary: String!
 }
 
+type FetchLikeCategoryOutput {
+  product_product_id: String!
+  product_product_title: String!
+  product_product_category: String!
+  product_product_workDay: String!
+  product_product_sellOrBuy: Boolean!
+  u_user_nickname: String!
+  u_user_profileImage: String
+  i_image_url: String!
+  product_pick_pick_id: String!
+}
+
 type CancelPaymentOutput {
   payment_id: String!
   payment_impUid: String!
@@ -202,6 +214,7 @@ type Query {
   fetchSellProduct: [FetchProductOutput!]!
   fetchSearchProduct(search: String!, page: Float!, pageSize: Float!): [FetchSearchProductOutput!]!
   fetchCategoryProduct(product_category: String!, page: Float!, pageSize: Float!): [FetchProductOutput!]!
+  fetchLikeCategoryProduct(product_category: String!, page: Float!, pageSize: Float!): [FetchLikeCategoryOutput!]!
   fetchSubCategoryProduct(product_sub_category: String!, page: Float!, pageSize: Float!): [FetchSubCategoryOutput!]!
   fetchSellCategoryProducts(page: Float!, pageSize: Float!): [FetchProductOutput!]!
   fetchNewbieProduct: [FetchProductOutput!]!

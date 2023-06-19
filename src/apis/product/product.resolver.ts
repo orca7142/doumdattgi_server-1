@@ -7,8 +7,9 @@ import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { IContext } from 'src/commons/interfaces/context';
 import { FetchProductOutput } from './dto/fetch-product.output';
-import { FetchSubCategoryOutput } from './dto/fetch-subCategoty.output';
+import { FetchSubCategoryOutput } from './dto/fetch-subCategory.output';
 import { FetchSearchProductOutput } from './dto/fetch-SearchProduct.output';
+import { FetchLikeCategoryOutput } from './dto/fetch-LikeCategory.output';
 
 @Resolver()
 export class ProductResolver {
@@ -80,6 +81,19 @@ export class ProductResolver {
     @Args('pageSize') pageSize: number,
   ): Promise<FetchProductOutput[]> {
     return this.productsService.findCategory({
+      product_category,
+      page,
+      pageSize,
+    });
+  }
+
+  @Query(() => [FetchLikeCategoryOutput])
+  fetchLikeCategoryProduct(
+    @Args('product_category') product_category: string, //
+    @Args('page') page: number,
+    @Args('pageSize') pageSize: number,
+  ): Promise<FetchLikeCategoryOutput[]> {
+    return this.productsService.findLikeCategory({
       product_category,
       page,
       pageSize,
