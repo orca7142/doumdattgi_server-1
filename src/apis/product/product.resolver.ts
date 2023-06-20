@@ -10,6 +10,7 @@ import { FetchProductOutput } from './dto/fetch-product.output';
 import { FetchSubCategoryOutput } from './dto/fetch-subCategory.output';
 import { FetchSearchProductOutput } from './dto/fetch-SearchProduct.output';
 import { FetchLikeCategoryOutput } from './dto/fetch-LikeCategory.output';
+import { FetchLikeSubCategoryOutput } from './dto/fetch-LikeSubCategory.output';
 
 @Resolver()
 export class ProductResolver {
@@ -38,8 +39,14 @@ export class ProductResolver {
 
   @UseGuards(GqlAuthGuard('access'))
   @Mutation(() => Boolean)
-  deleteLoginProduct(@Args('product_id') product_id: string): Promise<boolean> {
-    return this.productsService.delete({ product_id });
+  deleteLoginProduct(
+    @Args('product_id') product_id: string,
+    @Context() context: IContext,
+  ): Promise<boolean> {
+    return this.productsService.delete({
+      product_id,
+      user_id: context.req.user.user_id,
+    });
   }
 
   @Query(() => [FetchProductOutput])
@@ -107,6 +114,19 @@ export class ProductResolver {
     @Args('pageSize') pageSize: number,
   ): Promise<FetchSubCategoryOutput[]> {
     return this.productsService.findSubCategory({
+      product_sub_category,
+      page,
+      pageSize,
+    });
+  }
+
+  @Query(() => [FetchLikeSubCategoryOutput])
+  fetchLikeSubCategoryProduct(
+    @Args('product_sub_category') product_sub_category: string, //
+    @Args('page') page: number,
+    @Args('pageSize') pageSize: number,
+  ): Promise<FetchLikeSubCategoryOutput[]> {
+    return this.productsService.findLikeSubCategory({
       product_sub_category,
       page,
       pageSize,

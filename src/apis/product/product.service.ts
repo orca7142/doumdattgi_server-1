@@ -22,6 +22,7 @@ import { FetchSubCategoryOutput } from './dto/fetch-subCategory.output';
 import { FetchSearchProductOutput } from './dto/fetch-SearchProduct.output';
 import { Slot } from '../slot/entites/slot.entity';
 import { FetchLikeCategoryOutput } from './dto/fetch-LikeCategory.output';
+import { FetchLikeSubCategoryOutput } from './dto/fetch-LikeSubCategory.output';
 
 @Injectable()
 export class ProductService {
@@ -280,7 +281,7 @@ export class ProductService {
         'product.product_sellOrBuy',
         'u.user_nickname',
         'u.user_profileImage',
-        'MAX(i.image_url) as image_url', // MAX 함수를 사용하여 이미지 URL 중 하나 선택
+        'MAX(i.image_url) as image_url',
         'COUNT(pick.pick_id) as pick_count',
       ])
       .where('product_category LIKE "%":product_category"%"', {
@@ -292,11 +293,11 @@ export class ProductService {
       })
       .groupBy('product.product_id')
       .orderBy('COUNT(pick.pick_id)', 'DESC')
+      .addOrderBy('product.product_createdAt', 'DESC')
       .limit(pageSize)
       .offset(pageSize * (page - 1))
       .getRawMany();
 
-    console.log(result);
     return result;
   }
 
@@ -332,6 +333,49 @@ export class ProductService {
         product_sellOrBuy: 1,
       })
       .orderBy('product.product_createdAt', 'DESC')
+      .limit(pageSize)
+      .offset(pageSize * (page - 1))
+      .getRawMany();
+
+    return result;
+  }
+
+  async findLikeSubCategory({
+    product_sub_category,
+    page,
+    pageSize,
+  }: IProductServiceFindSubCategory): Promise<FetchLikeSubCategoryOutput[]> {
+    const result = await this.productsRepository
+      .createQueryBuilder('product')
+      .innerJoin('product.user', 'u', 'product.userUserId = u.user_Id')
+      .innerJoin(
+        'product.images',
+        'i',
+        'product.product_id = i.productProductId',
+      )
+      .leftJoinAndSelect('product.pick', 'pick')
+      .select([
+        'product.product_id',
+        'product.product_title',
+        'product.product_category',
+        'product.product_sub_category',
+        'product.product_workDay',
+        'product.product_sellOrBuy',
+        'u.user_nickname',
+        'u.user_profileImage',
+        'MAX(i.image_url) as image_url',
+        'COUNT(pick.pick_id) as pick_count',
+      ])
+      .where('product_sub_category = :product_sub_category', {
+        product_sub_category,
+      })
+      .andWhere('i.image_isMain = :image_isMain', { image_isMain: 1 })
+      .andWhere('product.product_sellOrBuy = :product_sellOrBuy', {
+        product_sellOrBuy: 1,
+      })
+      .groupBy('product.product_id')
+      .orderBy('COUNT(pick.pick_id)', 'DESC')
+      .addOrderBy('product.product_createdAt', 'DESC')
       .limit(pageSize)
       .offset(pageSize * (page - 1))
       .getRawMany();
@@ -525,13 +569,20 @@ export class ProductService {
     }
   }
 
-  async delete({ product_id }: IProductServiceDelete): Promise<boolean> {
+  async delete({
+    product_id,
+    user_id,
+  }: IProductServiceDelete): Promise<boolean> {
     const product = await this.productsRepository.findOne({
-      where: { product_id },
+      where: { user: { user_id }, product_id },
+      relations: ['user'],
     });
+    console.log(product);
 
     if (!product)
-      throw new Error('상품을 찾을수 없습니다. product_id를 확인하세요');
+      throw new Error(
+        '상품을 찾을수 없습니다. product_id를 확인하거나. 본인의 게시물인지 확인하세요',
+      );
 
     try {
       const result = await this.productsRepository.softDelete({ product_id });

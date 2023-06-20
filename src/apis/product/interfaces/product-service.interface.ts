@@ -17,6 +17,7 @@ export interface IProductServiceUpdate {
 
 export interface IProductServiceDelete {
   product_id: string;
+  user_id: string;
 }
 
 export interface IProductServiceFindAll {
