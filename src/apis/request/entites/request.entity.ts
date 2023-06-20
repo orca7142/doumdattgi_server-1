@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -27,8 +28,7 @@ export class Request {
   @Field(() => String)
   request_id: string;
 
-  @JoinColumn()
-  @OneToOne(() => Product)
+  @ManyToOne(() => Product)
   @Field(() => Product)
   product: Product;
 
