@@ -66,6 +66,7 @@ export interface IUsersServiceResetPassword {
 }
 
 export interface IUsersServiceResetPasswordSettingPage {
+  password: string;
   new_password: string;
   context: IContext;
 }

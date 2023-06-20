@@ -15,6 +15,7 @@ export class UsersResolver {
     private readonly usersService: UsersService, //
   ) {}
 
+  // 이메일 인증번호 전송 API
   @Mutation(() => String)
   sendTokenEmail(
     @Args('user_email') user_email: string, //
@@ -22,6 +23,7 @@ export class UsersResolver {
     return this.usersService.sendTokenEmail({ user_email });
   }
 
+  // 이메일 인증번호 검증 API
   @Mutation(() => Boolean)
   checkValidTokenEMAIL(
     @Args('user_email') user_email: string,
@@ -33,6 +35,7 @@ export class UsersResolver {
     });
   }
 
+  // 문자 인증번호 전송 API
   @Mutation(() => String)
   sendTokenSMS(
     @Args('user_phone') user_phone: string, //
@@ -40,6 +43,7 @@ export class UsersResolver {
     return this.usersService.sendTokenSMS({ user_phone });
   }
 
+  // 이메일 찾기 API
   @Mutation(() => String)
   checkValidTokenFindEmailBySMS(
     @Args('user_phone') user_phone: string,
@@ -51,6 +55,7 @@ export class UsersResolver {
     });
   }
 
+  // 비밀번호 찾기 API
   @Mutation(() => Boolean)
   checkValidTokenFindPwdBySMS(
     @Args('user_phone') user_phone: string,
@@ -62,6 +67,7 @@ export class UsersResolver {
     });
   }
 
+  // 비밀번호 재설정 API
   @Mutation(() => Boolean)
   resetPassword(
     @Args('user_phone') user_phone: string,
@@ -73,18 +79,22 @@ export class UsersResolver {
     });
   }
 
+  // 설정 페이지 비밀번호 재설정 API
   @UseGuards(GqlAuthGuard('access'))
   @Mutation(() => Boolean)
   resetPasswordSettingPage(
+    @Args('password') password: string,
     @Args('new_password') new_password: string,
     @Context() context: IContext,
   ): Promise<boolean> {
     return this.usersService.resetPasswordSettingPage({
+      password,
       new_password,
       context,
     });
   }
 
+  // 회원가입 API
   @Mutation(() => User)
   createUser(
     @Args('createUserInput') createUserInput: CreateUserInput,
@@ -94,6 +104,7 @@ export class UsersResolver {
     });
   }
 
+  // 로그인한 유저 조회 API
   @UseGuards(GqlAuthGuard('access'))
   @Query(() => User)
   fetchLoginUser(
@@ -102,6 +113,7 @@ export class UsersResolver {
     return this.usersService.findLoginUser({ context });
   }
 
+  // 설정 페이지 닉네임 또는 자기소개 수정 API
   @UseGuards(GqlAuthGuard('access'))
   @Mutation(() => User)
   updateNicknameIntroduce(
@@ -115,6 +127,7 @@ export class UsersResolver {
     });
   }
 
+  // 설정 페이지 프로필 사진 수정 API
   @UseGuards(GqlAuthGuard('access'))
   @Mutation(() => User)
   updateProfileImage(
@@ -127,6 +140,7 @@ export class UsersResolver {
     });
   }
 
+  // 설정 페이지 유저 정보 수정 API
   @UseGuards(GqlAuthGuard('access'))
   @Mutation(() => User)
   updateUserInfo(
@@ -140,6 +154,7 @@ export class UsersResolver {
     });
   }
 
+  // 회원 탈퇴 API
   @UseGuards(GqlAuthGuard('access'))
   @Mutation(() => Boolean)
   deleteUser(
@@ -150,6 +165,7 @@ export class UsersResolver {
     });
   }
 
+  // 유저 슬롯 조회 API
   @UseGuards(GqlAuthGuard('access'))
   @Query(() => Slot)
   fetchUserSlot(
