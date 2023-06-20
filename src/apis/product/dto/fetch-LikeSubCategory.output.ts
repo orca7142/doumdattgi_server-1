@@ -1,7 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
-export class FetchLikeCategoryOutput {
+export class FetchLikeSubCategoryOutput {
   @Field(() => String)
   product_product_id: string;
 
@@ -10,6 +10,9 @@ export class FetchLikeCategoryOutput {
 
   @Field(() => String)
   product_product_category: string;
+
+  @Field(() => String)
+  product_product_sub_category: string;
 
   @Field(() => String)
   product_product_workDay: string;
