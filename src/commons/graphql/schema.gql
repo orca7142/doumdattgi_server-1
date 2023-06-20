@@ -239,7 +239,7 @@ type Mutation {
   checkValidTokenFindEmailBySMS(user_phone: String!, user_token: String!): String!
   checkValidTokenFindPwdBySMS(user_phone: String!, user_token: String!): Boolean!
   resetPassword(user_phone: String!, new_password: String!): Boolean!
-  resetPasswordSettingPage(new_password: String!): Boolean!
+  resetPasswordSettingPage(password: String!, new_password: String!): Boolean!
   createUser(createUserInput: CreateUserInput!): User!
   updateNicknameIntroduce(updateNicknameIntroduceInput: UpdateNicknameIntroduceInput!): User!
   updateProfileImage(user_url: String!): User!

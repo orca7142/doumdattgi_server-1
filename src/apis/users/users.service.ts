@@ -119,6 +119,8 @@ export class UsersService {
     }
   }
 
+  // 비밀번호
+
   // 이메일 인증번호 전송 함수
   async sendTokenEmail({
     user_email,
@@ -230,11 +232,19 @@ export class UsersService {
 
   // 설정 페이지 비밀번호 변경 함수
   async resetPasswordSettingPage({
+    password,
     new_password,
     context,
   }: IUsersServiceResetPasswordSettingPage): Promise<boolean> {
+    // todo 기존 비밀번호 검증
+    const user = await this.findLoginUser({ context });
+    const user_password = user.user_password;
+    const check = await bcrypt.compare(password, user_password);
+    if (!check)
+      throw new ConflictException('기존 비밀번호가 일치하지 않습니다.');
+
     const hashedNewPassword = await bcrypt.hash(new_password, 10);
-    const user_id = context.req.user.user_id;
+    const user_id = user.user_id;
     const resetPwd = await this.usersRepository.update(
       {
         user_id,
