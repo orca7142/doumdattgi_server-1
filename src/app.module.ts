@@ -14,6 +14,7 @@ import { RequestsModule } from './apis/request/request.module';
 import { PaymentsModule } from './apis/payment/payment.module';
 import { PickModule } from './apis/pick/pick.module';
 import { CommentsModule } from './apis/comment/comment.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { CommentsModule } from './apis/comment/comment.module';
     PaymentsModule,
     CommentsModule,
     PickModule,
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot(),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,

@@ -34,6 +34,7 @@ import { sendRequestTemplate } from 'src/commons/utils/utils';
 const mysms = coolsms;
 
 import 'dotenv/config';
+import { Cron } from '@nestjs/schedule';
 const SMS_KEY = process.env.SMS_KEY;
 const SMS_SECRET = process.env.SMS_SECRET;
 const SMS_SENDER = process.env.SMS_SENDER;
@@ -66,6 +67,7 @@ export class RequestsService {
     private readonly mailerService: MailerService,
   ) {}
 
+  // 의뢰 요청하는 함수
   async sendRequest({
     createRequestInput, //
     context,
@@ -93,6 +95,27 @@ export class RequestsService {
     const product_title = seller.product_title;
 
     const messageService = new mysms(SMS_KEY, SMS_SECRET);
+
+    const checkSameRequest = await this.requestsRepository.findOne({
+      where: { buyer_id, seller_id },
+    });
+    if (checkSameRequest)
+      throw new ConflictException('같은 상품을 중복 요청했습니다');
+    const result = await this.requestsRepository.save({
+      ...rest,
+      request_price,
+      request_isAccept: REQUEST_ISACCEPT_ENUM.WAITING,
+      product: { product_id },
+      seller_id,
+      seller_nickname,
+      seller_profileImage,
+      seller_email,
+      buyer_id,
+      buyer_nickname,
+      buyer_profileImage,
+      buyer_email,
+    });
+
     await messageService.sendOne({
       autoTypeDetect: true,
       to: seller_phone,
@@ -112,21 +135,6 @@ export class RequestsService {
         buyer_nickname,
         product_title,
       }),
-    });
-
-    const result = await this.requestsRepository.save({
-      ...rest,
-      request_price,
-      request_isAccept: REQUEST_ISACCEPT_ENUM.WAITING,
-      product: { product_id },
-      seller_id,
-      seller_nickname,
-      seller_profileImage,
-      seller_email,
-      buyer_id,
-      buyer_nickname,
-      buyer_profileImage,
-      buyer_email,
     });
 
     await this.usersRepository.update(
