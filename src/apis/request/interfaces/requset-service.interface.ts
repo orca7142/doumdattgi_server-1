@@ -33,3 +33,11 @@ export interface IValidateSellerBuyerInput {
   request_id: string;
   context: IContext;
 }
+
+export interface IRequestsServiceRequestCompleteInput {
+  seller_phone: string;
+  sellerNickname: string;
+  buyerNickname: string;
+  requestTitle: string;
+  request_id: string;
+}
