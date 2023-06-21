@@ -12,6 +12,7 @@ import {
   IFetchWorkInput,
   IRequestAcceptRefuseInput,
   IRequestProcessInput,
+  IRequestsServiceRequestCompleteInput,
 } from './interfaces/requset-service.interface';
 import { UsersService } from '../users/users.service';
 import { Repository } from 'typeorm';
@@ -66,6 +67,114 @@ export class RequestsService {
     private readonly cacheManager: Cache,
     private readonly mailerService: MailerService,
   ) {}
+
+  // 작업 완료 확정하기 함수
+  async requestComplete({
+    seller_phone,
+    sellerNickname,
+    buyerNickname,
+    requestTitle,
+    request_id,
+  }: IRequestsServiceRequestCompleteInput): Promise<void> {
+    const messageService = new mysms(SMS_KEY, SMS_SECRET);
+    const date = new Date();
+    await messageService.sendOne({
+      autoTypeDetect: true,
+      to: seller_phone,
+      from: SMS_SENDER,
+      text: `[도움닫기] ${sellerNickname}님 ${buyerNickname}께서 ${requestTitle} 의뢰서 작업을 완료 확정하였습니다.`,
+    });
+
+    const seller_id = (
+      await this.requestsRepository.findOne({ where: { request_id } })
+    ).seller_id;
+    const workRate = (
+      await this.usersRepository.findOne({ where: { user_id: seller_id } })
+    ).user_workRate;
+    await this.usersRepository.update(
+      {
+        user_id: seller_id,
+      },
+      {
+        user_workRate: workRate + 1,
+      },
+    );
+
+    await this.requestsRepository.save({
+      request_id,
+      request_completedAt: date,
+      request_isAccept: REQUEST_ISACCEPT_ENUM.FINISH,
+    });
+
+    const user_id = (
+      await this.requestsRepository.findOne({ where: { request_id } })
+    ).seller_id;
+
+    const user_point = (
+      await this.usersRepository.findOne({ where: { user_id } })
+    ).user_point;
+
+    const requestPrice = (
+      await this.engageInRepository.findOne({
+        where: { request: { request_id } },
+      })
+    ).engageIn_price;
+
+    await this.usersRepository.update(
+      {
+        user_id,
+      },
+      {
+        user_point: user_point + requestPrice,
+      },
+    );
+
+    await this.paymentsRepository.save({
+      payment_impUid: '',
+      payment_amount: requestPrice,
+      payment_status: PAYMENT_STATUS_ENUM.SELL,
+      payment_type: '의뢰 완료',
+      user: { user_id },
+    });
+
+    const userSlot = await this.slotsRepository.findOne({
+      where: { user: { user_id } },
+    });
+
+    const slot_id = userSlot.slot_id;
+    const slot_first = userSlot.slot_first;
+    const slot_second = userSlot.slot_second;
+    const slot_third = userSlot.slot_third;
+
+    if (slot_third === true) {
+      await this.slotsRepository.update(
+        {
+          slot_id,
+        },
+        {
+          slot_third: false,
+        },
+      );
+    } else if (slot_second === true) {
+      await this.slotsRepository.update(
+        {
+          slot_id,
+        },
+        {
+          slot_second: false,
+        },
+      );
+    } else if (slot_first === true) {
+      await this.slotsRepository.update(
+        {
+          slot_id,
+        },
+        {
+          slot_first: false,
+        },
+      );
+    }
+  }
 
   // 의뢰 요청하는 함수
   async sendRequest({
@@ -379,104 +488,48 @@ export class RequestsService {
       );
       return (await workComplete).affected ? true : false;
     } else if (process === '작업 완료 확정하기') {
-      await messageService.sendOne({
-        autoTypeDetect: true,
-        to: seller_phone,
-        from: SMS_SENDER,
-        text: `[도움닫기] ${sellerNickname}님 ${buyerNickname}께서 ${requestTitle} 의뢰서 작업을 완료 확정하였습니다.`,
-      });
-
-      const seller_id = (
-        await this.requestsRepository.findOne({ where: { request_id } })
-      ).seller_id;
-      const workRate = (
-        await this.usersRepository.findOne({ where: { user_id: seller_id } })
-      ).user_workRate;
-      await this.usersRepository.update(
-        {
-          user_id: seller_id,
-        },
-        {
-          user_workRate: workRate + 1,
-        },
-      );
-
-      await this.requestsRepository.save({
+      const complete = await this.requestComplete({
+        seller_phone,
+        sellerNickname,
+        buyerNickname,
+        requestTitle,
         request_id,
-        request_completedAt: date,
-        request_isAccept: REQUEST_ISACCEPT_ENUM.FINISH,
       });
+      return true;
+    }
+  }
 
-      const user_id = (
-        await this.requestsRepository.findOne({ where: { request_id } })
-      ).seller_id;
-
-      const user_point = (
-        await this.usersRepository.findOne({ where: { user_id } })
-      ).user_point;
-
-      const requestPrice = (
-        await this.engageInRepository.findOne({
-          where: { request: { request_id } },
-        })
-      ).engageIn_price;
-
-      await this.usersRepository.update(
-        {
-          user_id,
-        },
-        {
-          user_point: user_point + requestPrice,
-        },
-      );
-
-      await this.paymentsRepository.save({
-        payment_impUid: '',
-        payment_amount: requestPrice,
-        payment_status: PAYMENT_STATUS_ENUM.SELL,
-        payment_type: '의뢰 완료',
-        user: { user_id },
-      });
-
-      const userSlot = await this.slotsRepository.findOne({
-        where: { user: { user_id } },
-      });
-
-      const slot_id = userSlot.slot_id;
-      const slot_first = userSlot.slot_first;
-      const slot_second = userSlot.slot_second;
-      const slot_third = userSlot.slot_third;
-
-      if (slot_third === true) {
-        const slotChangeOne = await this.slotsRepository.update(
-          {
-            slot_id,
-          },
-          {
-            slot_third: false,
-          },
-        );
-        return (await slotChangeOne).affected ? true : false;
-      } else if (slot_second === true) {
-        const slotChangeTwo = await this.slotsRepository.update(
-          {
-            slot_id,
-          },
-          {
-            slot_second: false,
-          },
-        );
-        return (await slotChangeTwo).affected ? true : false;
-      } else if (slot_first === true) {
-        const slotChangeThird = await this.slotsRepository.update(
-          {
-            slot_id,
-          },
-          {
-            slot_first: false,
-          },
-        );
-        return (await slotChangeThird).affected ? true : false;
+  // 1시간마다 작업 완료 확정 만료시간 확인 및 업데이트
+  @Cron('0 0-23/1 * * *')
+  async checkRequestComplete() {
+    const result = await this.requestsRepository.find();
+    for (let i = 0; i < result.length; i++) {
+      if (result[i].request_completedAt === null && result[i].request_sendAt) {
+        const target = result[i].request_sendAt.getTime() + 259200000;
+        const change = new Date().getTime();
+        const differ = target - change;
+        if (differ < 0) {
+          console.log('작업 확정 완료하기 자동으로 진행');
+          const seller_id = result[i].seller_id;
+          const seller_phone = (
+            await this.usersRepository.findOne({
+              where: { user_id: seller_id },
+            })
+          ).user_phone;
+          const sellerNickname = result[i].seller_nickname;
+          const buyerNickname = result[i].buyer_nickname;
+          const requestTitle = result[i].request_title;
+          const request_id = result[i].request_id;
+          await this.requestComplete({
+            seller_phone,
+            sellerNickname,
+            buyerNickname,
+            requestTitle,
+            request_id,
+          });
+        }
+      } else {
+        continue;
       }
     }
   }
