@@ -105,9 +105,15 @@ export class UsersService {
   }
 
   // 닉네임 형식 검증 함수
-  validateNickname({ user_nickname }) {
+  async validateNickname({ user_nickname }) {
     if (user_nickname.length < 2 || user_nickname.length > 15) {
       throw new ConflictException('닉네임이 길이 조건에 부합하지 않습니다');
+    }
+    const findNickname = await this.usersRepository.findOne({
+      where: { user_nickname },
+    });
+    if (findNickname) {
+      throw new ConflictException('입력하신 닉네임이 이미 존재합니다');
     }
   }
 
@@ -118,8 +124,6 @@ export class UsersService {
       throw new ConflictException('휴대폰 번호 형식이 잘못되었습니다');
     }
   }
-
-  // 비밀번호
 
   // 이메일 인증번호 전송 함수
   async sendTokenEmail({
@@ -268,6 +272,8 @@ export class UsersService {
     const validatePhone = await this.findOneByPhone({ user_phone });
     const validateEmail = await this.findOneByEmail({ user_email });
 
+    await this.validateNickname({ user_nickname });
+
     if (validatePhone) {
       throw new ConflictException('이미 등록된 휴대폰 번호입니다.');
     } else if (validateEmail) {
@@ -317,6 +323,8 @@ export class UsersService {
     const { user_nickname, user_introduce } = updateNicknameIntroduceInput;
 
     const loginUserInfo = await this.findLoginUser({ context });
+
+    await this.validateNickname({ user_nickname });
 
     await this.usersRepository.save({
       ...loginUserInfo,
