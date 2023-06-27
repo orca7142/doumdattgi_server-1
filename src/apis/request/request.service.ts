@@ -205,6 +205,9 @@ export class RequestsService {
 
     const messageService = new mysms(SMS_KEY, SMS_SECRET);
 
+    if (buyer_point < request_price)
+      throw new ConflictException('보유한 포인트가 부족합니다.');
+
     const checkSameRequest = await this.requestsRepository.findOne({
       where: { buyer_id, seller_id },
     });
@@ -231,9 +234,6 @@ export class RequestsService {
       from: SMS_SENDER,
       text: `[도움닫기] ${seller_nickname}님 ${buyer_nickname}께서 ${product_title}글에 대해 의뢰서 요청을 하였습니다. 수락 또는 거절을 해주세요.`,
     });
-
-    if (buyer_point < request_price)
-      throw new ConflictException('보유한 포인트가 부족합니다.');
 
     await this.mailerService.sendMail({
       from: process.env.EMAIL_SENDER,
