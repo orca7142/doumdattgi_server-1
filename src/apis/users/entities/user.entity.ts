@@ -67,6 +67,10 @@ export class User {
   @Field(() => Int)
   user_point: number;
 
+  @Column({ default: 0 })
+  @Field(() => Int)
+  user_mileage: number;
+
   @DeleteDateColumn()
   user_deletedAt: Date;
 

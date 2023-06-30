@@ -96,6 +96,7 @@ type User {
   user_portfolio: String
   user_workRate: Int!
   user_point: Int!
+  user_mileage: Int!
   slot: Slot!
 }
 

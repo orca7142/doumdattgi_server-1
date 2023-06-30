@@ -114,18 +114,27 @@ export class RequestsService {
       await this.usersRepository.findOne({ where: { user_id } })
     ).user_point;
 
+    const user_mileage = (
+      await this.usersRepository.findOne({ where: { user_id } })
+    ).user_mileage;
+
     const requestPrice = (
       await this.engageInRepository.findOne({
         where: { request: { request_id } },
       })
     ).engageIn_price;
 
+    //의뢰서 작업 금액의 5% 차감 및 마일리지 및 포인트로 전환
+    const mileage = requestPrice * 0.05;
+    const earnMoney = requestPrice - mileage;
+
     await this.usersRepository.update(
       {
         user_id,
       },
       {
-        user_point: user_point + requestPrice,
+        user_point: user_point + earnMoney,
+        user_mileage: user_mileage + mileage,
       },
     );
 
