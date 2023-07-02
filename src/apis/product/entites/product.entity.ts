@@ -4,13 +4,16 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Image } from 'src/apis/image/entites/image.entity';
 import { Pick } from 'src/apis/pick/entites/pick.entity';
+import { Coupon } from 'src/apis/coupon/entities/coupon.entity';
 
 export enum PRODUCT_CATEGORY_ENUM {
   IT = 'IT',
@@ -112,4 +115,9 @@ export class Product {
   @DeleteDateColumn()
   @Field(() => Date, { nullable: true })
   product_deletedAt: Date;
+
+  @JoinColumn()
+  @OneToOne(() => Coupon, (coupon) => coupon.product)
+  @Field(() => Coupon)
+  coupon: Coupon;
 }
