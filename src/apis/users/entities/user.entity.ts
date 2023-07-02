@@ -1,4 +1,5 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Coupon } from 'src/apis/coupon/entities/coupon.entity';
 import { Payment } from 'src/apis/payment/entities/payment.entity';
 import { Product } from 'src/apis/product/entites/product.entity';
 import { Slot } from 'src/apis/slot/entites/slot.entity';
@@ -26,6 +27,10 @@ export class User {
   @OneToMany(() => Product, (Product) => Product.user)
   @Field(() => [Product])
   product: Product[];
+
+  @OneToMany(() => Coupon, (Coupon) => Coupon.user)
+  @Field(() => [Coupon])
+  coupon: Coupon[];
 
   @Column()
   @Field(() => String)
