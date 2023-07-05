@@ -118,6 +118,6 @@ export class Product {
 
   @JoinColumn()
   @OneToOne(() => Coupon, (coupon) => coupon.product)
-  @Field(() => Coupon)
+  @Field(() => Coupon, { nullable: true })
   coupon: Coupon;
 }

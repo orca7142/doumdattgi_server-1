@@ -6,6 +6,7 @@ import { UsersService } from '../users/users.service';
 import {
   IProductServiceCreate,
   IProductServiceDelete,
+  IProductServiceFetchMyNotCouponProduct,
   IProductServiceFindAll,
   IProductServiceFindCategory,
   IProductServiceFindOne,
@@ -590,5 +591,22 @@ export class ProductService {
     } catch (error) {
       throw new Error('삭제에 실패하였습니다.');
     }
+  }
+
+  // 나의 상단노출권 적용 안된 상품 조회 함수
+  async fetchMyNotCouponProduct({
+    user_id,
+  }: IProductServiceFetchMyNotCouponProduct): Promise<Product[]> {
+    const result = [];
+    const product = await this.productsRepository.find({
+      where: { user: { user_id } },
+      relations: ['coupon'],
+    });
+
+    for (let i = 0; i < product.length; i++) {
+      if (!product[i].coupon) result.push(product[i]);
+    }
+
+    return result;
   }
 }
