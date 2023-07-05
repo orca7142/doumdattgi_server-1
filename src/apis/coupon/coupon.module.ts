@@ -7,6 +7,7 @@ import { CouponsService } from './coupon.service';
 import { UsersService } from '../users/users.service';
 import { Payment } from '../payment/entities/payment.entity';
 import { Slot } from '../slot/entites/slot.entity';
+import { Product } from '../product/entites/product.entity';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { Slot } from '../slot/entites/slot.entity';
       User,
       Payment,
       Slot,
+      Product,
     ]),
   ],
   providers: [

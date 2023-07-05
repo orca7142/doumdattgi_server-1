@@ -170,4 +170,16 @@ export class ProductResolver {
       pageSize,
     });
   }
+
+  // 나의 상단노출권 적용 안된 상품 조회 API
+  @UseGuards(GqlAuthGuard('access'))
+  @Query(() => [Product])
+  async fetchMyNotCouponProduct(
+    @Context() context: IContext,
+  ): Promise<Product[]> {
+    const user_id = context.req.user.user_id;
+    return this.productsService.fetchMyNotCouponProduct({
+      user_id,
+    });
+  }
 }

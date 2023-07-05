@@ -34,7 +34,7 @@ type Product {
   product_roadAddress: String
   product_detailAddress: String
   product_deletedAt: DateTime
-  coupon: Coupon!
+  coupon: Coupon
 }
 
 enum PRODUCT_CATEGORY_ENUM {
@@ -252,6 +252,7 @@ type Query {
   fetchNewbieProduct: [FetchProductOutput!]!
   fetchDetailProduct(product_id: String!): Product!
   fetchMyProduct(page: Float!, pageSize: Float!): [Product!]!
+  fetchMyNotCouponProduct: [Product!]!
   fetchBuyerRequest: [Request!]!
   fetchOneRequest(request_id: String!): Request!
   fetchSellerWork: [Request!]!
@@ -288,7 +289,7 @@ type Mutation {
   cancelPayment(payment_impUid: String!, payment_type: String!): CancelPaymentOutput!
   createComment(createCommentInput: CreateCommentInput!): Comment!
   createPick(product_id: String!): String!
-  purchaseCoupon(coupon: String!): Coupon!
+  purchaseCoupon(coupon: String!, productId: String!): Boolean!
 }
 
 input CreateUserInput {

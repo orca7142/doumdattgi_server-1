@@ -3,7 +3,6 @@ import { CouponsService } from './coupon.service';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { IContext } from 'src/commons/interfaces/context';
-import { Coupon } from './entities/coupon.entity';
 
 @Resolver()
 export class CouponsResolver {
@@ -11,13 +10,14 @@ export class CouponsResolver {
     private readonly couponsService: CouponsService, //
   ) {}
 
-  // 쿠폰 구매 API
+  // 쿠폰 구매 및 사용 API
   @UseGuards(GqlAuthGuard('access'))
-  @Mutation(() => Coupon)
+  @Mutation(() => Boolean)
   purchaseCoupon(
     @Args('coupon') coupon: string,
-    @Context() context: IContext, //
-  ): Promise<Coupon> {
-    return this.couponsService.purchaseCoupon({ context, coupon });
+    @Args('productId') productId: string,
+    @Context() context: IContext,
+  ): Promise<boolean> {
+    return this.couponsService.purchaseCoupon({ context, coupon, productId });
   }
 }

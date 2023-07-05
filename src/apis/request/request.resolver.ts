@@ -10,6 +10,7 @@ import { Request } from './entites/request.entity';
 export class RequestsResolver {
   constructor(private readonly requestsService: RequestsService) {}
 
+  // 의뢰서 요청 API
   @UseGuards(GqlAuthGuard('access'))
   @Mutation(() => Request)
   sendRequest(
@@ -22,6 +23,7 @@ export class RequestsResolver {
     });
   }
 
+  // 구매자 의뢰서 요청 조회 API
   @UseGuards(GqlAuthGuard('access'))
   @Query(() => [Request])
   fetchBuyerRequest(
@@ -32,6 +34,7 @@ export class RequestsResolver {
     });
   }
 
+  // 의뢰서 조회하기 API
   @UseGuards(GqlAuthGuard('access'))
   @Query(() => Request)
   fetchOneRequest(

@@ -53,3 +53,7 @@ export interface IProductServiceFindSellProduct {
   page: number;
   pageSize: number;
 }
+
+export interface IProductServiceFetchMyNotCouponProduct {
+  user_id: string;
+}

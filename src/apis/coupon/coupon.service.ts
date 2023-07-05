@@ -3,11 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { COUPON_TYPE_ENUM, Coupon } from './entities/coupon.entity';
 import { Repository } from 'typeorm';
 import {
-  ICouponsServiceCheckMileage,
   ICouponsServicePurchaseCoupon,
+  ICouponsServiceUpdateMileage,
 } from './interfaces/coupons-service.interface';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
+import { Product } from '../product/entites/product.entity';
 
 @Injectable()
 export class CouponsService {
@@ -18,11 +19,17 @@ export class CouponsService {
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
 
+    @InjectRepository(Product)
+    private readonly productsRepository: Repository<Product>,
+
     private readonly usersService: UsersService,
   ) {}
 
   // 유저 마일리지 수정 함수
-  async updateMileage({ user_id, mileage }) {
+  async updateMileage({
+    user_id,
+    mileage,
+  }: ICouponsServiceUpdateMileage): Promise<void> {
     const myMileage = (
       await this.usersRepository.findOne({ where: { user_id } })
     ).user_mileage;
@@ -36,11 +43,12 @@ export class CouponsService {
     );
   }
 
-  // 쿠폰 구매 함수
+  // 쿠폰 구매 및 사용 함수
   async purchaseCoupon({
     context, //
     coupon,
-  }: ICouponsServicePurchaseCoupon): Promise<Coupon> {
+    productId,
+  }: ICouponsServicePurchaseCoupon): Promise<boolean> {
     const user_id = context.req.user.user_id;
     let couponType = COUPON_TYPE_ENUM.ONE_DAY;
     let mileage = 0;
@@ -73,9 +81,21 @@ export class CouponsService {
       }
     }
 
-    return await this.couponsRepository.save({
+    const saveCoupon = await this.couponsRepository.save({
       user: { user_id },
       coupon_type: couponType,
     });
+
+    const couponId = saveCoupon.coupon_id;
+
+    const result = await this.productsRepository.update(
+      {
+        product_id: productId,
+      },
+      {
+        coupon: { coupon_id: couponId },
+      },
+    );
+    return result ? true : false;
   }
 }
