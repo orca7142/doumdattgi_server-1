@@ -34,7 +34,7 @@ type Product {
   product_roadAddress: String
   product_detailAddress: String
   product_deletedAt: DateTime
-  coupon: Coupon
+  mileage: Mileage
 }
 
 enum PRODUCT_CATEGORY_ENUM {
@@ -57,19 +57,26 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
-type Coupon {
-  coupon_id: String!
+type Mileage {
+  mileage_id: String!
   user: User!
-  coupon_type: COUPON_TYPE_ENUM!
-  coupon_isUsed: Boolean!
+  mileage_status: MILEAGE_STATUS_ENUM!
+  mileage_coupon: COUPON_TYPE_ENUM
+  payment_amount: Int!
+  mileage_createdAt: DateTime!
   product: Product!
-  coupon_createdAt: DateTime!
+}
+
+enum MILEAGE_STATUS_ENUM {
+  INCOME
+  EXPENSE
 }
 
 enum COUPON_TYPE_ENUM {
   ONE_DAY
   THREE_DAYS
   SEVEN_DAYS
+  NONE
 }
 
 type Payment {
@@ -102,7 +109,7 @@ type User {
   user_id: String!
   payment: [Payment!]!
   product: [Product!]!
-  coupon: [Coupon!]!
+  mileage: [Mileage!]!
   user_email: String!
   user_password: String!
   user_name: String!
@@ -260,6 +267,7 @@ type Query {
   fetchComments(request_id: String!): [Comment!]!
   fetchPickUserProduct(page: Float!, pageSize: Float!): [FetchMyPickOutput!]!
   fetchPickOrNot(product_id: String!): Boolean!
+  fetchMileageHistory: [Mileage!]!
 }
 
 type Mutation {

@@ -600,11 +600,12 @@ export class ProductService {
     const result = [];
     const product = await this.productsRepository.find({
       where: { user: { user_id } },
-      relations: ['coupon'],
+      relations: ['mileage'],
     });
 
     for (let i = 0; i < product.length; i++) {
-      if (!product[i].coupon) result.push(product[i]);
+      if (!product[i].mileage && product[i].product_sellOrBuy)
+        result.push(product[i]);
     }
 
     return result;

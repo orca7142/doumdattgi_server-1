@@ -36,6 +36,11 @@ const mysms = coolsms;
 
 import 'dotenv/config';
 import { Cron } from '@nestjs/schedule';
+import {
+  COUPON_TYPE_ENUM,
+  MILEAGE_STATUS_ENUM,
+  Mileage,
+} from '../mileage/entities/mileage.entity';
 const SMS_KEY = process.env.SMS_KEY;
 const SMS_SECRET = process.env.SMS_SECRET;
 const SMS_SENDER = process.env.SMS_SENDER;
@@ -51,6 +56,9 @@ export class RequestsService {
 
     @InjectRepository(Product)
     private readonly productsRepository: Repository<Product>,
+
+    @InjectRepository(Mileage)
+    private readonly mileagesRepository: Repository<Mileage>,
 
     @InjectRepository(EngageIn)
     private readonly engageInRepository: Repository<EngageIn>,
@@ -138,6 +146,14 @@ export class RequestsService {
       },
     );
 
+    // 마일리지 테이블 내역 저장
+    await this.mileagesRepository.save({
+      mileage_status: MILEAGE_STATUS_ENUM.INCOME,
+      mileage_coupon: COUPON_TYPE_ENUM.NONE,
+      payment_amount: mileage,
+      user: { user_id },
+    });
+
     await this.paymentsRepository.save({
       payment_impUid: '',
       payment_amount: requestPrice,
@@ -218,7 +234,7 @@ export class RequestsService {
       throw new ConflictException('보유한 포인트가 부족합니다.');
 
     const checkSameRequest = await this.requestsRepository.findOne({
-      where: { buyer_id, seller_id },
+      where: { buyer_id, seller_id, product: { product_id } },
     });
     if (checkSameRequest)
       throw new ConflictException('같은 상품을 중복 요청했습니다');
