@@ -13,7 +13,7 @@ import {
 import { User } from '../../users/entities/user.entity';
 import { Image } from 'src/apis/image/entites/image.entity';
 import { Pick } from 'src/apis/pick/entites/pick.entity';
-import { Coupon } from 'src/apis/coupon/entities/coupon.entity';
+import { Mileage } from 'src/apis/mileage/entities/mileage.entity';
 
 export enum PRODUCT_CATEGORY_ENUM {
   IT = 'IT',
@@ -117,7 +117,7 @@ export class Product {
   product_deletedAt: Date;
 
   @JoinColumn()
-  @OneToOne(() => Coupon, (coupon) => coupon.product)
-  @Field(() => Coupon, { nullable: true })
-  coupon: Coupon;
+  @OneToOne(() => Mileage, (mileage) => mileage.product)
+  @Field(() => Mileage, { nullable: true })
+  mileage: Mileage;
 }

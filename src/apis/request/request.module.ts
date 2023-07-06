@@ -12,6 +12,7 @@ import { ProductResolver } from '../product/product.resolver';
 import { Request } from './entites/request.entity';
 import { Image } from '../image/entites/image.entity';
 import { Slot } from '../slot/entites/slot.entity';
+import { Mileage } from '../mileage/entities/mileage.entity';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { Slot } from '../slot/entites/slot.entity';
       User,
       Request,
       Slot,
+      Mileage,
     ]),
   ],
   providers: [

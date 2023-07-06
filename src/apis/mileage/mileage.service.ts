@@ -1,35 +1,52 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { COUPON_TYPE_ENUM, Coupon } from './entities/coupon.entity';
 import { Repository } from 'typeorm';
 import {
-  ICouponsServicePurchaseCoupon,
-  ICouponsServiceUpdateMileage,
-} from './interfaces/coupons-service.interface';
+  COUPON_TYPE_ENUM,
+  MILEAGE_STATUS_ENUM,
+  Mileage,
+} from './entities/mileage.entity';
+import {
+  IMileagesServiceMileageHistory,
+  IMileagesServicePurchaseCoupon,
+  IMileagesServiceUpdateMileage,
+} from './interfaces/mileage-service.interface';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { Product } from '../product/entites/product.entity';
 
 @Injectable()
-export class CouponsService {
+export class MileagesService {
   constructor(
-    @InjectRepository(Coupon)
-    private readonly couponsRepository: Repository<Coupon>,
-
-    @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
+    @InjectRepository(Mileage)
+    private readonly mileagesRepository: Repository<Mileage>,
 
     @InjectRepository(Product)
     private readonly productsRepository: Repository<Product>,
 
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
+
     private readonly usersService: UsersService,
   ) {}
+
+  // 유저 마일리지 조회 함수
+  async mileageHistory({
+    context,
+  }: IMileagesServiceMileageHistory): Promise<Mileage[]> {
+    const user_id = context.req.user.user_id;
+    return await this.mileagesRepository.find({
+      where: { user: { user_id } },
+      order: { mileage_createdAt: 'DESC' },
+    });
+  }
 
   // 유저 마일리지 수정 함수
   async updateMileage({
     user_id,
     mileage,
-  }: ICouponsServiceUpdateMileage): Promise<void> {
+    couponType,
+  }: IMileagesServiceUpdateMileage): Promise<string> {
     const myMileage = (
       await this.usersRepository.findOne({ where: { user_id } })
     ).user_mileage;
@@ -41,6 +58,16 @@ export class CouponsService {
         user_mileage: myMileage - mileage,
       },
     );
+
+    // 마일리지 테이블 저장하기
+    const saveMileage = await this.mileagesRepository.save({
+      mileage_status: MILEAGE_STATUS_ENUM.EXPENSE,
+      mileage_coupon: couponType,
+      payment_amount: mileage,
+      user: { user_id },
+    });
+
+    return saveMileage.mileage_id;
   }
 
   // 쿠폰 구매 및 사용 함수
@@ -48,52 +75,46 @@ export class CouponsService {
     context, //
     coupon,
     productId,
-  }: ICouponsServicePurchaseCoupon): Promise<boolean> {
+  }: IMileagesServicePurchaseCoupon): Promise<boolean> {
     const user_id = context.req.user.user_id;
     let couponType = COUPON_TYPE_ENUM.ONE_DAY;
     let mileage = 0;
     const user_mileage = (await this.usersService.findLoginUser({ context }))
       .user_mileage;
+    let mileage_id = '';
 
     if (coupon === 'ONE_DAY') {
-      if (user_mileage >= 1000) {
+      if (user_mileage >= 500) {
         couponType = COUPON_TYPE_ENUM.ONE_DAY;
-        mileage = 1000;
-        await this.updateMileage({ user_id, mileage });
+        mileage = 500;
+        mileage_id = await this.updateMileage({ user_id, mileage, couponType });
       } else {
         throw new ConflictException('보유하신 마일리지가 부족합니다');
       }
     } else if (coupon === 'THREE_DAYS') {
-      if (user_mileage >= 3000) {
-        couponType = COUPON_TYPE_ENUM.ONE_DAY;
-        mileage = 3000;
-        await this.updateMileage({ user_id, mileage });
+      if (user_mileage >= 1000) {
+        couponType = COUPON_TYPE_ENUM.THREE_DAYS;
+        mileage = 1000;
+        mileage_id = await this.updateMileage({ user_id, mileage, couponType });
       } else {
         throw new ConflictException('보유하신 마일리지가 부족합니다');
       }
     } else if (coupon === 'SEVEN_DAYS') {
-      if (user_mileage >= 7000) {
-        couponType = COUPON_TYPE_ENUM.ONE_DAY;
-        mileage = 7000;
-        await this.updateMileage({ user_id, mileage });
+      if (user_mileage >= 2000) {
+        couponType = COUPON_TYPE_ENUM.SEVEN_DAYS;
+        mileage = 2000;
+        mileage_id = await this.updateMileage({ user_id, mileage, couponType });
       } else {
         throw new ConflictException('보유하신 마일리지가 부족합니다');
       }
     }
-
-    const saveCoupon = await this.couponsRepository.save({
-      user: { user_id },
-      coupon_type: couponType,
-    });
-
-    const couponId = saveCoupon.coupon_id;
 
     const result = await this.productsRepository.update(
       {
         product_id: productId,
       },
       {
-        coupon: { coupon_id: couponId },
+        mileage: { mileage_id },
       },
     );
     return result ? true : false;

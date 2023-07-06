@@ -7,14 +7,14 @@ import { Payment } from '../payment/entities/payment.entity';
 import { Request } from '../request/entites/request.entity';
 import { Pick } from '../pick/entites/pick.entity';
 import { Slot } from '../slot/entites/slot.entity';
-import { Coupon } from '../coupon/entities/coupon.entity';
+import { Mileage } from '../mileage/entities/mileage.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       Request, //
       Payment,
-      Coupon,
+      Mileage,
       User,
       Pick,
       Slot,
