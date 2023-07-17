@@ -50,6 +50,7 @@ export interface IProductServiceFindSubCategory {
 }
 
 export interface IProductServiceFindSellProduct {
+  product_category: string;
   page: number;
   pageSize: number;
 }

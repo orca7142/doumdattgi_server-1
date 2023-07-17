@@ -17,6 +17,15 @@ export class FetchProductOutput {
   @Field(() => Boolean)
   product_product_sellOrBuy: boolean;
 
+  @Field(() => String, { nullable: true })
+  product_minAmount: string;
+
+  @Field(() => String, { nullable: true })
+  product_possibleAmount: string;
+
+  @Field(() => String, { nullable: true })
+  product_date: string;
+
   @Field(() => String)
   u_user_nickname: string;
 

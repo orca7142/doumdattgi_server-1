@@ -24,6 +24,9 @@ type Product {
   product_category: PRODUCT_CATEGORY_ENUM!
   product_sub_category: String!
   product_summary: String!
+  product_minAmount: String
+  product_possibleAmount: String
+  product_date: String
   product_main_text: String!
   product_sellOrBuy: Boolean!
   product_workDay: WORKDAY_STATUS_ENUM!
@@ -158,6 +161,9 @@ type FetchProductOutput {
   product_product_category: String!
   product_product_workDay: String!
   product_product_sellOrBuy: Boolean!
+  product_minAmount: String
+  product_possibleAmount: String
+  product_date: String
   u_user_nickname: String!
   u_user_profileImage: String
   i_image_url: String!
@@ -169,6 +175,9 @@ type FetchSubCategoryOutput {
   product_product_category: String!
   product_product_workDay: String!
   product_product_sellOrBuy: Boolean!
+  product_minAmount: String
+  product_possibleAmount: String
+  product_date: String
   u_user_nickname: String!
   u_user_profileImage: String
   i_image_url: String!
@@ -181,6 +190,9 @@ type FetchSearchProductOutput {
   product_product_category: String!
   product_product_workDay: String!
   product_product_sellOrBuy: Boolean!
+  product_minAmount: String
+  product_possibleAmount: String
+  product_date: String
   u_user_nickname: String!
   u_user_profileImage: String
   i_image_url: String!
@@ -255,7 +267,7 @@ type Query {
   fetchLikeCategoryProduct(product_category: String!, page: Float!, pageSize: Float!): [FetchLikeCategoryOutput!]!
   fetchSubCategoryProduct(product_sub_category: String!, page: Float!, pageSize: Float!): [FetchSubCategoryOutput!]!
   fetchLikeSubCategoryProduct(product_sub_category: String!, page: Float!, pageSize: Float!): [FetchLikeSubCategoryOutput!]!
-  fetchSellCategoryProducts(page: Float!, pageSize: Float!): [FetchProductOutput!]!
+  fetchSellCategoryProducts(product_category: String!, page: Float!, pageSize: Float!): [FetchProductOutput!]!
   fetchNewbieProduct: [FetchProductOutput!]!
   fetchDetailProduct(product_id: String!): Product!
   fetchMyProduct(page: Float!, pageSize: Float!): [Product!]!
@@ -333,6 +345,9 @@ input CreateProductInput {
   product_workTime: Int!
   product_startTime: Int!
   product_endTime: Int!
+  product_minAmount: String
+  product_possibleAmount: String
+  product_date: String
   product_thumbnailImage: [Thumbnail!]!
   product_postNum: String
   product_roadAddress: String
@@ -355,6 +370,9 @@ input UpdateProductInput {
   product_workTime: Int
   product_startTime: Int
   product_endTime: Int
+  product_minAmount: String
+  product_possibleAmount: String
+  product_date: String
   product_thumbnailImage: [Thumbnail!]
   product_postNum: String
   product_roadAddress: String
