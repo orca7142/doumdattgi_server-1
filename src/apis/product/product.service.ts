@@ -43,6 +43,7 @@ export class ProductService {
     private readonly usersService: UsersService,
   ) {}
 
+  // 모든 게시물 검색
   async findAll({
     page,
     pageSize,
@@ -60,6 +61,10 @@ export class ProductService {
         'product.product_title',
         'product.product_category',
         'product.product_workDay',
+        'product.product_sellOrBuy',
+        'product.product_minAmount',
+        'product.product_possibleAmount',
+        'product.product_date',
         'u.user_nickname',
         'u.user_profileImage',
         'i.image_url',
@@ -73,6 +78,7 @@ export class ProductService {
     return result;
   }
 
+  // 모든 유저의 게시글 검색
   async findUserAll({
     user_id,
     page,
@@ -91,6 +97,7 @@ export class ProductService {
     return result;
   }
 
+  // 최신 게시물 검색(8개만)
   async findAllProduct(): Promise<FetchProductOutput[]> {
     const result = await this.productsRepository
       .createQueryBuilder('product')
@@ -105,6 +112,7 @@ export class ProductService {
         'product.product_title',
         'product.product_category',
         'product.product_workDay',
+        'product.product_minAmount',
         'product.product_sellOrBuy',
         'u.user_profileImage',
         'u.user_nickname',
@@ -121,6 +129,7 @@ export class ProductService {
     return result;
   }
 
+  // 랜덤 조회(4개만)
   async findRandom(): Promise<FetchProductOutput[]> {
     const result = await this.productsRepository
       .createQueryBuilder('product')
@@ -136,6 +145,7 @@ export class ProductService {
         'product.product_category',
         'product.product_workDay',
         'product.product_sellOrBuy',
+        'product.product_minAmount',
         'u.user_nickname',
         'u.user_profileImage',
         'i.image_url',
@@ -151,6 +161,7 @@ export class ProductService {
     return result;
   }
 
+  // 구인글 검색 4개만 (메인페이지)
   async findSell(): Promise<FetchProductOutput[]> {
     const result = await this.productsRepository
       .createQueryBuilder('product')
@@ -181,6 +192,7 @@ export class ProductService {
     return result;
   }
 
+  // 검색하기
   async findSearch({
     search,
     page,
@@ -222,6 +234,7 @@ export class ProductService {
     return result;
   }
 
+  // 카테고리 검색
   async findCategory({
     product_category,
     page,
@@ -260,6 +273,7 @@ export class ProductService {
     return result;
   }
 
+  // 좋아요 많은 순으로 보기(리스트페이지: 카테고리)
   async findLikeCategory({
     product_category,
     page,
@@ -302,6 +316,7 @@ export class ProductService {
     return result;
   }
 
+  // 서브 카테고리 검색
   async findSubCategory({
     product_sub_category,
     page,
@@ -341,6 +356,7 @@ export class ProductService {
     return result;
   }
 
+  // 좋아요 많은 순으로 보기(리스트페이지: 서브 카테고리)
   async findLikeSubCategory({
     product_sub_category,
     page,
@@ -384,7 +400,9 @@ export class ProductService {
     return result;
   }
 
+  // 구해요 페이지 검색 (카테고리, 리스트)
   async findSellProduct({
+    product_category,
     page,
     pageSize,
   }: IProductServiceFindSellProduct): Promise<FetchProductOutput[]> {
@@ -402,11 +420,16 @@ export class ProductService {
         'product.product_category',
         'product.product_workDay',
         'product.product_sellOrBuy',
+        'product.product_possibleAmount',
+        'product.product_date',
         'u.user_profileImage',
         'u.user_nickname',
         'i.image_url',
       ])
-      .where('i.image_isMain = :image_isMain', { image_isMain: 1 })
+      .where('product_category LIKE "%":product_category"%"', {
+        product_category,
+      })
+      .andWhere('i.image_isMain = :image_isMain', { image_isMain: 1 })
       .andWhere('product.product_sellOrBuy = :product_sellOrBuy', {
         product_sellOrBuy: 0,
       })
@@ -418,6 +441,7 @@ export class ProductService {
     return result;
   }
 
+  // 숨은 보석 찾기(메인페이지)
   async findNewUser(): Promise<FetchProductOutput[]> {
     const result = await this.productsRepository
       .createQueryBuilder('product')
@@ -449,6 +473,7 @@ export class ProductService {
     return result;
   }
 
+  // 디테일 페이지
   async findOne({ product_id }: IProductServiceFindOne): Promise<Product> {
     const productUserId = (
       await this.productsRepository.findOne({

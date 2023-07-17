@@ -135,10 +135,15 @@ export class ProductResolver {
 
   @Query(() => [FetchProductOutput])
   fetchSellCategoryProducts(
+    @Args('product_category') product_category: string,
     @Args('page') page: number,
     @Args('pageSize') pageSize: number,
   ): Promise<FetchProductOutput[]> {
-    return this.productsService.findSellProduct({ page, pageSize });
+    return this.productsService.findSellProduct({
+      product_category,
+      page,
+      pageSize,
+    });
   }
 
   @Query(() => [FetchProductOutput])
