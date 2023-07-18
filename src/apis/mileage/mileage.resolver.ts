@@ -4,6 +4,7 @@ import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { IContext } from 'src/commons/interfaces/context';
 import { Mileage } from './entities/mileage.entity';
 import { MileagesService } from './mileage.service';
+import { Product } from '../product/entites/product.entity';
 
 @Resolver()
 export class MileagesResolver {
@@ -29,5 +30,14 @@ export class MileagesResolver {
     @Context() context: IContext,
   ): Promise<boolean> {
     return this.mileagesService.purchaseCoupon({ context, coupon, productId });
+  }
+
+  // 마일리지 적용상품 조회 API
+  @UseGuards(GqlAuthGuard('access'))
+  @Query(() => [Product])
+  fetchMileageProductHistory(
+    @Context() context: IContext, //
+  ): Promise<Product[]> {
+    return this.mileagesService.mileageProductHistory({ context });
   }
 }

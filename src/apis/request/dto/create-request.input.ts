@@ -13,4 +13,7 @@ export class CreateRequestInput {
 
   @Field(() => Int)
   request_price: number;
+
+  @Field(() => Date)
+  request_dueDate: Date;
 }
