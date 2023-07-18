@@ -73,15 +73,15 @@ export class Product {
   @Field(() => String)
   product_summary: string;
 
-  @Column()
-  @Field(() => Int, { nullable: true })
-  product_minAmount?: number;
+  @Column({ default: '' })
+  @Field(() => String, { nullable: true })
+  product_minAmount?: string;
 
-  @Column()
-  @Field(() => Int, { nullable: true })
-  product_possibleAmount?: number;
+  @Column({ default: '' })
+  @Field(() => String, { nullable: true })
+  product_possibleAmount?: string;
 
-  @Column()
+  @Column({ default: '' })
   @Field(() => String, { nullable: true })
   product_date?: string;
 
