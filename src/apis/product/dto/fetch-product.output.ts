@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
 export class FetchProductOutput {
@@ -17,11 +17,11 @@ export class FetchProductOutput {
   @Field(() => Boolean)
   product_product_sellOrBuy: boolean;
 
-  @Field(() => String, { nullable: true })
-  product_minAmount: string;
+  @Field(() => Int, { nullable: true })
+  product_minAmount: number;
 
-  @Field(() => String, { nullable: true })
-  product_possibleAmount: string;
+  @Field(() => Int, { nullable: true })
+  product_possibleAmount: number;
 
   @Field(() => String, { nullable: true })
   product_date: string;

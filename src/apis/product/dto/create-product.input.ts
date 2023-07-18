@@ -41,11 +41,11 @@ export class CreateProductInput {
   @Field(() => Int)
   product_endTime: number;
 
-  @Field(() => String, { nullable: true })
-  product_minAmount?: string;
+  @Field(() => Int, { nullable: true })
+  product_minAmount?: number;
 
-  @Field(() => String, { nullable: true })
-  product_possibleAmount?: string;
+  @Field(() => Int, { nullable: true })
+  product_possibleAmount?: number;
 
   @Field(() => String, { nullable: true })
   product_date?: string;
