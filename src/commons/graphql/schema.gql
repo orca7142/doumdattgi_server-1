@@ -24,8 +24,8 @@ type Product {
   product_category: PRODUCT_CATEGORY_ENUM!
   product_sub_category: String!
   product_summary: String!
-  product_minAmount: Int
-  product_possibleAmount: Int
+  product_minAmount: String
+  product_possibleAmount: String
   product_date: String
   product_main_text: String!
   product_sellOrBuy: Boolean!
@@ -161,8 +161,8 @@ type FetchProductOutput {
   product_product_category: String!
   product_product_workDay: String!
   product_product_sellOrBuy: Boolean!
-  product_minAmount: Int
-  product_possibleAmount: Int
+  product_minAmount: String
+  product_possibleAmount: String
   product_date: String
   u_user_nickname: String!
   u_user_profileImage: String
@@ -175,8 +175,8 @@ type FetchSubCategoryOutput {
   product_product_category: String!
   product_product_workDay: String!
   product_product_sellOrBuy: Boolean!
-  product_minAmount: Int
-  product_possibleAmount: Int
+  product_minAmount: String
+  product_possibleAmount: String
   product_date: String
   u_user_nickname: String!
   u_user_profileImage: String
@@ -190,8 +190,8 @@ type FetchSearchProductOutput {
   product_product_category: String!
   product_product_workDay: String!
   product_product_sellOrBuy: Boolean!
-  product_minAmount: Int
-  product_possibleAmount: Int
+  product_minAmount: String
+  product_possibleAmount: String
   product_date: String
   u_user_nickname: String!
   u_user_profileImage: String
@@ -345,8 +345,8 @@ input CreateProductInput {
   product_workTime: Int!
   product_startTime: Int!
   product_endTime: Int!
-  product_minAmount: Int
-  product_possibleAmount: Int
+  product_minAmount: String
+  product_possibleAmount: String
   product_date: String
   product_thumbnailImage: [Thumbnail!]!
   product_postNum: String
@@ -370,8 +370,8 @@ input UpdateProductInput {
   product_workTime: Int
   product_startTime: Int
   product_endTime: Int
-  product_minAmount: Int
-  product_possibleAmount: Int
+  product_minAmount: String
+  product_possibleAmount: String
   product_date: String
   product_thumbnailImage: [Thumbnail!]
   product_postNum: String
