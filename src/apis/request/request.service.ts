@@ -208,6 +208,13 @@ export class RequestsService {
   }: ICreateRequestInput): Promise<Request> {
     const { product_id, request_price, ...rest } = createRequestInput;
 
+    const minPrice = (
+      await this.productsRepository.findOne({ where: { product_id } })
+    ).product_minAmount;
+    if (request_price < Number(minPrice)) {
+      throw new ConflictException('최소신청금액보다 의뢰서요청금액이 적습니다');
+    }
+
     const seller = await this.productsRepository.findOne({
       where: { product_id },
       relations: ['user'],

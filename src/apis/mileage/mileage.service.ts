@@ -8,6 +8,7 @@ import {
 } from './entities/mileage.entity';
 import {
   IMileagesServiceMileageHistory,
+  IMileagesServiceMileageProductHistory,
   IMileagesServicePurchaseCoupon,
   IMileagesServiceUpdateMileage,
 } from './interfaces/mileage-service.interface';
@@ -118,5 +119,31 @@ export class MileagesService {
       },
     );
     return result ? true : false;
+  }
+
+  // 유저 마일리지 적용 상품 조회 함수
+  async mileageProductHistory({
+    context,
+  }: IMileagesServiceMileageProductHistory): Promise<Product[]> {
+    const user_id = context.req.user.user_id;
+
+    const mileage = await this.mileagesRepository.find({
+      where: { user: { user_id } },
+      relations: ['user'],
+      order: { mileage_createdAt: 'DESC' },
+    });
+
+    const result = [];
+
+    for (let i = 0; i < mileage.length; i++) {
+      const mileage_id = mileage[i].mileage_id;
+      result.push(
+        await this.productsRepository.findOne({
+          where: { mileage: { mileage_id } },
+          relations: ['mileage', 'images'],
+        }),
+      );
+    }
+    return result;
   }
 }

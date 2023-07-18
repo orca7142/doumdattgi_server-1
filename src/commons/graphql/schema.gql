@@ -146,6 +146,7 @@ type Request {
   request_completedAt: DateTime
   request_title: String!
   request_content: String!
+  request_dueDate: DateTime!
 }
 
 enum REQUEST_ISACCEPT_ENUM {
@@ -280,6 +281,7 @@ type Query {
   fetchPickUserProduct(page: Float!, pageSize: Float!): [FetchMyPickOutput!]!
   fetchPickOrNot(product_id: String!): Boolean!
   fetchMileageHistory: [Mileage!]!
+  fetchMileageProductHistory: [Product!]!
 }
 
 type Mutation {
@@ -384,6 +386,7 @@ input CreateRequestInput {
   request_title: String!
   request_content: String!
   request_price: Int!
+  request_dueDate: DateTime!
 }
 
 input CreateCommentInput {

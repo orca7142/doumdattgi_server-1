@@ -95,4 +95,8 @@ export class Request {
   @Column({ type: 'text' })
   @Field(() => String)
   request_content: string;
+
+  @Column()
+  @Field(() => Date)
+  request_dueDate: Date;
 }
