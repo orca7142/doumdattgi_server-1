@@ -418,10 +418,12 @@ export class ProductService {
         'product.product_id',
         'product.product_title',
         'product.product_category',
+        'product.product_sub_category',
         'product.product_workDay',
         'product.product_sellOrBuy',
         'product.product_possibleAmount',
         'product.product_date',
+        'product.product_createdAt',
         'u.user_profileImage',
         'u.user_nickname',
         'i.image_url',
@@ -438,6 +440,7 @@ export class ProductService {
       .offset(pageSize * (page - 1))
       .getRawMany();
 
+    console.log(result);
     return result;
   }
 

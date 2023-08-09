@@ -69,8 +69,8 @@ export class Product {
   @Field(() => String)
   product_sub_category: string;
 
-  @Column()
-  @Field(() => String)
+  @Column({ default: '' })
+  @Field(() => String, { nullable: true })
   product_summary: string;
 
   @Column({ default: '' })
@@ -108,8 +108,8 @@ export class Product {
   @Field(() => Int)
   product_endTime: number;
 
-  @Column()
-  @Field(() => Int)
+  @Column({ nullable: true })
+  @Field(() => Int, { nullable: true })
   product_workTime: number;
 
   @Column({ default: '' })

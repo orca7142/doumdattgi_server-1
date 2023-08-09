@@ -23,7 +23,7 @@ type Product {
   product_title: String!
   product_category: PRODUCT_CATEGORY_ENUM!
   product_sub_category: String!
-  product_summary: String!
+  product_summary: String
   product_minAmount: String
   product_possibleAmount: String
   product_date: String
@@ -32,7 +32,7 @@ type Product {
   product_workDay: WORKDAY_STATUS_ENUM!
   product_startTime: Int!
   product_endTime: Int!
-  product_workTime: Int!
+  product_workTime: Int
   product_postNum: String
   product_roadAddress: String
   product_detailAddress: String
@@ -160,11 +160,13 @@ type FetchProductOutput {
   product_product_id: String!
   product_product_title: String!
   product_product_category: String!
+  product_product_sub_category: String!
   product_product_workDay: String!
   product_product_sellOrBuy: Boolean!
-  product_minAmount: String
-  product_possibleAmount: String
-  product_date: String
+  product_product_minAmount: String
+  product_product_possibleAmount: String
+  product_product_date: String
+  product_product_createdAt: DateTime!
   u_user_nickname: String!
   u_user_profileImage: String
   i_image_url: String!
@@ -174,30 +176,33 @@ type FetchSubCategoryOutput {
   product_product_id: String!
   product_product_title: String!
   product_product_category: String!
+  product_product_sub_category: String!
   product_product_workDay: String!
   product_product_sellOrBuy: Boolean!
-  product_minAmount: String
-  product_possibleAmount: String
-  product_date: String
+  product_product_minAmount: String
+  product_product_possibleAmount: String
+  product_product_date: String
+  product_product_createdAt: DateTime!
   u_user_nickname: String!
   u_user_profileImage: String
   i_image_url: String!
-  product_product_sub_category: String!
 }
 
 type FetchSearchProductOutput {
   product_product_id: String!
   product_product_title: String!
   product_product_category: String!
+  product_product_sub_category: String!
   product_product_workDay: String!
   product_product_sellOrBuy: Boolean!
-  product_minAmount: String
-  product_possibleAmount: String
-  product_date: String
+  product_product_minAmount: String
+  product_product_possibleAmount: String
+  product_product_date: String
+  product_product_createdAt: DateTime!
   u_user_nickname: String!
   u_user_profileImage: String
   i_image_url: String!
-  product_product_summary: String!
+  product_product_summary: String
 }
 
 type FetchLikeCategoryOutput {
@@ -341,16 +346,16 @@ input CreateProductInput {
   product_title: String!
   product_category: String!
   product_sub_category: String!
-  product_summary: String!
+  product_summary: String
   product_main_text: String!
   product_workDay: String!
-  product_workTime: Int!
+  product_workTime: Int
   product_startTime: Int!
   product_endTime: Int!
   product_minAmount: String
   product_possibleAmount: String
   product_date: String
-  product_thumbnailImage: [Thumbnail!]!
+  product_thumbnailImage: [Thumbnail!]
   product_postNum: String
   product_roadAddress: String
   product_detailAddress: String
