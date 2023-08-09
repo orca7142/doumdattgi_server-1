@@ -23,7 +23,7 @@ export class CreateProductInput {
   @Field(() => String)
   product_sub_category: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   product_summary: string;
 
   @Field(() => String)
@@ -32,7 +32,7 @@ export class CreateProductInput {
   @Field(() => String)
   product_workDay: string;
 
-  @Field(() => Int)
+  @Field(() => Int, { nullable: true })
   product_workTime: number;
 
   @Field(() => Int)
@@ -50,7 +50,7 @@ export class CreateProductInput {
   @Field(() => String, { nullable: true })
   product_date?: string;
 
-  @Field(() => [Thumbnail])
+  @Field(() => [Thumbnail], { nullable: true })
   product_thumbnailImage: Thumbnail[];
 
   @Field(() => String, { nullable: true })

@@ -12,19 +12,25 @@ export class FetchProductOutput {
   product_product_category: string;
 
   @Field(() => String)
+  product_product_sub_category: string;
+
+  @Field(() => String)
   product_product_workDay: string;
 
   @Field(() => Boolean)
   product_product_sellOrBuy: boolean;
 
   @Field(() => String, { nullable: true })
-  product_minAmount: string;
+  product_product_minAmount: string;
 
   @Field(() => String, { nullable: true })
-  product_possibleAmount: string;
+  product_product_possibleAmount: string;
 
   @Field(() => String, { nullable: true })
-  product_date: string;
+  product_product_date: string;
+
+  @Field(() => Date)
+  product_product_createdAt: Date;
 
   @Field(() => String)
   u_user_nickname: string;
