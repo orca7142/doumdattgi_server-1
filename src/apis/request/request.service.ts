@@ -319,6 +319,7 @@ export class RequestsService {
   }: IFetchOneRequestInput): Promise<Request> {
     const result = await this.requestsRepository.findOne({
       where: { request_id },
+      relations: ['product'],
     });
     return result;
   }
