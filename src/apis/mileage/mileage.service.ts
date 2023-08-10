@@ -14,7 +14,10 @@ import {
 } from './interfaces/mileage-service.interface';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
-import { Product } from '../product/entites/product.entity';
+import {
+  PRODUCT_CATEGORY_ENUM,
+  Product,
+} from '../product/entites/product.entity';
 
 @Injectable()
 export class MileagesService {
@@ -144,6 +147,54 @@ export class MileagesService {
         }),
       );
     }
+    return result;
+  }
+
+  randomMileageProduct(mileageProduct, count) {
+    const shuffledProduct = mileageProduct.slice(); // 배열을 복제하여 새 배열 생성
+    for (let i = shuffledProduct.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1)); // 0부터 i 사이의 랜덤 인덱스 선택
+      [shuffledProduct[i], shuffledProduct[j]] = [
+        shuffledProduct[j],
+        shuffledProduct[i],
+      ]; // 두 요소의 위치를 교환
+    }
+    return shuffledProduct.slice(0, count); // 처음 count 개의 요소 반환
+  }
+
+  // 마일리지 적용 상품 조회 함수
+  async fetchRandomMileageProduct({
+    category, //
+  }): Promise<Product[]> {
+    let chkcategory = PRODUCT_CATEGORY_ENUM.IT;
+
+    if (category === 'IT') {
+      chkcategory = PRODUCT_CATEGORY_ENUM.IT;
+    } else if (category === 'DESIGN') {
+      chkcategory = PRODUCT_CATEGORY_ENUM.DESIGN;
+    } else if (category === 'TRANSLATE') {
+      chkcategory = PRODUCT_CATEGORY_ENUM.TRANSLATE;
+    } else if (category === 'VIDEO') {
+      chkcategory = PRODUCT_CATEGORY_ENUM.VIDEO;
+    } else if (category === 'MARKETING') {
+      chkcategory = PRODUCT_CATEGORY_ENUM.MARKETING;
+    } else if (category === 'DOCUMENT') {
+      chkcategory = PRODUCT_CATEGORY_ENUM.DOCUMENT;
+    }
+
+    const mileageProduct = [];
+
+    const findProduct = await this.productsRepository.find({
+      where: { product_category: chkcategory },
+      relations: ['mileage', 'images', 'user'],
+    });
+    for (let i = 0; i < findProduct.length; i++) {
+      if (findProduct[i].mileage) {
+        mileageProduct.push(findProduct[i]);
+      }
+    }
+    const result = this.randomMileageProduct(mileageProduct, 3);
+
     return result;
   }
 }

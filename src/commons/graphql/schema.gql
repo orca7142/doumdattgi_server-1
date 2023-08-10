@@ -282,6 +282,7 @@ type Query {
   fetchPickOrNot(product_id: String!): Boolean!
   fetchMileageHistory: [Mileage!]!
   fetchMileageProductHistory: [Product!]!
+  fetchMileageProduct(category: String!): [Product!]!
 }
 
 type Mutation {

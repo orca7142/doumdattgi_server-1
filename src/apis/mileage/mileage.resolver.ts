@@ -32,12 +32,20 @@ export class MileagesResolver {
     return this.mileagesService.purchaseCoupon({ context, coupon, productId });
   }
 
-  // 마일리지 적용상품 조회 API
+  // 나의 마일리지 적용상품 조회 API
   @UseGuards(GqlAuthGuard('access'))
   @Query(() => [Product])
   fetchMileageProductHistory(
     @Context() context: IContext, //
   ): Promise<Product[]> {
     return this.mileagesService.mileageProductHistory({ context });
+  }
+
+  // 마일리지 적용상품 조회 API
+  @Query(() => [Product])
+  fetchRandomMileageProduct(
+    @Args('category') category: string, //
+  ): Promise<Product[]> {
+    return this.mileagesService.fetchRandomMileageProduct({ category });
   }
 }
