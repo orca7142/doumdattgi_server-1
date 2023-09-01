@@ -188,23 +188,6 @@ type FetchSubCategoryOutput {
   i_image_url: String!
 }
 
-type FetchSearchProductOutput {
-  product_product_id: String!
-  product_product_title: String!
-  product_product_category: String!
-  product_product_sub_category: String!
-  product_product_workDay: String!
-  product_product_sellOrBuy: Boolean!
-  product_product_minAmount: String
-  product_product_possibleAmount: String
-  product_product_date: String
-  product_product_createdAt: DateTime!
-  u_user_nickname: String!
-  u_user_profileImage: String
-  i_image_url: String!
-  product_product_summary: String
-}
-
 type FetchLikeCategoryOutput {
   product_product_id: String!
   product_product_title: String!
@@ -215,6 +198,19 @@ type FetchLikeCategoryOutput {
   u_user_profileImage: String
   image_url: String!
   pick_count: Float!
+}
+
+type FetchSearchProductOutput {
+  product_product_id: String!
+  product_product_title: String!
+  product_product_category: String!
+  product_product_workDay: String!
+  product_product_sellOrBuy: Boolean!
+  u_user_nickname: String!
+  u_user_profileImage: String
+  image_url: String!
+  pick_count: Float!
+  product_product_summary: String
 }
 
 type FetchLikeSubCategoryOutput {
@@ -270,6 +266,7 @@ type Query {
   fetchSellProduct: [FetchProductOutput!]!
   fetchSearchProduct(search: String!, page: Float!, pageSize: Float!): [FetchSearchProductOutput!]!
   fetchCategoryProduct(product_category: String!, page: Float!, pageSize: Float!): [FetchProductOutput!]!
+  fetchMyCategoryProduct(product_category: String!, page: Float!, pageSize: Float!): [Product!]!
   fetchLikeCategoryProduct(product_category: String!, page: Float!, pageSize: Float!): [FetchLikeCategoryOutput!]!
   fetchSubCategoryProduct(product_sub_category: String!, page: Float!, pageSize: Float!): [FetchSubCategoryOutput!]!
   fetchLikeSubCategoryProduct(product_sub_category: String!, page: Float!, pageSize: Float!): [FetchLikeSubCategoryOutput!]!
@@ -277,6 +274,7 @@ type Query {
   fetchNewbieProduct: [FetchProductOutput!]!
   fetchDetailProduct(product_id: String!): Product!
   fetchMyProduct(page: Float!, pageSize: Float!): [Product!]!
+  fetchSellMyProduct(page: Float!, pageSize: Float!): [Product!]!
   fetchMyNotCouponProduct: [Product!]!
   fetchBuyerRequest: [Request!]!
   fetchOneRequest(request_id: String!): Request!
@@ -287,7 +285,7 @@ type Query {
   fetchPickOrNot(product_id: String!): Boolean!
   fetchMileageHistory: [Mileage!]!
   fetchMileageProductHistory: [Product!]!
-  fetchMileageProduct(category: String!): [Product!]!
+  fetchRandomMileageProduct(category: String!): [Product!]!
 }
 
 type Mutation {
