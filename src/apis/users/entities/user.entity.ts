@@ -54,6 +54,10 @@ export class User {
 
   @Column({ default: '' })
   @Field(() => String, { nullable: true })
+  user_provider: string;
+
+  @Column({ default: '' })
+  @Field(() => String, { nullable: true })
   user_profileImage: string;
 
   @Column({ default: '' })

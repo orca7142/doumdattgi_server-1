@@ -5,6 +5,7 @@ import { UpdateNicknameIntroduceInput } from '../dto/update-nicknameIntroduce.in
 
 export interface ICreateUserInput {
   createUserInput: CreateUserInput;
+  user_provider?: string;
 }
 
 export interface IUsersServiceDuplicationEmail {
