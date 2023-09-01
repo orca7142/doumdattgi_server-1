@@ -43,6 +43,13 @@ export interface IProductServiceFindCategory {
   pageSize: number;
 }
 
+export interface IProductServiceFindMyCategory {
+  user_id: string;
+  product_category: string;
+  page: number;
+  pageSize: number;
+}
+
 export interface IProductServiceFindSubCategory {
   product_sub_category: string;
   page: number;

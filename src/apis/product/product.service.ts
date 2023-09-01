@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entites/product.entity';
-import { Repository } from 'typeorm';
+import { Raw, Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
 import {
   IProductServiceCreate,
@@ -9,6 +9,7 @@ import {
   IProductServiceFetchMyNotCouponProduct,
   IProductServiceFindAll,
   IProductServiceFindCategory,
+  IProductServiceFindMyCategory,
   IProductServiceFindOne,
   IProductServiceFindSearch,
   IProductServiceFindSellProduct,
@@ -78,7 +79,7 @@ export class ProductService {
     return result;
   }
 
-  // 모든 유저의 게시글 검색
+  // 모든 유저의 구직게시글 검색
   async findUserAll({
     user_id,
     page,
@@ -88,6 +89,27 @@ export class ProductService {
       where: {
         user: { user_id },
         images: { image_isMain: true },
+        product_sellOrBuy: true,
+      },
+      relations: ['user', 'images'],
+      order: { product_createdAt: 'DESC' },
+      skip: pageSize * (page - 1),
+      take: pageSize,
+    });
+    return result;
+  }
+
+  // 모든 유저의 구인게시글 검색
+  async findUserSellAll({
+    user_id,
+    page,
+    pageSize,
+  }: IProductServiceFindUserAll): Promise<Product[]> {
+    const result = await this.productsRepository.find({
+      where: {
+        user: { user_id },
+        images: { image_isMain: true },
+        product_sellOrBuy: false,
       },
       relations: ['user', 'images'],
       order: { product_createdAt: 'DESC' },
@@ -210,6 +232,7 @@ export class ProductService {
         'i',
         'product.product_id = i.productProductId',
       )
+      .leftJoinAndSelect('product.pick', 'pick')
       .select([
         'product.product_id',
         'product.product_title',
@@ -219,14 +242,14 @@ export class ProductService {
         'product.product_summary',
         'u.user_nickname',
         'u.user_profileImage',
-        'i.image_url',
+        'MAX(i.image_url) as image_url',
+        'COUNT(pick.pick_id) as pick_count',
       ])
       .where('product.product_title LIKE :search', { search: `%${search}%` })
       .andWhere('i.image_isMain = :image_isMain', { image_isMain: 1 })
-      .andWhere('product.product_sellOrBuy = :product_sellOrBuy', {
-        product_sellOrBuy: 1,
-      })
-      .orderBy('product.product_createdAt', 'DESC')
+      .groupBy('product.product_id')
+      .orderBy('COUNT(pick.pick_id)', 'DESC')
+      .addOrderBy('product.product_createdAt', 'DESC')
       .limit(pageSize)
       .offset(pageSize * (page - 1))
       .getRawMany();
@@ -271,6 +294,87 @@ export class ProductService {
       .getRawMany();
 
     return result;
+  }
+
+  // 나의카테고리 검색
+  // async findMyCategory({
+  //   product_category,
+  //   user_id,
+  //   page,
+  //   pageSize,
+  // }: IProductServiceFindMyCategory): Promise<Product[]> {
+  //   const result = await this.productsRepository.find({
+  //     where: {
+  //       user: { user_id },
+  //       images: { image_isMain: true },
+  //       product_sellOrBuy: true,
+  //     },
+  //     relations: ['user', 'images'],
+  //     order: { product_createdAt: 'DESC' },
+  //     skip: pageSize * (page - 1),
+  //     take: pageSize,
+  //   });
+  //   return result;
+  // }
+
+  async findMyCategory({
+    product_category,
+    user_id,
+    page,
+    pageSize,
+  }: IProductServiceFindMyCategory): Promise<Product[]> {
+    const ProductResult = await this.productsRepository.find({
+      where: {
+        images: { image_isMain: true },
+        product_sellOrBuy: true,
+        product_category: Raw((alias) => `${alias} LIKE :category`, {
+          category: `%${product_category}%`,
+        }),
+      },
+      relations: ['user', 'images', 'pick'],
+      order: { product_createdAt: 'DESC' },
+      skip: pageSize * (page - 1),
+      take: pageSize,
+    });
+
+    // 1. 모든 상품의 product_id 뽑기
+    const productIds = ProductResult.map((product) => product.product_id);
+
+    const UserResult = await this.productsRepository.find({
+      where: {
+        user: { user_id },
+        images: { image_isMain: true },
+        product_sellOrBuy: true,
+        product_category: Raw((alias) => `${alias} LIKE :category`, {
+          category: `%${product_category}%`,
+        }),
+      },
+      relations: ['user', 'images', 'pick'],
+      order: { product_createdAt: 'DESC' },
+      skip: pageSize * (page - 1),
+      take: pageSize,
+    });
+
+    // 2. 로그인한 유저의 product_id만 뽑기
+    const UserProductIds = UserResult.map((product) => product.product_id);
+
+    //로그인한 유저의 pick_id뽑기
+    const UserPickIds = UserResult.map((product) =>
+      product.pick.map((pick) => pick.pick_id),
+    );
+
+    // 3. 둘의 공통된 product_id 뽑기
+    const commonProductIds = productIds.filter((productId) =>
+      UserProductIds.includes(productId),
+    );
+    console.log(productIds, UserProductIds, commonProductIds, UserPickIds);
+
+    // 4. 둘의 공통된 product_id에서 pick_id가 있는 것만 boolean값을 넣어준다.
+
+    return UserResult;
+
+    // 1. user아이디 받아온걸로 그 user_id에 해당되는 pick_id를 어온다
+    // 2. 애네 둘을 합친다(둘의 일치하는 product_id에 boolean값을 넣어줘야한다.)
   }
 
   // 좋아요 많은 순으로 보기(리스트페이지: 카테고리)

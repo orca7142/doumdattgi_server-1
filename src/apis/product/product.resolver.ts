@@ -94,6 +94,23 @@ export class ProductResolver {
     });
   }
 
+  @UseGuards(GqlAuthGuard('access'))
+  @Query(() => [Product])
+  fetchMyCategoryProduct(
+    @Args('product_category') product_category: string, //
+    @Args('page') page: number,
+    @Args('pageSize') pageSize: number,
+    @Context() context: IContext,
+  ): Promise<Product[]> {
+    const user_id = context.req.user.user_id;
+    return this.productsService.findMyCategory({
+      product_category,
+      user_id,
+      page,
+      pageSize,
+    });
+  }
+
   @Query(() => [FetchLikeCategoryOutput])
   fetchLikeCategoryProduct(
     @Args('product_category') product_category: string, //
@@ -170,6 +187,21 @@ export class ProductResolver {
   ): Promise<Product[]> {
     const user_id = context.req.user.user_id;
     return this.productsService.findUserAll({
+      user_id,
+      page,
+      pageSize,
+    });
+  }
+
+  @UseGuards(GqlAuthGuard('access'))
+  @Query(() => [Product])
+  async fetchSellMyProduct(
+    @Args('page') page: number,
+    @Args('pageSize') pageSize: number,
+    @Context() context: IContext,
+  ): Promise<Product[]> {
+    const user_id = context.req.user.user_id;
+    return this.productsService.findUserSellAll({
       user_id,
       page,
       pageSize,

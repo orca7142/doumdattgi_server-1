@@ -1,8 +1,8 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { FetchProductOutput } from './fetch-product.output';
+import { FetchLikeCategoryOutput } from './fetch-LikeCategory.output';
 
 @ObjectType()
-export class FetchSearchProductOutput extends FetchProductOutput {
+export class FetchSearchProductOutput extends FetchLikeCategoryOutput {
   @Field(() => String, { nullable: true })
   product_product_summary: string;
 }
