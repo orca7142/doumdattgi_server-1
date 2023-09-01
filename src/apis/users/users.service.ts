@@ -323,9 +323,10 @@ export class UsersService {
     const { user_nickname, user_introduce } = updateNicknameIntroduceInput;
 
     const loginUserInfo = await this.findLoginUser({ context });
-
-    await this.validateNickname({ user_nickname });
-
+    const loginUserNickname = loginUserInfo.user_nickname;
+    if (loginUserNickname !== user_nickname) {
+      await this.validateNickname({ user_nickname });
+    }
     await this.usersRepository.save({
       ...loginUserInfo,
       user_nickname,
