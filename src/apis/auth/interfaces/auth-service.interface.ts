@@ -29,6 +29,7 @@ export interface IOAuthUser {
   user: {
     user_name: string;
     user_email: string;
+    user_provider: string;
     user_password: string;
     user_nickname: string;
     user_phone: string;
