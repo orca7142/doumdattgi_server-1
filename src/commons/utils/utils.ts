@@ -102,3 +102,99 @@ export function sendRequestTemplate({
 	  `;
   return template;
 }
+
+export function requestAcceptTemplate({
+  seller_nickname,
+  buyer_nickname,
+  request_title,
+}) {
+  const template = `
+		<!DOCTYPE html>
+		<html lang="ko">
+			<head>
+				<title>도움닫기</title>
+			</head>
+			<body id="box1"></body>
+				<table style="width: 100%;">
+						<tbody>
+								<tr>
+										<td style="text-align: center;">
+												<h1>도움닫기</h1>
+										</td>
+								</tr>
+								<tr>
+										<td style="text-align: center;">
+												<h2>[도움닫기]  ${buyer_nickname}님 ${seller_nickname}께서 ${request_title}글에 대해 의뢰서 요청을 수락하였습니다.</h2>
+										</td>
+								</tr>
+						</tbody>
+				</table>
+			</body>
+		</html>		
+		`;
+  return template;
+}
+
+export function requestRefuseTemplate({
+  seller_nickname,
+  buyer_nickname,
+  request_title,
+}) {
+  const template = `
+		  <!DOCTYPE html>
+		  <html lang="ko">
+			  <head>
+				  <title>도움닫기</title>
+			  </head>
+			  <body id="box1"></body>
+				  <table style="width: 100%;">
+						  <tbody>
+								  <tr>
+										  <td style="text-align: center;">
+												  <h1>도움닫기</h1>
+										  </td>
+								  </tr>
+								  <tr>
+										  <td style="text-align: center;">
+												  <h2>[도움닫기]  ${buyer_nickname}님 ${seller_nickname}께서 ${request_title}글에 대해 의뢰서 요청을 거절하였습니다.</h2>
+										  </td>
+								  </tr>
+						  </tbody>
+				  </table>
+			  </body>
+		  </html>		
+		  `;
+  return template;
+}
+
+export function requestCompleteTemplate({
+  seller_nickname,
+  buyer_nickname,
+  request_title,
+}) {
+  const template = `
+			<!DOCTYPE html>
+			<html lang="ko">
+				<head>
+					<title>도움닫기</title>
+				</head>
+				<body id="box1"></body>
+					<table style="width: 100%;">
+							<tbody>
+									<tr>
+											<td style="text-align: center;">
+													<h1>도움닫기</h1>
+											</td>
+									</tr>
+									<tr>
+											<td style="text-align: center;">
+													<h2>[도움닫기]  ${buyer_nickname}님 ${seller_nickname}께서 ${request_title} 의뢰서 작업을 완료하였습니다</h2>
+											</td>
+									</tr>
+							</tbody>
+					</table>
+				</body>
+			</html>		
+			`;
+  return template;
+}
