@@ -30,9 +30,12 @@ import {
 import { Slot } from '../slot/entites/slot.entity';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Cache } from 'cache-manager';
-import coolsms from 'coolsms-node-sdk';
-import { sendRequestTemplate } from 'src/commons/utils/utils';
-const mysms = coolsms;
+import {
+  requestAcceptTemplate,
+  requestCompleteTemplate,
+  requestRefuseTemplate,
+  sendRequestTemplate,
+} from 'src/commons/utils/utils';
 
 import 'dotenv/config';
 import { Cron } from '@nestjs/schedule';
@@ -41,9 +44,6 @@ import {
   MILEAGE_STATUS_ENUM,
   Mileage,
 } from '../mileage/entities/mileage.entity';
-const SMS_KEY = process.env.SMS_KEY;
-const SMS_SECRET = process.env.SMS_SECRET;
-const SMS_SENDER = process.env.SMS_SENDER;
 
 @Injectable()
 export class RequestsService {
@@ -78,20 +78,9 @@ export class RequestsService {
 
   // 작업 완료 확정하기 함수
   async requestComplete({
-    seller_phone,
-    sellerNickname,
-    buyerNickname,
-    requestTitle,
     request_id,
   }: IRequestsServiceRequestCompleteInput): Promise<void> {
-    const messageService = new mysms(SMS_KEY, SMS_SECRET);
     const date = new Date();
-    await messageService.sendOne({
-      autoTypeDetect: true,
-      to: seller_phone,
-      from: SMS_SENDER,
-      text: `[도움닫기] ${sellerNickname}님 ${buyerNickname}께서 ${requestTitle} 의뢰서 작업을 완료 확정하였습니다.`,
-    });
 
     const seller_id = (
       await this.requestsRepository.findOne({ where: { request_id } })
@@ -224,7 +213,6 @@ export class RequestsService {
     const seller_nickname = seller.user.user_nickname;
     const seller_profileImage = seller.user.user_profileImage;
     const seller_email = seller.user.user_email;
-    const seller_phone = seller.user.user_phone;
 
     const buyer = await this.usersService.findLoginUser({ context });
     const buyer_id = buyer.user_id;
@@ -234,8 +222,6 @@ export class RequestsService {
     const buyer_point = buyer.user_point;
 
     const product_title = seller.product_title;
-
-    const messageService = new mysms(SMS_KEY, SMS_SECRET);
 
     if (buyer_point < request_price)
       throw new ConflictException('보유한 포인트가 부족합니다.');
@@ -258,13 +244,6 @@ export class RequestsService {
       buyer_nickname,
       buyer_profileImage,
       buyer_email,
-    });
-
-    await messageService.sendOne({
-      autoTypeDetect: true,
-      to: seller_phone,
-      from: SMS_SENDER,
-      text: `[도움닫기] ${seller_nickname}님 ${buyer_nickname}께서 ${product_title}글에 대해 의뢰서 요청을 하였습니다. 수락 또는 거절을 해주세요.`,
     });
 
     await this.mailerService.sendMail({
@@ -345,21 +324,21 @@ export class RequestsService {
       where: { request_id },
     });
 
-    const sellerNickname = requestUser.seller_nickname;
-    const buyerNickname = requestUser.buyer_nickname;
-    const requestTitle = requestUser.request_title;
-    const buyer = requestUser.buyer_id;
-    const buyer_phone = (
-      await this.usersRepository.findOne({ where: { user_id: buyer } })
-    ).user_phone;
+    const seller_email = requestUser.seller_email;
+    const seller_nickname = requestUser.seller_nickname;
+    const buyer_nickname = requestUser.buyer_nickname;
+    const request_title = requestUser.request_title;
 
     if (acceptRefuse === '수락하기') {
-      const messageService = new mysms(SMS_KEY, SMS_SECRET);
-      await messageService.sendOne({
-        autoTypeDetect: true,
-        to: buyer_phone,
-        from: SMS_SENDER,
-        text: `[도움닫기] ${buyerNickname}님 ${sellerNickname}께서 ${requestTitle}글에 대해 의뢰서 요청을 수락하였습니다.`,
+      await this.mailerService.sendMail({
+        from: process.env.EMAIL_SENDER,
+        to: seller_email,
+        subject: '[도움닫기] 의뢰서 요청에 관하여 알려드립니다.',
+        html: requestAcceptTemplate({
+          seller_nickname,
+          buyer_nickname,
+          request_title,
+        }),
       });
 
       await this.engageInRepository.update(
@@ -415,12 +394,15 @@ export class RequestsService {
         }
       }
     } else if (acceptRefuse === '거절하기') {
-      const messageService = new mysms(SMS_KEY, SMS_SECRET);
-      await messageService.sendOne({
-        autoTypeDetect: true,
-        to: buyer_phone,
-        from: SMS_SENDER,
-        text: `[도움닫기] ${buyerNickname}님 ${sellerNickname}께서 ${requestTitle}글에 대해 의뢰서 요청을 거절하였습니다.`,
+      await this.mailerService.sendMail({
+        from: process.env.EMAIL_SENDER,
+        to: seller_email,
+        subject: '[도움닫기] 의뢰서 요청에 관하여 알려드립니다.',
+        html: requestRefuseTemplate({
+          seller_nickname,
+          buyer_nickname,
+          request_title,
+        }),
       });
       await this.requestsRepository.update(
         {
@@ -493,24 +475,12 @@ export class RequestsService {
     const sellerNickname = requestUser.seller_nickname;
     const buyerNickname = requestUser.buyer_nickname;
     const requestTitle = requestUser.request_title;
-    const buyer = requestUser.buyer_id;
     const seller = requestUser.seller_id;
-    const buyer_phone = (
-      await this.usersRepository.findOne({ where: { user_id: buyer } })
-    ).user_phone;
     const seller_phone = (
       await this.usersRepository.findOne({ where: { user_id: seller } })
     ).user_phone;
-    const messageService = new mysms(SMS_KEY, SMS_SECRET);
 
     if (process === '작업 완료하기') {
-      await messageService.sendOne({
-        autoTypeDetect: true,
-        to: buyer_phone,
-        from: SMS_SENDER,
-        text: `[도움닫기] ${buyerNickname}님 ${sellerNickname}께서 ${requestTitle} 의뢰서 작업을 완료하였습니다.`,
-      });
-
       const workComplete = await this.requestsRepository.update(
         {
           request_id,
@@ -521,7 +491,7 @@ export class RequestsService {
       );
       return (await workComplete).affected ? true : false;
     } else if (process === '작업 완료 확정하기') {
-      const complete = await this.requestComplete({
+      await this.requestComplete({
         seller_phone,
         sellerNickname,
         buyerNickname,

@@ -16,7 +16,7 @@ export class JwtNaverStrategy extends PassportStrategy(Strategy, 'naver') {
       user_email: profile._json.email,
       user_provider: profile.provider,
       user_password: '',
-      user_nickname: '',
+      user_nickname: 'profile.displayName',
       user_phone: '',
     };
   }

@@ -88,25 +88,25 @@ export class MileagesService {
     let mileage_id = '';
 
     if (coupon === 'ONE_DAY') {
-      if (user_mileage >= 500) {
+      if (user_mileage >= 5000) {
         couponType = COUPON_TYPE_ENUM.ONE_DAY;
-        mileage = 500;
+        mileage = 5000;
         mileage_id = await this.updateMileage({ user_id, mileage, couponType });
       } else {
         throw new ConflictException('보유하신 마일리지가 부족합니다');
       }
     } else if (coupon === 'THREE_DAYS') {
-      if (user_mileage >= 1000) {
+      if (user_mileage >= 10000) {
         couponType = COUPON_TYPE_ENUM.THREE_DAYS;
-        mileage = 1000;
+        mileage = 10000;
         mileage_id = await this.updateMileage({ user_id, mileage, couponType });
       } else {
         throw new ConflictException('보유하신 마일리지가 부족합니다');
       }
     } else if (coupon === 'SEVEN_DAYS') {
-      if (user_mileage >= 2000) {
+      if (user_mileage >= 20000) {
         couponType = COUPON_TYPE_ENUM.SEVEN_DAYS;
-        mileage = 2000;
+        mileage = 20000;
         mileage_id = await this.updateMileage({ user_id, mileage, couponType });
       } else {
         throw new ConflictException('보유하신 마일리지가 부족합니다');
@@ -151,15 +151,15 @@ export class MileagesService {
   }
 
   randomMileageProduct(mileageProduct, count) {
-    const shuffledProduct = mileageProduct.slice(); // 배열을 복제하여 새 배열 생성
+    const shuffledProduct = mileageProduct.slice();
     for (let i = shuffledProduct.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1)); // 0부터 i 사이의 랜덤 인덱스 선택
+      const j = Math.floor(Math.random() * (i + 1));
       [shuffledProduct[i], shuffledProduct[j]] = [
         shuffledProduct[j],
         shuffledProduct[i],
-      ]; // 두 요소의 위치를 교환
+      ];
     }
-    return shuffledProduct.slice(0, count); // 처음 count 개의 요소 반환
+    return shuffledProduct.slice(0, count);
   }
 
   // 마일리지 적용 상품 조회 함수
