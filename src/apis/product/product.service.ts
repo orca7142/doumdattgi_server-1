@@ -165,6 +165,7 @@ export class ProductService {
         'product.product_id',
         'product.product_title',
         'product.product_category',
+        'product.product_sub_category',
         'product.product_workDay',
         'product.product_sellOrBuy',
         'product.product_minAmount',
@@ -367,6 +368,7 @@ export class ProductService {
     const commonProductIds = productIds.filter((productId) =>
       UserProductIds.includes(productId),
     );
+    // console.log(commonProductIds);
     console.log(productIds, UserProductIds, commonProductIds, UserPickIds);
 
     // 4. 둘의 공통된 product_id에서 pick_id가 있는 것만 boolean값을 넣어준다.
