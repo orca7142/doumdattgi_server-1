@@ -133,6 +133,7 @@ export class ProductService {
         'product.product_id',
         'product.product_title',
         'product.product_category',
+        'product.product_sub_category',
         'product.product_workDay',
         'product.product_minAmount',
         'product.product_sellOrBuy',
@@ -198,6 +199,7 @@ export class ProductService {
         'product.product_id',
         'product.product_title',
         'product.product_category',
+        'product.product_sub_category',
         'product.product_workDay',
         'product.product_sellOrBuy',
         'u.user_nickname',
@@ -238,6 +240,7 @@ export class ProductService {
         'product.product_id',
         'product.product_title',
         'product.product_category',
+        'product.product_sub_category',
         'product.product_workDay',
         'product.product_sellOrBuy',
         'product.product_summary',
@@ -276,6 +279,7 @@ export class ProductService {
         'product.product_id',
         'product.product_title',
         'product.product_category',
+        'product.product_sub_category',
         'product.product_workDay',
         'product.product_sellOrBuy',
         'u.user_nickname',
@@ -369,7 +373,7 @@ export class ProductService {
       UserProductIds.includes(productId),
     );
     // console.log(commonProductIds);
-    console.log(productIds, UserProductIds, commonProductIds, UserPickIds);
+    // console.log(productIds, UserProductIds, commonProductIds, UserPickIds);
 
     // 4. 둘의 공통된 product_id에서 pick_id가 있는 것만 boolean값을 넣어준다.
 
@@ -398,6 +402,7 @@ export class ProductService {
         'product.product_id',
         'product.product_title',
         'product.product_category',
+        'product.product_sub_category',
         'product.product_workDay',
         'product.product_sellOrBuy',
         'u.user_nickname',
@@ -564,6 +569,7 @@ export class ProductService {
         'product.product_id',
         'product.product_title',
         'product.product_category',
+        'product.product_sub_category',
         'product.product_workDay',
         'product.product_sellOrBuy',
         'u.user_nickname',
@@ -712,7 +718,6 @@ export class ProductService {
       where: { user: { user_id }, product_id },
       relations: ['user'],
     });
-    console.log(product);
 
     if (!product)
       throw new Error(

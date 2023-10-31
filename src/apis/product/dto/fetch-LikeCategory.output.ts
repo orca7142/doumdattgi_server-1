@@ -12,6 +12,9 @@ export class FetchLikeCategoryOutput {
   product_product_category: string;
 
   @Field(() => String)
+  product_product_sub_category: string;
+
+  @Field(() => String)
   product_product_workDay: string;
 
   @Field(() => Boolean)
