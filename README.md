@@ -1,73 +1,116 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+<img src="https://i.postimg.cc/50wjX27B/doumdattgi-banner.png" alt="banner" />
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# 🪜 도움닫기
+매년마다 이슈가 되는 취업난 문제,
+이제는 익숙할정도로 한국 사회의 고질적인 문제로 자리 잡았습니다. 
+기업들의 중고신입 선호 확산으로 인해 실무경험의 기회가 없는 무(無) 경험 초년생들은 
+개인의 능력을 쌓을 기회조차 쉽게 얻지 못하고 있습니다.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+<span style="color: #88b04b">도움닫기</span>는 이런 경험이 없거나 부족한 사람들에게 실제로 일할 수 있는 기회와 개인의 능력을 증명해 볼 수 있는 환경을 제공하며 <span style="color: #88b04b">사회의 첫 발을 내딛는 이들이 좀 더 높은 곳으로 도약하여 새로운 시작을 할 수 있도록 하는 성장지원 플랫폼</span>입니다.
 
-## Description
+---
+# 배포 주소
+### [도움닫기](https://www.doumdattgi.com/) https://www.doumdattgi.com/
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+---
+# 📆 프로젝트 기간
 
-## Installation
+- 2023.05.01 ~ 2023.10.27
 
-```bash
-$ yarn install
-```
+---
+# 🛠 기술 스택
 
-## Running the app
+![기술스택 drawio](https://github.com/code-bootcamp/doumdattgi_server/assets/115931848/9daf97d2-60fe-4c51-a51d-afb45d76035d)
 
-```bash
-# development
-$ yarn run start
+![Fontawesome](https://img.shields.io/badge/fontawesome-339AF0?style=for-the-badge&logo=fontawesome&logoColor=white)
+![Reacthookform](https://img.shields.io/badge/reacthookform-EC5990?style=for-the-badge&logo=reacthookform&logoColor=white)
+<br>
 
-# watch mode
-$ yarn run start:dev
+---
+# 🧑‍💻 👩🏻‍💻 프로젝트 팀원 구성
+ 
+![](https://velog.velcdn.com/images/cometes/post/08813667-eeca-4211-b7bb-902008c5f581/image.jpeg)
+![](https://velog.velcdn.com/images/cometes/post/0cdbf860-d03f-4a1c-a50d-e27fce2edfd2/image.png)
+![](https://velog.velcdn.com/images/cometes/post/a3dbd815-6790-434b-b2e6-a29110e9b446/image.png)
 
-# production mode
-$ yarn run start:prod
-```
+### Git 링크
+ <table>
+    <tr>
+      <td colspan='3' align="center">
+        <b>Frontend</b>
+      </td>
+            <td colspan='2' align="center">
+        <b>Backend</b>
+      </td>
+    </tr>
+    <tr>
+     <td align="center"><b><a href="https://github.com/cometes">전혜원</a></b></td>
+     <td align="center"><b><a href="https://github.com/wooryeol">김우렬</a></b></td>
+     <td align="center"><b><a href="https://github.com/Songhyunseop">송현섭</a></b></td>
+           <td align="center"><b><a href="https://github.com/jswon-jung">정승원</a></b></td>
+     <td align="center"><b><a href="https://github.com/orca7142">이동현</a></b></td>
+   </tr>
+   <tr>
+     <td align="center"><a href="https://github.com/cometes"><img src="https://velog.velcdn.com/images/cometes/post/f82a7726-4462-4e7b-a49f-4cb2a5f70bb1/image.png" width="80px" /></a></td>
+     <td align="center"><a href="https://github.com/wooryeol"><img src="https://velog.velcdn.com/images/cometes/post/89918ada-c1e0-4743-bc93-d529f815a384/image.png" width="80px" /></a></td>
+     <td align="center"><a href="https://github.com/Songhyunseop"><img src="https://velog.velcdn.com/images/cometes/post/804629dd-a8a8-4f8f-bd60-aeb36306350c/image.png" width="80px" /></a>
+            <td align="center"><a href="https://github.com/jswon-jung"><img src="https://velog.velcdn.com/images/cometes/post/aad5187d-d262-4837-934d-8e414d644c77/image.png" width="80px" /></a>
+     <td align="center"><a href="https://github.com/orca7142"><img src="https://velog.velcdn.com/images/cometes/post/9c6c9b67-69f0-458d-8a39-cae69ca482da/image.png" width="80px" /></a></td>
+   </tr>
+      <tr>
+   </tr>
+ </table>
 
-## Test
+---
+ # 💡 주요 기능
+ ### 🎯 **로그인 및 회원가입 기능**
 
-```bash
-# unit tests
-$ yarn run test
+ - 가입된 정보 입력으로 로그인 가능
+ - 소셜 로그인 기능
+ - 이메일 인증을 통한 회원가입 기능
 
-# e2e tests
-$ yarn run test:e2e
 
-# test coverage
-$ yarn run test:cov
-```
+ ### 🎯 **상품 목록 조회 기능**
+ 
+ - 카테고리별로 등록된 게시글 목록 조회 가능
+ - 게시글 클릭 시 등록자 연락처, 판매정보, 작업 시간 등 조회 가능
+ 
 
-## Support
+ ### 🎯 **게시글 작성기능**
+ 
+ - 카테고리 및 태그, 작업가능 시간을 선택하여 글 작성 가능
+ - 게시글에 이미지 첨부 가능
+ - 글 작성 시 지도를 이용해 현 위치 지정 가능
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
 
-## Stay in touch
+ ### 🎯 **결제 기능**
+ 
+ - 개인 결제를 통해 사이트에서 통용되는 포인트 충전 가능 (결제방식은 이니시스, 카카오페이 중 택1)
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
 
-## License
+ ### 🎯 **거래 기능**
+ 
+ - 구매자가 의뢰 요청을 보내면 판매자가 요청을 수락하거나 거절 가능
+ - 의뢰 수락 후 맡은 의뢰가 끝나면 판매자는 구매자에게 완료 상태 전달 가능
+ - 완료를 받은 구매자는 의뢰를 종료하고 예정된 거래금액을 판매자에게 전달 가능
+ - 구매자는 의뢰 수락, 완료를 현 진행상태를 통해 확인 가능
+ - 거래 완료 시 플랫폼 이용에 도움이 되는 마일리지 적립 가능
 
-Nest is [MIT licensed](LICENSE).
+---
+# 🖥️ 페이지 구성
+
+## 메인 페이지
+![](https://velog.velcdn.com/images/cometes/post/d7fbf117-836f-4d7c-9ebf-93d1629be7c8/image.gif)
+
+## 카테고리 별 페이지
+![](https://velog.velcdn.com/images/cometes/post/82f58fc3-e849-4477-90c1-79c927ae416e/image.gif)
+
+## 의뢰 거래 페이지
+![](https://velog.velcdn.com/images/cometes/post/857d5810-4c71-40c0-af73-31bc6419514e/image.gif)
+
+
+## 의뢰 댓글 페이지
+![](https://velog.velcdn.com/images/cometes/post/a129873e-8d98-4cda-8906-7bdec93d753e/image.gif)
+
+## 마일리지 페이지
+![](https://velog.velcdn.com/images/cometes/post/8394500e-a415-4823-a1f5-e5e4558660f2/image.gif)
