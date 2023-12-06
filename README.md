@@ -35,7 +35,7 @@
  
 ![](https://velog.velcdn.com/images/cometes/post/08813667-eeca-4211-b7bb-902008c5f581/image.jpeg)
 ![](https://velog.velcdn.com/images/cometes/post/0cdbf860-d03f-4a1c-a50d-e27fce2edfd2/image.png)
-![](https://velog.velcdn.com/images/cometes/post/a3dbd815-6790-434b-b2e6-a29110e9b446/image.png)
+![KakaoTalk_20231206_161640194](https://github.com/code-bootcamp/doumdattgi_server/assets/115931848/820e0ec8-b9b0-4ffd-92c3-dbc5460685de)
 
 ### Git 링크
  <table>
