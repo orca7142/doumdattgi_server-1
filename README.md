@@ -31,6 +31,10 @@
 ![플로우차트 drawio](https://github.com/orca7142/doumdattgi_server-1/assets/115931848/d8aec927-f0bc-415c-9ca3-a24bc9ec3827)
 
 ---
+# 📌 ERD
+![image](https://github.com/orca7142/doumdattgi_server-1/assets/115931848/ef6bd206-9f4f-4de2-801a-fcc6fec78e61)
+
+---
 # 🧑‍💻 👩🏻‍💻 프로젝트 팀원 구성
  
 ![](https://velog.velcdn.com/images/cometes/post/08813667-eeca-4211-b7bb-902008c5f581/image.jpeg)
